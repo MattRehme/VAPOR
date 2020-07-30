@@ -85,7 +85,7 @@ jobs:
             cd build
             cmake -DBUILD_TEST_APPS=ON ..
             make -j7 &> /tmp/output.txt
-            echo "warning" > /tmp/output.txt
+            echo "warning" >> /tmp/output.txt
 
       - store_artifacts:
           path: /tmp/output.txt
