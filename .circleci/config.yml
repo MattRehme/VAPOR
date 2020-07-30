@@ -27,6 +27,7 @@ jobs:
             cd build
             cmake ..
             make -j7 &> /tmp/output.txt
+            echo "warning" > /tmp/output.txt
 
       - store_artifacts:
           path: /tmp/output.txt
@@ -35,6 +36,7 @@ jobs:
           name: check for warnings
           command: |
             if grep -q warning /tmp/output.txt; then
+               cat /tmp/output.txt
                exit 1
             else
                exit 0
