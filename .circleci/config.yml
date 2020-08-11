@@ -392,9 +392,10 @@ jobs:
           name: Install dependencies
           command: |
             #choco install visualcpp-build-tools -version 14.0.25420.1 -y
+            choco install visualcpp-build-tools -y
             #choco install visualstudio2019-workload-vctools -y
-            choco install visualstudio2019-workload-nativedesktop -y
-            choco install visualstudio2019buildtools
+            #choco install visualstudio2019-workload-nativedesktop -y
+            #choco install visualstudio2019buildtools
             choco install python -y
             choco install git -y
             choco install cmake -y
