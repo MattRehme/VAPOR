@@ -391,7 +391,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            choco install visualcpp-build-tools -version 14.0.25420.1 -y
+            #choco install visualcpp-build-tools -version 14.0.25420.1 -y
+            choco install visualstudio2019-workload-vctools -y
             choco install python -y
             choco install git -y
             choco install cmake -y
@@ -473,7 +474,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - build_ubuntu18
+      #- build_ubuntu18
       #- build_ubuntu16
       #- build_centos7
       #- build_osx
@@ -487,7 +488,7 @@ workflows:
       #- build_ubuntu16_installer
       #- build_centos7_installer
       #- build_osx_installer
-      #- build_win10_installer
+      - build_win10_installer
       #- release_on_github:
       #    requires:
       #      - build_win10_installer
