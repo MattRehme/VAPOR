@@ -400,7 +400,8 @@ jobs:
             choco install python -y
             choco install git -y
             choco install cmake -y
-            choco install nsis -y
+            # NSIS has a broken link when installing through choco.  https://github.com/actions/virtual-environments/pull/1392
+            #choco install nsis -y
             python -m pip install gdown
             #setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bin" 
             setx /M PATH "%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin" 
