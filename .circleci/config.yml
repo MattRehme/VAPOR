@@ -403,6 +403,7 @@ jobs:
             # NSIS has a broken link when installing through choco.  https://github.com/actions/virtual-environments/pull/1392
             #choco install nsis -y
             #C:\Users\circleci\project\nsis-3.06.1-setup.exe /S /NCRC
+            pwd
             ./nsis-3.06.1-setup.exe /S /NCRC
             python -m pip install gdown
             #setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bin" 
