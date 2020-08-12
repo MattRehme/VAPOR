@@ -19,4 +19,4 @@ with zipfile.ZipFile("2019-Aug-Win32.zip", 'r') as zip_ref:
 url = "https://drive.google.com/a/ucar.edu/uc?id=1YweSaUX0S08E8HEF1Mee2o5gei7WZj1a"
 output = "nsis-3.06.1-setup.exe"
 gdown.download(url, output, quiet=False)
-os.system("./nsis-3.06.1-setup.exe")
+#os.system("./nsis-3.06.1-setup.exe")

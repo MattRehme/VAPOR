@@ -385,7 +385,9 @@ jobs:
             path: /tmp/tidy.txt
 
   build_win10_installer:
-    executor: win/default
+    executor: 
+      name: win/default
+      shell: powershell.exe
     steps:
       - checkout
       - run:
