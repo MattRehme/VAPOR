@@ -410,7 +410,7 @@ jobs:
             python -m pip install gdown
             #setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bin" 
             python .circleci/downloadWin3rdParty.py
-            "C:\Users\circleci\project\nsis-3.06.1-setup.exe /S /NCRC"
+            #'C:\Users\circleci\project\nsis-3.06.1-setup.exe /S /NCRC'
             setx /M PATH "%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin;C:\Program Files (x86)\NSIS"
       - run:
           name: Build Vapor
