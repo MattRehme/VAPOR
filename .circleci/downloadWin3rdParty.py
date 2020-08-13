@@ -20,4 +20,4 @@ url = "https://drive.google.com/a/ucar.edu/uc?id=1YweSaUX0S08E8HEF1Mee2o5gei7WZj
 output = "nsis-3.06.1-setup.exe"
 gdown.download(url, output, quiet=False)
 #os.system("./nsis-3.06.1-setup.exe")
-os.system("C:\Users\circleci\project\nsis-3.06.1-setup.exe /S /NCRC")
+os.system("C:\\Users\\circleci\\project\\nsis-3.06.1-setup.exe /S /NCRC")
