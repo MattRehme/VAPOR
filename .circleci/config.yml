@@ -415,6 +415,7 @@ jobs:
       - run:
           name: Build Vapor
           command: |
+            git checkout $CIRCLE_BRANCH
             Copy-Item site_files\* -Destination .
             mkdir build
             cd build
