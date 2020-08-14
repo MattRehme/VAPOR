@@ -387,7 +387,7 @@ jobs:
   build_win10_installer:
     executor: 
       name: win/default
-      shell: powershell.exe
+      #shell: powershell.exe
     steps:
       - checkout
       - run:
@@ -414,7 +414,7 @@ jobs:
           command: |
             #git checkout $CIRCLE_BRANCH
             #git checkout master
-            git reset -- hard origin/master
+            #git reset -- hard origin/master
             git branch
             Copy-Item site_files\* -Destination .
             mkdir build
