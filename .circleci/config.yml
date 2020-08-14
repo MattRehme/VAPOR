@@ -393,12 +393,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            #choco install visualcpp-build-tools -version 14.0.25420.1 -y
-            choco install visualcpp-build-tools -y
-            #choco install visualstudio2019buildtools --package-parameters "--allWorkloads --includeRecommended --includeOptional --passive --locale en-US"
-            #choco install visualstudio2019-workload-vctools -y
-            #choco install visualstudio2019-workload-nativedesktop -y
-            #choco install visualstudio2019buildtools
+            choco install visualcpp-build-tools -version 14.0.25420.1 -y
+            #choco install visualcpp-build-tools -y
             choco install python -y
             choco install git --force -y
             choco install cmake -y
@@ -409,12 +405,10 @@ jobs:
             #nsis-3.06.1-setup.exe /S /NCRC
             python -m pip install gdown
             #setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bin" 
+            setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bini;C:\Program Files (x86)\NSIS" 
             python .circleci/downloadWin3rdParty.py
             #'C:\Users\circleci\project\nsis-3.06.1-setup.exe /S /NCRC'
-            setx /M PATH "%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin;C:\Program Files (x86)\NSIS;C:\Program Files\Git\cmd"
-            #setx /M PATH "%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin"
-            #setx /M PATH "%PATH%;C:\Program Files (x86)\NSIS"
-            #setx /M PATH "%PATH%;C:\Program Files\Git\cmd"
+            #setx /M PATH "%PATH%;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin;C:\Program Files (x86)\NSIS;C:\Program Files\Git\cmd"
       - run:
           name: Build Vapor
           command: |
@@ -425,8 +419,8 @@ jobs:
             Copy-Item site_files\* -Destination .
             mkdir build
             cd build
-            #& 'C:\\Program Files\\CMake\\bin\\cmake.exe' -S C:\Users\circleci\project -B C:\Users\circleci\project\build -DCMAKE_BUILD_TYPE:STRING=Release -G 'Visual Studio 14 2015' -A x64
-            & 'C:\\Program Files\\CMake\\bin\\cmake.exe' -S C:\Users\circleci\project -B C:\Users\circleci\project\build -DCMAKE_BUILD_TYPE:STRING=Release -G 'Visual Studio 16 2019' -A x64
+            & 'C:\\Program Files\\CMake\\bin\\cmake.exe' -S C:\Users\circleci\project -B C:\Users\circleci\project\build -DCMAKE_BUILD_TYPE:STRING=Release -G 'Visual Studio 14 2015' -A x64
+            #& 'C:\\Program Files\\CMake\\bin\\cmake.exe' -S C:\Users\circleci\project -B C:\Users\circleci\project\build -DCMAKE_BUILD_TYPE:STRING=Release -G 'Visual Studio 16 2019' -A x64
             msbuild C:\Users\circleci\project\build\PACKAGE.vcxproj /p:Configuration=Release /p:Platform=x64
             mkdir -p C:\Users\circleci\project\tmp\workspace\installers
             Copy-Item C:\Users\circleci\project\build\*.exe -Destination C:\Users\circleci\project\tmp\workspace\installers\VAPOR3-3.2.0-win64-Weekly-master3.exe
