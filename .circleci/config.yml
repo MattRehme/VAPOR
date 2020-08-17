@@ -392,7 +392,7 @@ jobs:
             choco install python -y
             choco install git -y
             choco install cmake -y
-            choco install nsis -y
+            #choco install nsis -y
             python -m pip install gdown
             setx /M PATH "%PATH%;C:\Program Files (x86)\MSBuild\14.0\bin" 
             msbuild -version
