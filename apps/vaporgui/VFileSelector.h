@@ -9,7 +9,6 @@
 class VPushButton;
 class VLineEdit;
 
-
 //! class VFileSelector
 //!
 //! An abstract class for reading and writing files, or selecting
@@ -19,37 +18,33 @@ class VLineEdit;
 class VFileSelector : public VContainer {
     Q_OBJECT
 
-public:
+  public:
     std::string GetValue() const;
-    bool SetValue( const std::string& file );
+    bool SetValue(const std::string &file);
 
-     void HideLineEdit( bool hide );
+    void HideLineEdit(bool hide);
 
-protected:
-    VFileSelector(
-        const std::string& buttonText,
-        const std::string& defaultPath,
-        const std::string& filter
-    );
+  protected:
+    VFileSelector(const std::string &buttonText, const std::string &defaultPath,
+                  const std::string &filter);
 
-    VLineEdit*           _lineEdit;
-    VPushButton*         _pushButton;
+    VLineEdit *_lineEdit;
+    VPushButton *_pushButton;
 
-    std::string           _filePath;
-    std::string           _filter;
+    std::string _filePath;
+    std::string _filter;
 
-private:
+  private:
     virtual std::string _launchFileDialog() = 0;
-    virtual bool _isFileOperable( const std::string& file ) const = 0;
+    virtual bool _isFileOperable(const std::string &file) const = 0;
 
-public slots:
+  public slots:
     void OpenFileDialog();
-    void SetPathFromLineEdit( const std::string& value );
+    void SetPathFromLineEdit(const std::string &value);
 
-signals:
-    void ValueChanged( const std::string& path );
+  signals:
+    void ValueChanged(const std::string &path);
 };
-
 
 //! class VFileReader
 //!
@@ -58,16 +53,14 @@ signals:
 class VFileReader : public VFileSelector {
     Q_OBJECT
 
-public:
-    VFileReader(
-        const std::string& buttonText = "Select",
-        const std::string& defaultPath = QDir::homePath().toStdString(),
-        const std::string& filter = ""
-    );
+  public:
+    VFileReader(const std::string &buttonText = "Select",
+                const std::string &defaultPath = QDir::homePath().toStdString(),
+                const std::string &filter = "");
 
-private:
+  private:
     virtual std::string _launchFileDialog();
-    virtual bool _isFileOperable( const std::string& file ) const;
+    virtual bool _isFileOperable(const std::string &file) const;
 };
 
 //! class VFileWriter
@@ -77,16 +70,14 @@ private:
 class VFileWriter : public VFileSelector {
     Q_OBJECT
 
-public:
-    VFileWriter(
-        const std::string& buttonText = "Select",
-        const std::string& defaultPath = QDir::homePath().toStdString(),
-        const std::string& filter = ""
-    );
+  public:
+    VFileWriter(const std::string &buttonText = "Select",
+                const std::string &defaultPath = QDir::homePath().toStdString(),
+                const std::string &filter = "");
 
-private:
+  private:
     virtual std::string _launchFileDialog();
-    virtual bool _isFileOperable( const std::string& file ) const;
+    virtual bool _isFileOperable(const std::string &file) const;
 };
 
 //! class VFileSelector
@@ -96,13 +87,11 @@ private:
 class VDirSelector : public VFileSelector {
     Q_OBJECT
 
-public:
-    VDirSelector (
-        const std::string& buttonText = "Select",
-        const std::string& defaultPath = QDir::homePath().toStdString()
-    );
+  public:
+    VDirSelector(const std::string &buttonText = "Select",
+                 const std::string &defaultPath = QDir::homePath().toStdString());
 
-private:
+  private:
     virtual std::string _launchFileDialog();
-    virtual bool _isFileOperable( const std::string& file ) const;
+    virtual bool _isFileOperable(const std::string &file) const;
 };

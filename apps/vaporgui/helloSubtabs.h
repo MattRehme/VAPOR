@@ -3,31 +3,27 @@
 #include "ui_HelloVariablesGUI.h"
 
 namespace VAPoR {
-    class RenderParams;
-    class ParamsMgr;
-    class DataMgr;
-}
+class RenderParams;
+class ParamsMgr;
+class DataMgr;
+} // namespace VAPoR
 
 class HelloVariablesSubtab : public QWidget, public Ui_HelloVariablesGUI {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	HelloVariablesSubtab(QWidget* parent);
-	~HelloVariablesSubtab() {};	
+  public:
+    HelloVariablesSubtab(QWidget *parent);
+    ~HelloVariablesSubtab(){};
 
-	void Update(
-		VAPoR::DataMgr *dataMgr,
-		VAPoR::ParamsMgr *paramsMgr, 
-		VAPoR::RenderParams *rParams
-	) {
-		_variablesWidget->Update(dataMgr, paramsMgr, rParams);
-	}
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr,
+                VAPoR::RenderParams *rParams) {
+        _variablesWidget->Update(dataMgr, paramsMgr, rParams);
+    }
 
-protected:
-
-private:
-	//VariablesWidget* _variablesWidget;
+  protected:
+  private:
+    // VariablesWidget* _variablesWidget;
 };
 
 #endif

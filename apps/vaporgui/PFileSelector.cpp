@@ -7,35 +7,29 @@
 #include "SettingsParams.h"
 
 PFileSelector::PFileSelector(const std::string &tag, const std::string &label)
-: PLineItem(tag, label, _pathTexbox = new VLineEdit, _button = new VPushButton("Select"))
-{
+    : PLineItem(tag, label, _pathTexbox = new VLineEdit, _button = new VPushButton("Select")) {
     _pathTexbox->SetReadOnly(true);
     connect(_button, &VPushButton::ButtonClicked, this, &PFileSelector::buttonClicked);
 }
 
-void PFileSelector::updateGUI() const
-{
-    _pathTexbox->SetValue(getParamsString());
-}
+void PFileSelector::updateGUI() const { _pathTexbox->SetValue(getParamsString()); }
 
-PFileSelector *PFileSelector::SetFileTypeFilter(const std::string &filter)
-{
+PFileSelector *PFileSelector::SetFileTypeFilter(const std::string &filter) {
     _fileTypeFilter = QString::fromStdString(filter);
     return this;
 }
 
-//PFileSelector *PFileSelector::UseDefaultPathSetting(const std::string &tag)
+// PFileSelector *PFileSelector::UseDefaultPathSetting(const std::string &tag)
 //{
 //    _syncWithSettings = true;
 //    _syncWithSettingsTag = tag;
 //    return this;
 //}
 
-void PFileSelector::buttonClicked()
-{
+void PFileSelector::buttonClicked() {
     string defaultPath;
     string selectedFile = getParamsString();
-    
+
     if (_syncWithSettings) {
         // Too hardcoded in settings params to bother
     } else {
@@ -44,33 +38,27 @@ void PFileSelector::buttonClicked()
         else
             defaultPath = Wasp::FileUtils::HomeDir();
     }
-    
+
     QString qSelectedPath = selectPath(defaultPath);
     if (qSelectedPath.isNull())
         return;
-    
+
     setParamsString(qSelectedPath.toStdString());
 }
 
-bool PFileSelector::requireParamsMgr() const
-{
-    return _syncWithSettings;
+bool PFileSelector::requireParamsMgr() const { return _syncWithSettings; }
+
+QString PFileOpenSelector::selectPath(const std::string &defaultPath) const {
+    return QFileDialog::getOpenFileName(nullptr, "Select a file",
+                                        QString::fromStdString(defaultPath), _fileTypeFilter);
 }
 
-
-
-
-QString PFileOpenSelector::selectPath(const std::string &defaultPath) const
-{
-    return QFileDialog::getOpenFileName(nullptr, "Select a file", QString::fromStdString(defaultPath), _fileTypeFilter);
+QString PFileSaveSelector::selectPath(const std::string &defaultPath) const {
+    return QFileDialog::getSaveFileName(nullptr, "Select save file",
+                                        QString::fromStdString(defaultPath), _fileTypeFilter);
 }
 
-QString PFileSaveSelector::selectPath(const std::string &defaultPath) const
-{
-    return QFileDialog::getSaveFileName(nullptr, "Select save file", QString::fromStdString(defaultPath), _fileTypeFilter);
-}
-
-QString PDirectorySelector::selectPath(const std::string &defaultPath) const
-{
-    return QFileDialog::getExistingDirectory(nullptr, "Select a directory", QString::fromStdString(defaultPath));
+QString PDirectorySelector::selectPath(const std::string &defaultPath) const {
+    return QFileDialog::getExistingDirectory(nullptr, "Select a directory",
+                                             QString::fromStdString(defaultPath));
 }

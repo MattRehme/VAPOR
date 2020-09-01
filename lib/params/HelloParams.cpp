@@ -2,11 +2,10 @@
 #include <string>
 #include <vapor/HelloParams.h>
 
-
 using namespace Wasp;
 using namespace VAPoR;
 
-//Provide values for all the tags
+// Provide values for all the tags
 const string HelloParams::m_lineThicknessTag = "LineThickness";
 const string HelloParams::m_point1Tag = "Point1";
 const string HelloParams::m_point2Tag = "Point2";
@@ -16,35 +15,28 @@ const string HelloParams::m_point2Tag = "Point2";
 //
 static RenParamsRegistrar<HelloParams> registrar(HelloParams::GetClassType());
 
+HelloParams::HelloParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave)
+    : RenderParams(dataMgr, ssave, HelloParams::GetClassType()) {
 
-
-HelloParams::HelloParams(
-	DataMgr *dataMgr, ParamsBase::StateSave *ssave
-) : RenderParams(dataMgr, ssave, HelloParams::GetClassType()) {
-	
-	//restart provides default values even with no data mgr
-	_init();
+    // restart provides default values even with no data mgr
+    _init();
 }
 
-HelloParams::HelloParams(
-	DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node
-) : RenderParams(dataMgr, ssave, node) {}
+HelloParams::HelloParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node)
+    : RenderParams(dataMgr, ssave, node) {}
 
+HelloParams::~HelloParams() {}
 
-HelloParams::~HelloParams() {
-}
-
-
-//Set everything to default values.
-//Data Manager is absent.
+// Set everything to default values.
+// Data Manager is absent.
 void HelloParams::_init() {
-	SetLineThickness(1.0);
+    SetLineThickness(1.0);
 
-	vector <double> pt1;
-	vector <double> pt2;
+    vector<double> pt1;
+    vector<double> pt2;
 
-	GetBox()->GetExtents(pt1, pt2);
+    GetBox()->GetExtents(pt1, pt2);
 
-	SetPoint1(pt1);
-	SetPoint2(pt2);
+    SetPoint1(pt1);
+    SetPoint2(pt2);
 }

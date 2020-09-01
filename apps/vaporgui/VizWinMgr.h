@@ -1,11 +1,11 @@
 //************************************************************************
-//									*	
+//									*
 //		     Copyright (C)  2004				*
 //     University Corporation for Atmospheric Research			*
 //		     All Rights Reserved				*
 //									*
 //************************************************************************/
-//					
+//
 //	File:		VizWinMgr.h
 //
 //	Author:		Alan Norton
@@ -14,7 +14,6 @@
 //
 //	Date:		Sept 2004
 //
-
 
 #ifndef VIZWINMGR_H
 #define VIZWINMGR_H
@@ -34,7 +33,6 @@ class QWidget;
 class VizWin;
 class Trackball;
 
-
 //! \class VizWinMgr
 //! \ingroup Public_GUI
 //! \brief A class for managing all visualizers
@@ -49,131 +47,116 @@ class Trackball;
 //! associating the corresponding Visualizer instance.
 //
 class VizWinMgr : public QObject {
- Q_OBJECT
+    Q_OBJECT
 
-public:
+  public:
+    VizWinMgr(QWidget *parent, QMdiArea *mdiArea, VAPoR::ControlExec *ce);
 
- VizWinMgr(QWidget *parent, QMdiArea *mdiArea, VAPoR::ControlExec *ce);
+    ~VizWinMgr();
 
- ~VizWinMgr();
+    //! Shutdown all visualizers
+    //!
+    //! Reset to default state, killing all active visualizers
+    //
+    void Shutdown();
 
- //! Shutdown all visualizers
- //!
- //! Reset to default state, killing all active visualizers
- //
- void Shutdown();
+    //! Restart all visualizers
+    //!
+    //! Restart all known visualizers
+    //
+    void Restart();
 
- //! Restart all visualizers
- //!
- //! Restart all known visualizers
- //
- void Restart();
+    void SetTrackBall(const double posvec[3], const double dirvec[3], const double upvec[3],
+                      const double centerRot[3], bool perspective);
 
+    //! Invoke updateGL on all the visualizers that have dirty bit set.
+    void Update(bool fast);
 
- void SetTrackBall(
-	const double posvec[3], const double dirvec[3],
-	const double upvec[3], const double centerRot[3],
-	bool perspective
- );
+    //! \copydoc VAPoR::ControlExec::EnableImageCapture()
+    int EnableImageCapture(string filename, string winName);
 
- //! Invoke updateGL on all the visualizers that have dirty bit set.
- void Update(bool fast);
+  public slots:
 
- //! \copydoc VAPoR::ControlExec::EnableImageCapture()
- int EnableImageCapture(string filename, string winName);
+    //! Method launches a new visualizer, sets up appropriate
+    //! Params etc.  It returns the visualizer index as
+    //! returned by ControlExec::NewVisualizer()
+    //! \retval visualizer index
+    void LaunchVisualizer();
 
-public slots:
+    //! Arrange the Visualizers in a cascading sequence
+    void Cascade();
 
- //! Method launches a new visualizer, sets up appropriate
- //! Params etc.  It returns the visualizer index as
- //! returned by ControlExec::NewVisualizer()
- //! \retval visualizer index
- void LaunchVisualizer();
+    //! Arrange the visualizers to tile the available space.
+    void FitSpace();
 
- //! Arrange the Visualizers in a cascading sequence
- void Cascade();
+    //! Respond to user request to activate a window:
+    void SetWinActive(const QString &vizName);
 
- //! Arrange the visualizers to tile the available space.
- void FitSpace();
+    void Reinit();
 
- //! Respond to user request to activate a window:
- void SetWinActive(const QString &vizName);
+  private slots:
 
- void Reinit();
+    // Set a Visualizer to be the active (selected) Visualizer
+    // \param[in] vizNum index of Visualizer to be activated.
+    void _setActiveViz(string winName);
 
+    //! Method that responds to user destruction of a visualizer.
+    //! Relevant params, renderers, etc. are removed.
+    void _vizAboutToDisappear(string winName);
 
-private slots:
+    // Method that responds to completion of window navigation
+    //
+    void _syncViewpoints(string winName);
 
- // Set a Visualizer to be the active (selected) Visualizer
- // \param[in] vizNum index of Visualizer to be activated.
- void _setActiveViz(string winName); 
+  signals:
+    // Turn on/off multiple viz options:
+    //
+    void enableMultiViz(bool onOff);
 
- //! Method that responds to user destruction of a visualizer.
- //! Relevant params, renderers, etc. are removed.
- void _vizAboutToDisappear(string winName); 
+    // Respond to user setting the vizselectorcombo:
+    //
+    void newViz(const QString &);
 
- // Method that responds to completion of window navigation
- //
- void _syncViewpoints(string winName);
+    void removeViz(const QString &);
 
+    void activateViz(const QString &);
 
-signals:
- //Turn on/off multiple viz options:
- //
- void enableMultiViz(bool onOff);
+  private:
+    // Can't call default constructor
+    //
+    VizWinMgr();
 
- //Respond to user setting the vizselectorcombo:
- //
- void newViz(const QString&);
+    std::map<string, VizWin *> _vizWindow;
+    std::map<string, QMdiSubWindow *> _vizMdiWin;
 
- void removeViz(const QString&);
+    QMdiArea *_mdiArea;
 
- void activateViz(const QString&);
+    QWidget *_parent;
+    VAPoR::ControlExec *_controlExec;
+    Trackball *_trackBall;
+    bool _initialized;
 
+    void _attachVisualizer(string vizName);
 
-private:
+    GUIStateParams *_getStateParams() const {
+        VAssert(_controlExec != NULL);
+        VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
+        return ((GUIStateParams *)paramsMgr->GetParams(GUIStateParams::GetClassType()));
+    }
 
- // Can't call default constructor
- //
- VizWinMgr();
+    AnimationParams *_getAnimationParams() const {
+        VAssert(_controlExec != NULL);
+        VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
+        return ((AnimationParams *)paramsMgr->GetParams(AnimationParams::GetClassType()));
+    }
 
- std::map<string, VizWin*> _vizWindow;
- std::map<string, QMdiSubWindow*> _vizMdiWin;
+    VAPoR::ViewpointParams *_getViewpointParams(string winName) const {
+        VAssert(_controlExec != NULL);
+        VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
+        return (paramsMgr->GetViewpointParams(winName));
+    }
 
- QMdiArea* _mdiArea;
-
- QWidget* _parent;
- VAPoR::ControlExec* _controlExec;
- Trackball *_trackBall;
- bool _initialized;
-
- void _attachVisualizer(string vizName);
-
- GUIStateParams *_getStateParams() const {
-	VAssert(_controlExec != NULL);
-	VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
-	return ((GUIStateParams *)
-		paramsMgr->GetParams(GUIStateParams::GetClassType())
-	 );
- }
-
- AnimationParams *_getAnimationParams() const {
-	VAssert(_controlExec != NULL);
-	VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
-	return ((AnimationParams *)
-		paramsMgr->GetParams(AnimationParams::GetClassType())
-	);
- }
-
- VAPoR::ViewpointParams *_getViewpointParams(string winName) const {
-	VAssert(_controlExec != NULL);
-	VAPoR::ParamsMgr *paramsMgr = _controlExec->GetParamsMgr();
-	return (paramsMgr->GetViewpointParams(winName));
- }
-
- vector <string> _getVisualizerNames() const;
- void _killViz(string vizName);
-
+    vector<string> _getVisualizerNames() const;
+    void _killViz(string vizName);
 };
 #endif // VIZWINMGR_H
-

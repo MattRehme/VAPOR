@@ -20,13 +20,10 @@
 #ifndef MOUSEMODEPARAMS_H
 #define MOUSEMODEPARAMS_H
 
-
 #include <vector>
 #include <map>
 
 #include <vapor/ParamsBase.h>
-
-
 
 //! \class MouseModeParams
 //! \ingroup Public_Params
@@ -36,90 +33,74 @@
 //! \date    April 2014
 //!
 class MouseModeParams : public VAPoR::ParamsBase {
-	
-public:
-    
+
+  public:
     struct MouseMode {
         string name;
-        const char * const *icon;
+        const char *const *icon;
     };
 
- //! Create a MouseModeParams object from scratch
- //     
- MouseModeParams(
-    VAPoR::ParamsBase::StateSave *ssave
- );
+    //! Create a MouseModeParams object from scratch
+    //
+    MouseModeParams(VAPoR::ParamsBase::StateSave *ssave);
 
- //! Create a MouseModeParams object from an existing XmlNode tree
- //
- MouseModeParams(
-    VAPoR::ParamsBase::StateSave *ssave, VAPoR::XmlNode *node
- );
+    //! Create a MouseModeParams object from an existing XmlNode tree
+    //
+    MouseModeParams(VAPoR::ParamsBase::StateSave *ssave, VAPoR::XmlNode *node);
 
+    virtual ~MouseModeParams();
 
- virtual ~MouseModeParams();
-	
- //! method identifies pixmap icon for each mode
- const char* const * GetIcon(string name) const {
-     auto itr = _modes.cbegin();
-     for (; itr != _modes.cend(); ++itr)
-         if (itr->name == name)
-             break;
-	VAssert(itr != _modes.end());
-	return itr->icon;
- }
+    //! method identifies pixmap icon for each mode
+    const char *const *GetIcon(string name) const {
+        auto itr = _modes.cbegin();
+        for (; itr != _modes.cend(); ++itr)
+            if (itr->name == name)
+                break;
+        VAssert(itr != _modes.end());
+        return itr->icon;
+    }
 
- //! method indicates the current mouse mode
- //! \retval current mouse mode
- //
- string GetCurrentMouseMode() const {
-	return GetValueString(_currentMouseModeTag, GetNavigateModeName());
- }
+    //! method indicates the current mouse mode
+    //! \retval current mouse mode
+    //
+    string GetCurrentMouseMode() const {
+        return GetValueString(_currentMouseModeTag, GetNavigateModeName());
+    }
 
- //! method sets the current mouse mode
- //!
- //! \param[in] name  current mouse mode
- //
- void SetCurrentMouseMode(string name);
+    //! method sets the current mouse mode
+    //!
+    //! \param[in] name  current mouse mode
+    //
+    void SetCurrentMouseMode(string name);
 
- //! method indicates how many mouse modes are available.
- int GetNumMouseModes() {
-	return _modes.size();
- }
+    //! method indicates how many mouse modes are available.
+    int GetNumMouseModes() { return _modes.size(); }
 
- //! Return a vector of all registered mouse mode names
- //
- vector <string> GetAllMouseModes() {
-	vector <string> v;
-	for (auto itr = _modes.cbegin(); itr != _modes.cend(); ++itr) {
-		v.push_back(itr->name);
-	}
-	return(v);
- }
+    //! Return a vector of all registered mouse mode names
+    //
+    vector<string> GetAllMouseModes() {
+        vector<string> v;
+        for (auto itr = _modes.cbegin(); itr != _modes.cend(); ++itr) {
+            v.push_back(itr->name);
+        }
+        return (v);
+    }
 
- // Get static string identifier for this params class
- //
- static string GetClassType() {
-	return("MouseModeParamsTag");
- }
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("MouseModeParamsTag"); }
 
- static string GetNavigateModeName() {
-	return("Navigate");
- }
+    static string GetNavigateModeName() { return ("Navigate"); }
 
- static string GetRegionModeName() {
-	return("Region");
- }
+    static string GetRegionModeName() { return ("Region"); }
 
-private:
+  private:
+    static const string _currentMouseModeTag;
 
- static const string _currentMouseModeTag;
+    vector<MouseMode> _modes;
 
- vector<MouseMode> _modes;
-
- void _init();
- void _setUpDefault();
-
+    void _init();
+    void _setUpDefault();
 };
 
-#endif //MOUSEMODEPARAMS_H 
+#endif // MOUSEMODEPARAMS_H

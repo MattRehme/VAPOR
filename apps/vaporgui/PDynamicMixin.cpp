@@ -3,15 +3,13 @@
 #include "PWidget.h"
 #include <vapor/ParamsBase.h>
 
-PWidget *PDynamicMixin::EnableDynamicUpdate()
-{
+PWidget *PDynamicMixin::EnableDynamicUpdate() {
     PWidget *pw = getPWidget();
     pw->_dynamicUpdateIsOn = true;
     return pw;
 }
 
-void PDynamicMixin::dynamicSetParamsDouble(double v)
-{
+void PDynamicMixin::dynamicSetParamsDouble(double v) {
     PWidget *pw = getPWidget();
     if (pw->_dynamicUpdateIsOn) {
         pw->dynamicUpdateBegin();
@@ -20,8 +18,7 @@ void PDynamicMixin::dynamicSetParamsDouble(double v)
     }
 }
 
-void PDynamicMixin::dynamicSetParamsLong(long v)
-{
+void PDynamicMixin::dynamicSetParamsLong(long v) {
     PWidget *pw = getPWidget();
     if (pw->_dynamicUpdateIsOn) {
         pw->dynamicUpdateBegin();
@@ -30,8 +27,7 @@ void PDynamicMixin::dynamicSetParamsLong(long v)
     }
 }
 
-void PDynamicMixin::dynamicSetParamsString(const std::string &v)
-{
+void PDynamicMixin::dynamicSetParamsString(const std::string &v) {
     PWidget *pw = getPWidget();
     if (pw->_dynamicUpdateIsOn) {
         pw->dynamicUpdateBegin();
@@ -40,9 +36,8 @@ void PDynamicMixin::dynamicSetParamsString(const std::string &v)
     }
 }
 
-PWidget *PDynamicMixin::getPWidget()
-{
-    PWidget *pw = dynamic_cast<PWidget*>(this);
+PWidget *PDynamicMixin::getPWidget() {
+    PWidget *pw = dynamic_cast<PWidget *>(this);
     VAssert(pw != nullptr);
     return pw;
 }

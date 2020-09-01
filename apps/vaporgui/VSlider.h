@@ -15,26 +15,25 @@
 class VSlider : public VContainer {
     Q_OBJECT
 
-public:
-    VSlider( double min=0, double max=1 );
+  public:
+    VSlider(double min = 0, double max = 1);
 
-    void SetValue( double value );
-    void SetRange( double min, double max );
+    void SetValue(double value);
+    void SetRange(double min, double max);
 
     double GetValue() const;
 
-
-private:
-    QSlider* _slider;
+  private:
+    QSlider *_slider;
     double _minValid;
     double _maxValid;
     double _stepSize;
 
-private slots:
+  private slots:
     void _sliderChanged();
-    void _sliderChangedIntermediate( int position );
+    void _sliderChangedIntermediate(int position);
 
-signals:
-    void ValueChanged( double value );
-    void ValueChangedIntermediate( double value );
+  signals:
+    void ValueChanged(double value);
+    void ValueChangedIntermediate(double value);
 };

@@ -15,20 +15,20 @@
 class VIntSpinBox : public VContainer {
     Q_OBJECT
 
-public:
-    VIntSpinBox( int min, int max);
+  public:
+    VIntSpinBox(int min, int max);
 
-    void SetValue( int value );
-    void SetRange( int min, int max );
+    void SetValue(int value);
+    void SetRange(int min, int max);
 
     int GetValue() const;
 
-private:
-    QSpinBox* _spinBox;
+  private:
+    QSpinBox *_spinBox;
 
-public slots:
+  public slots:
     void emitSpinBoxChanged();
 
-signals:
-    void ValueChanged( int value );
+  signals:
+    void ValueChanged(int value);
 };

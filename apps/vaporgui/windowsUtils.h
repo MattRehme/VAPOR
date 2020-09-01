@@ -14,8 +14,10 @@
 
 LONG Windows_OpenRegistry(HKEY root, std::string keyName, HKEY &key);
 LONG Windows_CloseRegistry(HKEY key);
-LONG Windows_GetRegistryString(HKEY hKey, const std::string &strValueName, std::string &strValue, const std::string &strDefaultValue);
-LONG Windows_SetRegistryString(HKEY hKey, const std::string &strValueName, const std::string &strValue);
+LONG Windows_GetRegistryString(HKEY hKey, const std::string &strValueName, std::string &strValue,
+                               const std::string &strDefaultValue);
+LONG Windows_SetRegistryString(HKEY hKey, const std::string &strValueName,
+                               const std::string &strValue);
 std::string Windows_GetErrorString(LONG errorCode);
 
 #endif

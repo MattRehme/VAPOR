@@ -4,15 +4,14 @@
 #include <vapor/Grid.h>
 #include <vapor/StructuredGrid.h>
 
-
 namespace VAPoR {
 //! \class StretchedGrid
 //!
 //! \brief This class implements a 2D or 3D stretched grid.
 //!
-//! This class implements a 2D or 3D stretched grid: a 
-//! specialization of StructuredGrid class where cells are 
-//! quadrilaterals (2D), or cuboids (3D). Hence, stretched grids are 
+//! This class implements a 2D or 3D stretched grid: a
+//! specialization of StructuredGrid class where cells are
+//! quadrilaterals (2D), or cuboids (3D). Hence, stretched grids are
 //! topologically, but the location of each grid point is expressed
 //! by functions:
 //!
@@ -25,191 +24,153 @@ namespace VAPoR {
 //!
 //
 class VDF_API StretchedGrid : public StructuredGrid {
-public:
+  public:
+    //! \copydoc StructuredGrid::StructuredGrid()
+    //!
+    //! Construct a regular grid sampling a 3D or 2D scalar function.
+    //!
+    //! This constructor instantiates a stretched grid  where the x,y,z
+    //! user coordinates are expressed as follows:
+    //!
+    //! \code
+    //! x = X(i)
+    //! y = Y(j)
+    //! z = Z(k)
+    //! \endcode
+    //!
+    //! The X, Y, and Z user coordinates are specified with \p xcoords, \p xcoords,
+    //! and \p zcoords (if 3D), respectively.
+    //!
+    //! Adds new parameters:
+    //!
+    //! \param[in] xcoords  A 1D vector whose size matches that of the I
+    //! dimension of this class, and whose values specify the X user coordinates.
+    //! \param[in] ycoords  A 1D vector whose size matches that of the J
+    //! dimension of this class, and whose values specify the Y user coordinates.
+    //! \param[in] zcoords  A 1D vector whose size matches that of the K
+    //! dimension of this class, and whose values specify the Z user coordinates.
+    //!
+    //! \sa RegularGrid()
+    //
+    StretchedGrid(const std::vector<size_t> &dims, const std::vector<size_t> &bs,
+                  const std::vector<float *> &blks, const std::vector<double> &xcoords,
+                  const std::vector<double> &ycoords, const std::vector<double> &zcoords);
 
- //! \copydoc StructuredGrid::StructuredGrid()
- //!
- //! Construct a regular grid sampling a 3D or 2D scalar function.
- //!
- //! This constructor instantiates a stretched grid  where the x,y,z
- //! user coordinates are expressed as follows:
- //!
- //! \code
- //! x = X(i)
- //! y = Y(j)
- //! z = Z(k)
- //! \endcode
- //!
- //! The X, Y, and Z user coordinates are specified with \p xcoords, \p xcoords,
- //! and \p zcoords (if 3D), respectively.
- //!
- //! Adds new parameters:
- //!
- //! \param[in] xcoords  A 1D vector whose size matches that of the I
- //! dimension of this class, and whose values specify the X user coordinates.
- //! \param[in] ycoords  A 1D vector whose size matches that of the J
- //! dimension of this class, and whose values specify the Y user coordinates.
- //! \param[in] zcoords  A 1D vector whose size matches that of the K
- //! dimension of this class, and whose values specify the Z user coordinates.
- //!
- //! \sa RegularGrid()
- //
- StretchedGrid(
-	const std::vector <size_t> &dims,
-	const std::vector <size_t> &bs,
-	const std::vector <float *> &blks,
-	const std::vector <double> &xcoords,
-	const std::vector <double> &ycoords,
-	const std::vector <double> &zcoords
- );
+    StretchedGrid() = default;
+    virtual ~StretchedGrid() = default;
 
- StretchedGrid() = default;
- virtual ~StretchedGrid() = default;
+    virtual size_t GetGeometryDim() const override;
 
- virtual size_t GetGeometryDim() const override;
+    virtual std::vector<size_t> GetCoordDimensions(size_t dim) const override;
 
- virtual std::vector <size_t> GetCoordDimensions(size_t dim) const override;
+    static std::string GetClassType() { return ("Stretched"); }
+    std::string GetType() const override { return (GetClassType()); }
 
- static std::string GetClassType() {
-	return("Stretched");
- }  
- std::string GetType() const override {return (GetClassType()); }
+    // \copydoc GetGrid::GetUserExtents()
+    //
+    virtual void GetUserExtents(std::vector<double> &minu,
+                                std::vector<double> &maxu) const override {
+        minu = _minu;
+        maxu = _maxu;
+    }
 
+    // \copydoc GetGrid::GetBoundingBox()
+    //
+    virtual void GetBoundingBox(const std::vector<size_t> &min, const std::vector<size_t> &max,
+                                std::vector<double> &minu,
+                                std::vector<double> &maxu) const override;
 
- // \copydoc GetGrid::GetUserExtents()
- //
- virtual void GetUserExtents(
-    std::vector <double> &minu, std::vector <double> &maxu
- ) const override {
-	minu = _minu;
-	maxu = _maxu;
- }
+    // \copydoc GetGrid::GetUserCoordinates()
+    //
+    virtual void GetUserCoordinates(const size_t indices[], double coords[]) const override;
 
+    //! \copydoc Grid::GetIndicesCell
+    //!
+    virtual bool GetIndicesCell(const std::vector<double> &coords,
+                                std::vector<size_t> &indices) const override;
 
- // \copydoc GetGrid::GetBoundingBox()
- //
- virtual void GetBoundingBox(
-	const std::vector <size_t> &min, const std::vector <size_t> &max,
-	std::vector <double> &minu, std::vector <double> &maxu
- ) const override;
+    // \copydoc GetGrid::InsideGrid()
+    //
+    virtual bool InsideGrid(const std::vector<double> &coords) const override;
 
- // \copydoc GetGrid::GetUserCoordinates()
- //
- virtual void GetUserCoordinates(
-	const size_t indices[],
-	double coords[]
- ) const override;
+    //! Returns reference to vector containing X user coordinates
+    //!
+    //! Returns reference to vector passed to constructor
+    //! containing X user coordinates
+    //!
+    const std::vector<double> &GetXCoords() const { return (_xcoords); };
 
- //! \copydoc Grid::GetIndicesCell
- //!
- virtual bool GetIndicesCell(
-	const std::vector <double> &coords,
-	std::vector <size_t> &indices
- ) const override;
+    //! Returns reference to vector containing Y user coordinates
+    //!
+    //! Returns reference to vector passed to constructor
+    //! containing Y user coordinates
+    //!
+    const std::vector<double> &GetYCoords() const { return (_ycoords); };
 
- // \copydoc GetGrid::InsideGrid()
- //
- virtual bool InsideGrid(const std::vector <double> &coords) const override;
+    //! Returns reference to vector containing Z user coordinates
+    //!
+    //! Returns reference to vector passed to constructor
+    //! containing Z user coordinates
+    //!
+    const std::vector<double> &GetZCoords() const { return (_zcoords); };
 
- //! Returns reference to vector containing X user coordinates
- //!
- //! Returns reference to vector passed to constructor 
- //! containing X user coordinates
- //!
- const std::vector <double> &GetXCoords() const { return(_xcoords); };
+    class ConstCoordItrSG : public Grid::ConstCoordItrAbstract {
+      public:
+        ConstCoordItrSG(const StretchedGrid *cg, bool begin);
+        ConstCoordItrSG(const ConstCoordItrSG &rhs);
 
- //! Returns reference to vector containing Y user coordinates
- //!
- //! Returns reference to vector passed to constructor 
- //! containing Y user coordinates
- //!
- const std::vector <double> &GetYCoords() const { return(_ycoords); };
+        ConstCoordItrSG();
+        virtual ~ConstCoordItrSG() {}
 
- //! Returns reference to vector containing Z user coordinates
- //!
- //! Returns reference to vector passed to constructor 
- //! containing Z user coordinates
- //!
- const std::vector <double> &GetZCoords() const { return(_zcoords); };
+        virtual void next();
+        virtual void next(const long &offset);
+        virtual ConstCoordType &deref() const { return (_coords); }
+        virtual const void *address() const { return this; };
 
- class ConstCoordItrSG : public Grid::ConstCoordItrAbstract {
- public:
-  ConstCoordItrSG(const StretchedGrid *cg, bool begin);
-  ConstCoordItrSG(const ConstCoordItrSG &rhs);
-  
+        virtual bool equal(const void *rhs) const {
+            const ConstCoordItrSG *itrptr = static_cast<const ConstCoordItrSG *>(rhs);
 
-  ConstCoordItrSG();
-  virtual ~ConstCoordItrSG() {}
+            return (_index == itrptr->_index);
+        }
 
-  virtual void next();
-  virtual void next(const long &offset);
-  virtual ConstCoordType &deref() const {
-	return(_coords);
-  }
-  virtual const void *address() const {return this; };
+        virtual std::unique_ptr<ConstCoordItrAbstract> clone() const {
+            return std::unique_ptr<ConstCoordItrAbstract>(new ConstCoordItrSG(*this));
+        };
 
-  virtual bool equal(const void* rhs) const {
-	const ConstCoordItrSG *itrptr = 
-		static_cast<const ConstCoordItrSG *> (rhs);
+      private:
+        const StretchedGrid *_sg;
+        std::vector<size_t> _index;
+        std::vector<double> _coords;
+    };
 
-	return(_index == itrptr->_index);
-  }
+    virtual ConstCoordItr ConstCoordBegin() const override {
+        return ConstCoordItr(
+            std::unique_ptr<ConstCoordItrAbstract>(new ConstCoordItrSG(this, true)));
+    }
+    virtual ConstCoordItr ConstCoordEnd() const override {
+        return ConstCoordItr(
+            std::unique_ptr<ConstCoordItrAbstract>(new ConstCoordItrSG(this, false)));
+    }
 
-  virtual std::unique_ptr<ConstCoordItrAbstract> clone() const {
-	return std::unique_ptr<ConstCoordItrAbstract> (new ConstCoordItrSG(*this));
-  };
+  protected:
+    virtual float GetValueNearestNeighbor(const std::vector<double> &coords) const override;
 
- private:
-	const StretchedGrid *_sg;
-	std::vector <size_t> _index;
-	std::vector <double> _coords;
- };
+    virtual float GetValueLinear(const std::vector<double> &coords) const override;
 
- virtual ConstCoordItr ConstCoordBegin() const override {
-	return ConstCoordItr(
-		std::unique_ptr<ConstCoordItrAbstract> (new ConstCoordItrSG(this, true))
-	);
- }
- virtual ConstCoordItr ConstCoordEnd() const override {
-	return ConstCoordItr(
-		std::unique_ptr<ConstCoordItrAbstract>(new ConstCoordItrSG(this, false))
-	);
- }
+  private:
+    std::vector<double> _xcoords;
+    std::vector<double> _ycoords;
+    std::vector<double> _zcoords;
+    std::vector<double> _minu;
+    std::vector<double> _maxu;
 
-protected:
- virtual float GetValueNearestNeighbor(
-	const std::vector <double> &coords
- ) const override;
+    void _stretchedGrid(const std::vector<double> &xcoords, const std::vector<double> &ycoords,
+                        const std::vector<double> &zcoords);
 
- virtual float GetValueLinear(
-	const std::vector <double> &coords
- ) const override;
+    void _GetUserExtents(std::vector<double> &minu, std::vector<double> &maxu) const;
 
-
-private:
- std::vector <double> _xcoords;
- std::vector <double> _ycoords;
- std::vector <double> _zcoords;
- std::vector <double> _minu;
- std::vector <double> _maxu;
-
- void _stretchedGrid(
-	const std::vector <double> &xcoords,
-	const std::vector <double> &ycoords,
-	const std::vector <double> &zcoords
- );
-
- void _GetUserExtents(
-	std::vector <double> &minu, std::vector <double> &maxu
- ) const ;
-
- bool _insideGrid(
-	double x, double y, double z,
-	size_t &i, size_t &j, size_t &k,
-	double xwgt[2], double ywgt[2], double zwgt[2]
- ) const;
-
-
+    bool _insideGrid(double x, double y, double z, size_t &i, size_t &j, size_t &k, double xwgt[2],
+                     double ywgt[2], double zwgt[2]) const;
 };
-};
+}; // namespace VAPoR
 #endif

@@ -1,5 +1,5 @@
 //************************************************************************
-//									*	
+//									*
 //		     Copyright (C)  2018				*
 //     University Corporation for Atmospheric Research			*
 //		     All Rights Reserved				*
@@ -14,13 +14,12 @@
 //
 //	Date:		February 2018
 //
-//	Description:	Defines the DC free functions.  
+//	Description:	Defines the DC free functions.
 //
 //  These  functions operate on instances of the DC class.
 //
 #ifndef DCUTILS_H
 #define DCUTILS_H
-
 
 #include <vector>
 #include <string>
@@ -33,18 +32,11 @@ class NetCDFCollection;
 
 namespace DCUtils {
 
+int CopyAtt(const NetCDFCollection &ncdfc, string varname, string attname, DC::BaseVar &var);
 
-int CopyAtt(
-	const NetCDFCollection &ncdfc, string varname, string attname,
-	DC::BaseVar &var
-);
+int CopyAtt(const NetCDFCollection &ncdfc, string varname, DC::BaseVar &var);
 
-int CopyAtt(
-	const NetCDFCollection &ncdfc, string varname,
-	DC::BaseVar &var
-);
-
-};
-};
+}; // namespace DCUtils
+}; // namespace VAPoR
 
 #endif

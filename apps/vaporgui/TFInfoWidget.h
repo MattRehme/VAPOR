@@ -6,7 +6,7 @@
 #include <string>
 
 namespace VAPoR {
-    class RenderParams;
+class RenderParams;
 }
 
 //! \class TFInfoWidget
@@ -15,20 +15,17 @@ namespace VAPoR {
 
 class TFInfoWidget : public QWidget {
     Q_OBJECT
-    
-public:
-    enum ValueFormat {
-        Mapped = 0,
-        Percent = 1
-    };
-    
+
+  public:
+    enum ValueFormat { Mapped = 0, Percent = 1 };
+
     TFInfoWidget(const std::string &variableNameTag);
-    
+
     void Update(VAPoR::RenderParams *rParams);
     void DeselectControlPoint();
     void SetNormalizedValue(float value);
-    
-protected:
+
+  protected:
     void paintEvent(QPaintEvent *event);
     void updateValue();
     void updateValueEditValidator();
@@ -37,21 +34,21 @@ protected:
     float toMappedValue(float normalized) const;
     float toNormalizedValue(float mapped) const;
     float getValueFromEdit() const;
-    
-    virtual void controlPointChanged() {};
-    
-protected:
+
+    virtual void controlPointChanged(){};
+
+  protected:
     QLineEdit *_valueEdit;
     QComboBox *_valueEditType;
-    
+
     float _min = 0;
     float _max = 1;
-    
-protected:
+
+  protected:
     float _value;
     const std::string _variableNameTag;
-    
-private slots:
+
+  private slots:
     void valueEditTypeChanged(int);
     void valueEditChanged();
 };

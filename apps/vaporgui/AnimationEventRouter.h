@@ -20,114 +20,100 @@
 #ifndef ANIMATIONEVENTROUTER_H
 #define ANIMATIONEVENTROUTER_H
 
-
 #include "EventRouter.h"
 #include <vapor/MyBase.h>
 #include "ui_animationTab.h"
 
 namespace VAPoR {
-	class ControlExec;
+class ControlExec;
 }
 
 class QTableWidget;
 class QTimer;
 class Combo;
 
-
 QT_USE_NAMESPACE
-
 
 class AnimationEventRouter : public QWidget, public Ui_AnimationTab, public EventRouter {
 
-Q_OBJECT
+    Q_OBJECT
 
-public: 
- AnimationEventRouter(
-	QWidget *parent, VAPoR::ControlExec *ce
- );
+  public:
+    AnimationEventRouter(QWidget *parent, VAPoR::ControlExec *ce);
 
- ~AnimationEventRouter();
+    ~AnimationEventRouter();
 
- //Connect signals and slots from tab
- virtual void hookUpTab();
+    // Connect signals and slots from tab
+    virtual void hookUpTab();
 
- virtual void GetWebHelp(
-	std::vector <std::pair <string, string>> &help
- ) const ;
+    virtual void GetWebHelp(std::vector<std::pair<string, string>> &help) const;
 
+    // Get static string identifier for this router class
+    //
+    static string GetClassType() { return ("Animation"); }
 
- // Get static string identifier for this router class
- //
- static string GetClassType() {
-	return("Animation");
- }
+    string GetType() const { return GetClassType(); }
 
- string GetType() const {return GetClassType(); }
+  public slots:
+    // Animation slots:
+    //
+    void AnimationPause();
+    void AnimationPlayReverse();
+    void AnimationPlayForward();
+    void AnimationStepForward();
+    void AnimationStepReverse();
+    void AnimationReplay();
+    void AnimationGoToBegin();
+    void AnimationGoToEnd();
 
-public slots:
- // Animation slots:
- //
- void AnimationPause();
- void AnimationPlayReverse();
- void AnimationPlayForward();
- void AnimationStepForward();
- void AnimationStepReverse();
- void AnimationReplay();
- void AnimationGoToBegin();
- void AnimationGoToEnd();
+    void SetTimeStep(int ts);
+    void SetFrameStep(int step);
+    void SetFrameRate(int step);
 
- void SetTimeStep(int ts);
- void SetFrameStep(int step);
- void SetFrameRate(int step);
+  signals:
 
-signals:
+    // Emitted when animation is turned on (true) or off (false)
+    //
+    void AnimationOnOffSignal(bool onOff);
 
- // Emitted when animation is turned on (true) or off (false)
- //
- void AnimationOnOffSignal(bool onOff);
+    // Emitted when the client should draw a frame during animation. Only
+    // Emitted if AnimationOnOffChanged() was most recently called with
+    // onOff == true;
+    //
+    void AnimationDrawSignal();
 
- // Emitted when the client should draw a frame during animation. Only
- // Emitted if AnimationOnOffChanged() was most recently called with
- // onOff == true;
- //
- void AnimationDrawSignal();
- 
-protected:
- virtual void _confirmText() {};
- virtual void _updateTab();
+  protected:
+    virtual void _confirmText(){};
+    virtual void _updateTab();
 
-private:
+  private:
+    AnimationEventRouter() {}
 
- AnimationEventRouter() {}
- 
- void setCurrentTimestep(size_t ts) const; 
+    void setCurrentTimestep(size_t ts) const;
 
- void setPlay(int direction);
+    void setPlay(int direction);
 
- void enableWidgets(bool on);
+    void enableWidgets(bool on);
 
- // actions on main window:
- //
- QAction* _mainPlayForwardAction;
- QAction* _mainPlayBackwardAction;
- QAction* _mainPauseAction;
- 
- Combo *_timestepSelectCombo;
- Combo *_frameStepCombo;
- Combo *_frameRateCombo;
- QTimer *_myTimer;
- int _direction;
- bool _widgetsEnabled;
- bool _animationOn;
- 
-private slots:
+    // actions on main window:
+    //
+    QAction *_mainPlayForwardAction;
+    QAction *_mainPlayBackwardAction;
+    QAction *_mainPauseAction;
 
- void setStart();
- void setEnd();
- void playNextFrame();
+    Combo *_timestepSelectCombo;
+    Combo *_frameStepCombo;
+    Combo *_frameRateCombo;
+    QTimer *_myTimer;
+    int _direction;
+    bool _widgetsEnabled;
+    bool _animationOn;
 
+  private slots:
 
-
+    void setStart();
+    void setEnd();
+    void playNextFrame();
 };
 
-#endif //ANIMATIONEVENTROUTER_H 
+#endif // ANIMATIONEVENTROUTER_H

@@ -5,37 +5,28 @@
 #include <vapor/RenderParams.h>
 #include <vapor/DataMgr.h>
 
-namespace VAPoR 
-{
+namespace VAPoR {
 
 //! \class WireFrameParams
 //! \brief Class that supports drawing Barbs based on 2D or 3D vector field
 //! \author John Clyne
 //! \version 3.0
-class PARAMS_API WireFrameParams : public RenderParams 
-{
-public:
+class PARAMS_API WireFrameParams : public RenderParams {
+  public:
+    WireFrameParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave);
 
- WireFrameParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave);
+    WireFrameParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node);
 
- WireFrameParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node);
+    virtual ~WireFrameParams();
 
- virtual ~WireFrameParams();
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("WireFrameParams"); }
 
- // Get static string identifier for this params class
- //
-  static string GetClassType() 
-  {
-	  return("WireFrameParams");
-  }
+  private:
+    void _init();
 
-private:
+}; // End of Class WireFrameParams
+}; // namespace VAPoR
 
- void _init();
-
-
-}; //End of Class WireFrameParams
-};
-
-#endif 
-
+#endif

@@ -37,94 +37,64 @@ const string StatisticsParams::_stdDevEnabledTag = "StdDevEnabled";
 //
 // Register class with object factory!!!
 //
-static RenParamsRegistrar<StatisticsParams> registrar( StatisticsParams::GetClassType() );
+static RenParamsRegistrar<StatisticsParams> registrar(StatisticsParams::GetClassType());
 
-StatisticsParams::StatisticsParams( DataMgr* dmgr, ParamsBase::StateSave *ssave) 
-                : RenderParams( dmgr, ssave, StatisticsParams::GetClassType()) 
-{ }
+StatisticsParams::StatisticsParams(DataMgr *dmgr, ParamsBase::StateSave *ssave)
+    : RenderParams(dmgr, ssave, StatisticsParams::GetClassType()) {}
 
-StatisticsParams::StatisticsParams( DataMgr* dmgr, ParamsBase::StateSave *ssave, XmlNode *node) 
-                : RenderParams( dmgr, ssave, node)
-{
+StatisticsParams::StatisticsParams(DataMgr *dmgr, ParamsBase::StateSave *ssave, XmlNode *node)
+    : RenderParams(dmgr, ssave, node) {
     // If node isn't tagged correctly we correct the tag and reinitialize from scratch;
-    //  
+    //
     if (node->GetTag() != StatisticsParams::GetClassType()) {
         node->SetTag(StatisticsParams::GetClassType());
-    }  
+    }
 }
 
-StatisticsParams::~StatisticsParams() 
-{
-    MyBase::SetDiagMsg("StatisticsParams::~StatisticsParams() this=%p",this);
+StatisticsParams::~StatisticsParams() {
+    MyBase::SetDiagMsg("StatisticsParams::~StatisticsParams() this=%p", this);
 }
 
-bool StatisticsParams::GetAutoUpdateEnabled()
-{
-    return(GetValueLong(_autoUpdateTag, (long)false));
+bool StatisticsParams::GetAutoUpdateEnabled() {
+    return (GetValueLong(_autoUpdateTag, (long)false));
 }
 
-void StatisticsParams::SetAutoUpdateEnabled(bool val) 
-{
-    SetValueLong( _autoUpdateTag, "if we want stats auto-update", (long)val );
+void StatisticsParams::SetAutoUpdateEnabled(bool val) {
+    SetValueLong(_autoUpdateTag, "if we want stats auto-update", (long)val);
 }
 
-int StatisticsParams::GetCurrentMaxTS() const
-{
-    return (int)(GetValueDouble(_maxTSTag, 0.0));
-}
+int StatisticsParams::GetCurrentMaxTS() const { return (int)(GetValueDouble(_maxTSTag, 0.0)); }
 
-void StatisticsParams::SetCurrentMaxTS(int ts) 
-{
+void StatisticsParams::SetCurrentMaxTS(int ts) {
     SetValueDouble(_maxTSTag, "Maximum selected timestep for statistics", (double)ts);
 }
 
-bool StatisticsParams::GetMinEnabled() 
-{
-	return GetValueLong(_minEnabledTag, (long)true);
-}
+bool StatisticsParams::GetMinEnabled() { return GetValueLong(_minEnabledTag, (long)true); }
 
-void StatisticsParams::SetMinEnabled(bool state) 
-{
+void StatisticsParams::SetMinEnabled(bool state) {
     SetValueLong(_minEnabledTag, "Minimum statistic calculation", (long)state);
 }
 
-bool StatisticsParams::GetMaxEnabled() 
-{
-    return GetValueLong(_maxEnabledTag, (long)true);
-}
+bool StatisticsParams::GetMaxEnabled() { return GetValueLong(_maxEnabledTag, (long)true); }
 
-void StatisticsParams::SetMaxEnabled(bool state) 
-{
+void StatisticsParams::SetMaxEnabled(bool state) {
     SetValueLong(_maxEnabledTag, "Maximum statistic calculation", (long)state);
 }
 
-bool StatisticsParams::GetMeanEnabled() 
-{
-    return GetValueLong(_meanEnabledTag, (long)true); 
-}
+bool StatisticsParams::GetMeanEnabled() { return GetValueLong(_meanEnabledTag, (long)true); }
 
-void StatisticsParams::SetMeanEnabled(bool state) 
-{
+void StatisticsParams::SetMeanEnabled(bool state) {
     SetValueLong(_meanEnabledTag, "Mean statistic calculation", (long)state);
 }
 
-bool StatisticsParams::GetMedianEnabled() 
-{
-    return GetValueLong(_medianEnabledTag, (long)false);
-}
+bool StatisticsParams::GetMedianEnabled() { return GetValueLong(_medianEnabledTag, (long)false); }
 
-void StatisticsParams::SetMedianEnabled(bool state) 
-{
+void StatisticsParams::SetMedianEnabled(bool state) {
     SetValueLong(_medianEnabledTag, "Median statistic calculation", (long)state);
 }
 
-bool StatisticsParams::GetStdDevEnabled() 
-{
-    return GetValueLong(_stdDevEnabledTag, (long)false);
-}
+bool StatisticsParams::GetStdDevEnabled() { return GetValueLong(_stdDevEnabledTag, (long)false); }
 
-void StatisticsParams::SetStdDevEnabled(bool state) 
-{
+void StatisticsParams::SetStdDevEnabled(bool state) {
     SetValueLong(_stdDevEnabledTag, "Standard deviation statistic calculation", (long)state);
 }
-

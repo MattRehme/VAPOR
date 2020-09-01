@@ -4,36 +4,36 @@
 #include <QLineEdit>
 
 namespace VAPoR {
-    class RenderParams;
+class RenderParams;
 }
 
 class TFOpacityInfoWidget : public TFInfoWidget {
     Q_OBJECT
-    
-public:
+
+  public:
     TFOpacityInfoWidget(const std::string &variableNameTag);
-    
-public:
+
+  public:
     void SetOpacity(float opacity);
-    
-protected:
+
+  protected:
     void updateOpacity();
     float getOpacityFromEdit() const;
-    
+
     void controlPointChanged();
-    
-private:
+
+  private:
     QLineEdit *_opacityEdit;
-    
+
     float _opacity;
-    
-signals:
+
+  signals:
     void ControlPointChanged(float value, float opacity);
-    
-public slots:
+
+  public slots:
     void SetControlPoint(float value, float opacity);
     void DeselectControlPoint();
-    
-private slots:
+
+  private slots:
     void opacityEditChanged();
 };

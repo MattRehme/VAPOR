@@ -3,19 +3,16 @@
 #include <QLabel>
 #include <QBoxLayout>
 
-void TFIsoValueInfoWidget::controlPointChanged()
-{
+void TFIsoValueInfoWidget::controlPointChanged() {
     emit ControlPointChanged(this->getValueFromEdit());
 }
 
-void TFIsoValueInfoWidget::SetControlPoint(float value)
-{
+void TFIsoValueInfoWidget::SetControlPoint(float value) {
     this->setEnabled(true);
     SetNormalizedValue(value);
 }
 
-void TFIsoValueInfoWidget::Deselect()
-{
+void TFIsoValueInfoWidget::Deselect() {
     this->setEnabled(false);
     _valueEdit->clear();
 }

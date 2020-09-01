@@ -38,224 +38,145 @@
 
 namespace VAPoR {
 
-class RENDER_API TwoDDataRenderer : public TwoDRenderer
-{
+class RENDER_API TwoDDataRenderer : public TwoDRenderer {
 
-public:
+  public:
+    TwoDDataRenderer(const ParamsMgr *pm, string winName, string dataSetName, string instName,
+                     DataMgr *dataMgr);
 
-  TwoDDataRenderer( const ParamsMgr   *pm, 
-                          string      winName, 
-                          string      dataSetName,
-	                        string      instName, 
-                          DataMgr     *dataMgr);
+    virtual ~TwoDDataRenderer();
 
-  virtual ~TwoDDataRenderer();
+    // Get static string identifier for this render class
+    //
+    static string GetClassType() { return ("TwoDData"); }
 
-  // Get static string identifier for this render class
-  //
-  static string GetClassType() 
-  {
-    return("TwoDData");
-  }
+  protected:
+    int _initializeGL();
 
+    int _paintGL(bool fast);
 
-protected:
- int _initializeGL();
-
- int _paintGL(bool fast);
-
- int GetMesh(  DataMgr *dataMgr,
-                GLfloat **verts,
-                GLfloat **normals,
-                GLsizei &nverts,
-                GLsizei &width,
-                GLsizei &height,
-                GLuint **indices,
-                GLsizei &nindices,
+    int GetMesh(DataMgr *dataMgr, GLfloat **verts, GLfloat **normals, GLsizei &nverts,
+                GLsizei &width, GLsizei &height, GLuint **indices, GLsizei &nindices,
                 bool &structuredMesh);
 
+    const GLvoid *GetTexture(DataMgr *dataMgr, GLsizei &width, GLsizei &height,
+                             GLint &internalFormat, GLenum &format, GLenum &type, size_t &texelSize,
+                             bool &gridAligned);
 
- const GLvoid *GetTexture( DataMgr *dataMgr,
-                            GLsizei &width,
-                            GLsizei &height,
-                            GLint &internalFormat,
-                            GLenum &format,
-                            GLenum &type,
-                            size_t &texelSize,
-                            bool &gridAligned);
+  private:
+    class _grid_state_c {
+      public:
+        _grid_state_c() = default;
+        _grid_state_c(size_t numRefLevels, int refLevel, int lod, string hgtVar, string meshName,
+                      size_t ts, vector<double> minExts, vector<double> maxExts)
+            : _numRefLevels(numRefLevels), _refLevel(refLevel), _lod(lod), _hgtVar(hgtVar),
+              _meshName(meshName), _ts(ts), _minExts(minExts), _maxExts(maxExts) {}
 
+        void clear() {
+            _numRefLevels = 0;
+            _refLevel = _lod = -1;
+            _hgtVar = _meshName = "";
+            _ts = 0;
+            _minExts.clear();
+            _maxExts.clear();
+        }
 
-	
-private:
+        bool operator==(const _grid_state_c &rhs) const {
+            return (_numRefLevels == rhs._numRefLevels && _refLevel == rhs._refLevel &&
+                    _lod == rhs._lod && _hgtVar == rhs._hgtVar && _meshName == rhs._meshName &&
+                    _ts == rhs._ts && _minExts == rhs._minExts && _maxExts == rhs._maxExts);
+        }
+        bool operator!=(const _grid_state_c &rhs) const { return (!(*this == rhs)); }
 
- class _grid_state_c {
- public:
-  _grid_state_c() = default;
-  _grid_state_c(
-	size_t numRefLevels,
-	int refLevel,
-	int lod,
-	string hgtVar,
-	string meshName,
-	size_t ts,
-	vector <double> minExts,
-	vector <double> maxExts
-  ) : _numRefLevels(numRefLevels), _refLevel(refLevel), _lod(lod),
-	_hgtVar(hgtVar), _meshName(meshName),
-	_ts(ts), _minExts(minExts), _maxExts(maxExts)
-  {}
+      private:
+        size_t _numRefLevels;
+        int _refLevel;
+        int _lod;
+        string _hgtVar;
+        string _meshName;
+        size_t _ts;
+        vector<double> _minExts;
+        vector<double> _maxExts;
+    };
 
-  void clear() {
-	_numRefLevels = 0;
-	_refLevel = _lod = -1;
-	_hgtVar = _meshName = "";
-	_ts = 0;
-	_minExts.clear();
-	_maxExts.clear();
-  }
+    class _tex_state_c {
+      public:
+        _tex_state_c() = default;
+        _tex_state_c(int refLevel, int lod, string varname, size_t ts, vector<double> minExts,
+                     vector<double> maxExts)
+            : _refLevel(refLevel), _lod(lod), _varname(varname), _ts(ts), _minExts(minExts),
+              _maxExts(maxExts) {}
 
-  bool operator==(const _grid_state_c &rhs) const {
-	return(
-		_numRefLevels == rhs._numRefLevels &&
-		_refLevel == rhs._refLevel &&
-		_lod == rhs._lod &&
-		_hgtVar == rhs._hgtVar &&
-		_meshName == rhs._meshName &&
-		_ts == rhs._ts &&
-		_minExts == rhs._minExts &&
-		_maxExts == rhs._maxExts 
-	);
-  }
-  bool operator!=(const _grid_state_c &rhs) const {
-	return(! (*this == rhs));
-  }
+        void clear() {
+            _refLevel = _lod = -1;
+            _varname = "";
+            _ts = 0;
+            _minExts.clear();
+            _maxExts.clear();
+        }
 
- private:
-  size_t _numRefLevels;
-  int _refLevel;
-  int _lod;
-  string _hgtVar;
-  string _meshName;
-  size_t _ts;
-  vector <double> _minExts;
-  vector <double> _maxExts;
- };
+        bool operator==(const _tex_state_c &rhs) const {
+            return (_refLevel == rhs._refLevel && _lod == rhs._lod && _varname == rhs._varname &&
+                    _ts == rhs._ts && _minExts == rhs._minExts && _maxExts == rhs._maxExts);
+        }
+        bool operator!=(const _tex_state_c &rhs) const { return (!(*this == rhs)); }
 
- class _tex_state_c {
- public:
-  _tex_state_c() = default;
-  _tex_state_c(
-	int refLevel,
-	int lod,
-	string varname,
-	size_t ts,
-	vector <double> minExts,
-	vector <double> maxExts
-  ) : _refLevel(refLevel), _lod(lod), _varname(varname), 
-	_ts(ts), _minExts(minExts), _maxExts(maxExts)
-  {}
+      private:
+        int _refLevel;
+        int _lod;
+        string _varname;
+        size_t _ts;
+        vector<double> _minExts;
+        vector<double> _maxExts;
+    };
 
-  void clear() {
-	_refLevel = _lod = -1;
-	_varname = "";
-	_ts = 0;
-	_minExts.clear();
-	_maxExts.clear();
-  }
+    _grid_state_c _grid_state;
+    _tex_state_c _tex_state;
 
-  bool operator==(const _tex_state_c &rhs) const {
-	return(
-		_refLevel == rhs._refLevel &&
-		_lod == rhs._lod &&
-		_varname == rhs._varname &&
-		_ts == rhs._ts &&
-		_minExts == rhs._minExts &&
-		_maxExts == rhs._maxExts 
-	);
-  }
-  bool operator!=(const _tex_state_c &rhs) const {
-	return(! (*this == rhs));
-  }
+    GLsizei _texWidth;
+    GLsizei _texHeight;
+    size_t _texelSize;
+    SmartBuf _sb_verts;
+    SmartBuf _sb_normals;
+    SmartBuf _sb_indices;
+    SmartBuf _sb_texture;
+    GLsizei _vertsWidth;
+    GLsizei _vertsHeight;
+    GLsizei _nindices;
+    GLsizei _nverts;
 
- private:
-  int _refLevel;
-  int _lod;
-  string _varname;
-  size_t _ts;
-  vector <double> _minExts;
-  vector <double> _maxExts;
- };
+    GLuint _cMapTexID;
+    GLfloat *_colormap;
+    size_t _colormapsize;
 
- _grid_state_c _grid_state;
- _tex_state_c _tex_state;
+    bool _gridStateDirty() const;
 
- GLsizei _texWidth;
- GLsizei _texHeight;
- size_t _texelSize;
- SmartBuf _sb_verts;
- SmartBuf _sb_normals;
- SmartBuf _sb_indices;
- SmartBuf _sb_texture;
- GLsizei _vertsWidth;
- GLsizei _vertsHeight;
- GLsizei _nindices;
- GLsizei _nverts;
+    void _gridStateClear();
 
- GLuint _cMapTexID;
- GLfloat *_colormap;
- size_t _colormapsize;
+    void _gridStateSet();
 
- bool _gridStateDirty() const; 
+    bool _texStateDirty(DataMgr *dataMgr) const;
 
- void _gridStateClear();
+    void _texStateSet(DataMgr *dataMgr);
 
- void _gridStateSet();
+    void _texStateClear();
 
- bool _texStateDirty(DataMgr *dataMgr) const; 
+    int _getMeshStructured(DataMgr *dataMgr, const StructuredGrid *g, double defaultZ);
 
- void _texStateSet(DataMgr *dataMgr); 
+    int _getMeshUnStructured(DataMgr *dataMgr, const Grid *g, double defaultZ);
 
- void _texStateClear(); 
+    int _getMeshUnStructuredHelper(DataMgr *dataMgr, const Grid *g, double defaultZ);
 
+    int _getMeshStructuredDisplaced(DataMgr *dataMgr, const StructuredGrid *g, double defaultZ);
 
- int _getMeshStructured(
-	DataMgr *dataMgr,
-	const StructuredGrid *g,
-	double defaultZ
- );
+    int _getMeshStructuredPlane(DataMgr *dataMgr, const StructuredGrid *g, double defaultZ);
 
- int _getMeshUnStructured(
-	DataMgr *dataMgr,
-	const Grid *g,
-	double defaultZ
- );
+    const GLvoid *_getTexture(DataMgr *dataMgr);
 
- int _getMeshUnStructuredHelper(
-	DataMgr *dataMgr,
-	const Grid *g,
-	double defaultZ
- );
+    int _getOrientation(DataMgr *dataMgr, string varname);
 
- int _getMeshStructuredDisplaced(
-	DataMgr *dataMgr, const StructuredGrid *g, 
-	double defaultZ
- ); 
-
- int _getMeshStructuredPlane(
-	DataMgr *dataMgr, const StructuredGrid *g,
-	double defaultZ
- );
-
- const GLvoid *_getTexture(DataMgr* dataMgr);
-
-
- int _getOrientation( DataMgr *dataMgr, string varname);
-
-  void _clearCache() {
-	_tex_state.clear();
-  }
-
+    void _clearCache() { _tex_state.clear(); }
 };
-};
+}; // namespace VAPoR
 
 #endif // TWODDATARENDERER_H

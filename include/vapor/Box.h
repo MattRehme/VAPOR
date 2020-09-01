@@ -25,7 +25,6 @@
 
 namespace VAPoR {
 
-
 //! \class Box
 //! \ingroup Public_Params
 //! \brief 3D or 2D box with options for orientation angles .
@@ -33,104 +32,93 @@ namespace VAPoR {
 //! \version 3.0
 //! \date    March 2014
 
-//! The Box class supports various rectangular boxes, possibly rotated,  
+//! The Box class supports various rectangular boxes, possibly rotated,
 //! used in VAPOR to specify extents and also used in Manipulators.
-//! 
+//!
 class PARAMS_API Box : public ParamsBase {
-public:
-    
-    enum Orientation {
-        XY  = 0,
-        XZ  = 1,
-        YZ  = 2,
-        XYZ = 3
-    };
-	
-	//! Create a Box object from scratch
-	//
-	Box(ParamsBase::StateSave *ssave);
+  public:
+    enum Orientation { XY = 0, XZ = 1, YZ = 2, XYZ = 3 };
 
-	//! Create a Box object from an existing XmlNode tree
-	//
-	Box(ParamsBase::StateSave *ssave, XmlNode *node);
+    //! Create a Box object from scratch
+    //
+    Box(ParamsBase::StateSave *ssave);
 
-	virtual ~Box();
+    //! Create a Box object from an existing XmlNode tree
+    //
+    Box(ParamsBase::StateSave *ssave, XmlNode *node);
 
- //! Set the box min and max extents
- //!
- //! Set the extents of the box. 
- //!
- //! \param[in] minExt 2 or 3-element vector containing the minimum coordinates 
- //! of the box, specified in the order X, Y, Z
- //! \param[in] maxExt 2 or 3-element vector containing the maximum coordinates 
- //! of the box, specified in the order X, Y, Z
- //!
- //
- void SetExtents( const vector <double> &minExt, const vector <double> &maxExt );
+    virtual ~Box();
 
- //! Get the box min and max extents
- //!
- //! Get the box's coordinate extents.  If IsPlanar() is true a 2-element
- //! array is returned for \p minExt and \p maxExt, if false a 
- //! 3-element array is returned.
- //!
- //! \param[out] minExt 2 or 3-element vector containing the minimum 
- //! coordinates 
- //! of the box, specified in the order X, Y, Z
- //! \param[out] maxExt 2 or 3-element vector containing the 
- //! maximum coordinates 
- //! of the box, specified in the order X, Y, Z
- //!
- //! \sa IsPlanar(), GetOrientation(), SetExtents()
- //
- void GetExtents( vector <double> &minExt, vector <double> &maxExt ) const;
+    //! Set the box min and max extents
+    //!
+    //! Set the extents of the box.
+    //!
+    //! \param[in] minExt 2 or 3-element vector containing the minimum coordinates
+    //! of the box, specified in the order X, Y, Z
+    //! \param[in] maxExt 2 or 3-element vector containing the maximum coordinates
+    //! of the box, specified in the order X, Y, Z
+    //!
+    //
+    void SetExtents(const vector<double> &minExt, const vector<double> &maxExt);
 
- //! Indicate whether or not the box is constrained to be planar.  
- //!
- //! \retval bool True if the box is planar
- //!
- //! \sa GetOrientation()
- //
-  bool IsPlanar() const 
-  {
-	  return GetValueLong(Box::m_planarTag, (long) false);
-  }
+    //! Get the box min and max extents
+    //!
+    //! Get the box's coordinate extents.  If IsPlanar() is true a 2-element
+    //! array is returned for \p minExt and \p maxExt, if false a
+    //! 3-element array is returned.
+    //!
+    //! \param[out] minExt 2 or 3-element vector containing the minimum
+    //! coordinates
+    //! of the box, specified in the order X, Y, Z
+    //! \param[out] maxExt 2 or 3-element vector containing the
+    //! maximum coordinates
+    //! of the box, specified in the order X, Y, Z
+    //!
+    //! \sa IsPlanar(), GetOrientation(), SetExtents()
+    //
+    void GetExtents(vector<double> &minExt, vector<double> &maxExt) const;
 
- //! Constain the box to be planar or not
- //!
- //! Set the value of the planar state, indicating whether or not
- //! the box is constrained to be planar.
- //!
- //! \param[in] value bool indicates whether or be planar
- //!
- //! \sa SetExtents()
- //
- void SetPlanar(bool value);
+    //! Indicate whether or not the box is constrained to be planar.
+    //!
+    //! \retval bool True if the box is planar
+    //!
+    //! \sa GetOrientation()
+    //
+    bool IsPlanar() const { return GetValueLong(Box::m_planarTag, (long)false); }
 
- //! Indicate the orientation of a (2D) box
- //! This is 0,1, or 2 based on the axis orthogonal to the box.
- //! A 0 indiciates the XY plane, 1 indicates the XZ plane, and 2 YZ plane 
- //! axis.
- //!
- //! \retval int The plane that the box resides in, if planar. Otherwise
- //! the return value is meaningless.
- //!
- //! \sa IsPlanar()
- //
- int GetOrientation() const {
-	return GetValueLong(Box::m_orientationTag, XY);
- }
+    //! Constain the box to be planar or not
+    //!
+    //! Set the value of the planar state, indicating whether or not
+    //! the box is constrained to be planar.
+    //!
+    //! \param[in] value bool indicates whether or be planar
+    //!
+    //! \sa SetExtents()
+    //
+    void SetPlanar(bool value);
 
- //! Set the value of the orientation state, indicating the axis
- //! orthogonal to a 2D box 
- //!
- //! \param[in] value long indicates the orientation value
- //!
- //! \sa IsPlanar(), GetOrientation()
- //
- void SetOrientation(long value) {
-	SetValueLong(Box::m_orientationTag, "Set box orientation", (long)value);
- }
+    //! Indicate the orientation of a (2D) box
+    //! This is 0,1, or 2 based on the axis orthogonal to the box.
+    //! A 0 indiciates the XY plane, 1 indicates the XZ plane, and 2 YZ plane
+    //! axis.
+    //!
+    //! \retval int The plane that the box resides in, if planar. Otherwise
+    //! the return value is meaningless.
+    //!
+    //! \sa IsPlanar()
+    //
+    int GetOrientation() const { return GetValueLong(Box::m_orientationTag, XY); }
+
+    //! Set the value of the orientation state, indicating the axis
+    //! orthogonal to a 2D box
+    //!
+    //! \param[in] value long indicates the orientation value
+    //!
+    //! \sa IsPlanar(), GetOrientation()
+    //
+    void SetOrientation(long value) {
+        SetValueLong(Box::m_orientationTag, "Set box orientation", (long)value);
+    }
 
 #if 0
 	//! Get the stretched local box extents as a float array.  If timestep is >= 0, then get it just
@@ -183,7 +171,7 @@ public:
 	void SetLocalExtents(const float extents[6], int timestep = -1);
 #endif
 
-#if	0
+#if 0
 	//! Specify the stretched local extents as a float array.  If time step is -1, then set the generic extents.
 	//! Otherwise set the extents for a specific timestep.
 	//! \param[in] float extents[6]
@@ -192,15 +180,13 @@ public:
 	void SetStretchedLocalExtents(const double extents[6], int timestep = -1);
 #endif
 
-
-	//! Get the three orientation angles (theta, phi, psi)
-	//! Defaults to empty vector if no angles are set.
-	//! \retval const vector<double> vector of length 3 of angles.
-	vector<double> GetAngles() const 
-  {
-		const vector<double> defaultAngles(3,0.);
-		return GetValueDoubleVec(Box::m_anglesTag,defaultAngles);
-	}
+    //! Get the three orientation angles (theta, phi, psi)
+    //! Defaults to empty vector if no angles are set.
+    //! \retval const vector<double> vector of length 3 of angles.
+    vector<double> GetAngles() const {
+        const vector<double> defaultAngles(3, 0.);
+        return GetValueDoubleVec(Box::m_anglesTag, defaultAngles);
+    }
 
 #if 0
 	//! Get the angles as a double array
@@ -220,29 +206,31 @@ public:
 	}
 #endif
 
-	//! Set the angles from a double array
-	//! \param [in] ang double[3] array of three doubles for theta, phi, psi
-	//! \retval int zero on success
-	void SetAngles(const double angles[3]){
-		vector<double> ang;
-		for (int i = 0; i<3;i++) ang.push_back(angles[i]);
-		SetValueDoubleVec(m_anglesTag, "change box angles",ang);
-	}
+    //! Set the angles from a double array
+    //! \param [in] ang double[3] array of three doubles for theta, phi, psi
+    //! \retval int zero on success
+    void SetAngles(const double angles[3]) {
+        vector<double> ang;
+        for (int i = 0; i < 3; i++)
+            ang.push_back(angles[i]);
+        SetValueDoubleVec(m_anglesTag, "change box angles", ang);
+    }
 
-	//! Set the angles from a float array
-	//! \param [in] angles float[3] array of three floats for theta, phi, psi
-	//! \retval int zero on success
-	void SetAngles(const float angles[3]){
-		vector<double> angl;
-		for (int i = 0; i<3;i++) angl.push_back((double)angles[i]);
-		SetValueDoubleVec(m_anglesTag, "change box angles",angl);
-	}
+    //! Set the angles from a float array
+    //! \param [in] angles float[3] array of three floats for theta, phi, psi
+    //! \retval int zero on success
+    void SetAngles(const float angles[3]) {
+        vector<double> angl;
+        for (int i = 0; i < 3; i++)
+            angl.push_back((double)angles[i]);
+        SetValueDoubleVec(m_anglesTag, "change box angles", angl);
+    }
 
-	//! Set the three orientation angles (theta, phi, psi) from a vector of doubles
-	//! \param[in] vals const vector<double>& vector of length 3 of angles.
-	void SetAngles(const vector<double>& vals) {
-		SetValueDoubleVec(m_anglesTag, "Change box angles",vals);
-	}
+    //! Set the three orientation angles (theta, phi, psi) from a vector of doubles
+    //! \param[in] vals const vector<double>& vector of length 3 of angles.
+    void SetAngles(const vector<double> &vals) {
+        SetValueDoubleVec(m_anglesTag, "Change box angles", vals);
+    }
 #if 0
 	//! Get the time(s) as a long vector.
 	//! The first one should be negative, marking the default extents.
@@ -268,15 +256,11 @@ public:
 	) const;
 #endif
 
-	// Get static string identifier for this params class
-	//
-	static string GetClassType() {
-		return("BoxParams");
-	}
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("BoxParams"); }
 
-
-private:
-	
+  private:
 #if 0
 //! method supports rotated boxes such as probe
 //! Specifies an axis-aligned box containing the rotated box.
@@ -347,13 +331,13 @@ private:
 		double corners[8][3], float extraThickness, int timestep, 
 		double rotation = 0., int axis = -1
 	) const ;
-	
+
 #endif
 
-	static const string m_anglesTag;
-	static const string m_extentsTag;
-	static const string m_planarTag;
-	static const string m_orientationTag;
+    static const string m_anglesTag;
+    static const string m_extentsTag;
+    static const string m_planarTag;
+    static const string m_orientationTag;
 };
-};
+}; // namespace VAPoR
 #endif

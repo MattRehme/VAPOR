@@ -9,15 +9,14 @@
 #include <QIntValidator>
 #include "vapor/VAssert.h"
 
-Combo::Combo(QLineEdit* edit, QSlider* slider, bool intType)
-{
+Combo::Combo(QLineEdit *edit, QSlider *slider, bool intType) {
 
     _minValid = 0.0;
     _maxValid = 1.0;
     _value = _minValid;
     _intType = intType;
 
-    _floatPrecision = 6;   // 6 is default in QT
+    _floatPrecision = 6; // 6 is default in QT
 
     _lineEdit = NULL;
     _lineEditValidator = NULL;
@@ -27,19 +26,15 @@ Combo::Combo(QLineEdit* edit, QSlider* slider, bool intType)
 
     if (_intType)
         _lineEditValidator = new QIntValidator(this);
-    else 
+    else
         _lineEditValidator = new QDoubleValidator(this);
-    _lineEdit->setValidator( _lineEditValidator);
-
+    _lineEdit->setValidator(_lineEditValidator);
 
     // Set up slot for changes to _lineEdit
     //
-    connect(
-        _lineEdit, SIGNAL(returnPressed()),
-        this, SLOT(setLineEdit())
-    );
+    connect(_lineEdit, SIGNAL(returnPressed()), this, SLOT(setLineEdit()));
 
-    _slider= slider;
+    _slider = slider;
     _slider->setFocusPolicy(Qt::StrongFocus);
     _slider->setSingleStep(1);
     _slider->setMinimum(0);
@@ -48,21 +43,15 @@ Combo::Combo(QLineEdit* edit, QSlider* slider, bool intType)
 
     // Set up slot for changes to _slider
     //
-    connect(
-        _slider, SIGNAL(sliderReleased()),
-        this, SLOT(setSlider())
-    );
+    connect(_slider, SIGNAL(sliderReleased()), this, SLOT(setSlider()));
 
     // update values displayed in the _lineEdit without incurring any state upate.
-    connect( _slider, SIGNAL(sliderMoved(int)), this, SLOT(setSliderMini( int )) ); 
+    connect(_slider, SIGNAL(sliderMoved(int)), this, SLOT(setSliderMini(int)));
 
     // This is the aggregate slot that is fired when either the _slider
     // or the _lineEdit  object change value
     //
-    connect(
-            this, SIGNAL(valueChanged(double)),
-            this, SLOT(SetSliderLineEdit(double))
-    );
+    connect(this, SIGNAL(valueChanged(double)), this, SLOT(SetSliderLineEdit(double)));
 }
 
 void Combo::Update(double min, double max, double value) {
@@ -72,9 +61,12 @@ void Combo::Update(double min, double max, double value) {
     // Should we issue a signal to notify the change of input
     // parameters?
     //
-    if (min >= max) max = min; 
-    if (value < min) value = min;
-    if (value > max) value = max;
+    if (min >= max)
+        max = min;
+    if (value < min)
+        value = min;
+    if (value > max)
+        value = max;
 
     _minValid = min;
     _maxValid = max;
@@ -85,7 +77,7 @@ void Combo::Update(double min, double max, double value) {
     // Note: The QDoubleValidator has unexpected behavior and permits
     // values outside of the the valid range. Possible to options to correct
     // this are:
-    // 
+    //
     // 1. Subclass QDoubleValidator to perform the expected behavior
     // 2. Use QDoubleValidator only to ensure that input is a double,
     // and perform range checking inside the slot for returnPressed()
@@ -96,28 +88,27 @@ void Combo::Update(double min, double max, double value) {
     //
     bool oldState = _lineEdit->blockSignals(true);
     if (_intType) {
-        _lineEdit->setText(QString::number((int) value));
-    }
-    else {
-        _lineEdit->setText(QString::number( value, 'g', _floatPrecision ));
+        _lineEdit->setText(QString::number((int)value));
+    } else {
+        _lineEdit->setText(QString::number(value, 'g', _floatPrecision));
     }
     _lineEdit->blockSignals(oldState);
 
     int pos = 0;
     if (_minValid != _maxValid) {
-        pos = (int) (((value - _minValid) / (_maxValid - _minValid)) *
-            (_slider->maximum() - _slider->minimum()) + _slider->minimum());
+        pos = (int)(((value - _minValid) / (_maxValid - _minValid)) *
+                        (_slider->maximum() - _slider->minimum()) +
+                    _slider->minimum());
     }
 
     oldState = _slider->blockSignals(true);
     _slider->setSliderPosition(pos);
     _slider->blockSignals(oldState);
-    
 }
 
 void Combo::SetEnabled(bool on) {
-     _lineEdit->setEnabled(on);
-     _slider->setEnabled(on);
+    _lineEdit->setEnabled(on);
+    _slider->setEnabled(on);
 }
 
 void Combo::setLineEdit() {
@@ -132,29 +123,27 @@ void Combo::setLineEdit() {
     if (value < _minValid) {
         value = _minValid;
         if (_intType) {
-            _lineEdit->setText(QString::number((int) value));
-        }
-        else {
-            _lineEdit->setText(QString::number( value, 'g', _floatPrecision ));
+            _lineEdit->setText(QString::number((int)value));
+        } else {
+            _lineEdit->setText(QString::number(value, 'g', _floatPrecision));
         }
     }
     if (value > _maxValid) {
         value = _maxValid;
         if (_intType) {
-            _lineEdit->setText(QString::number((int) value));
-        }
-        else {
-            _lineEdit->setText(QString::number( value, 'g', _floatPrecision ));
+            _lineEdit->setText(QString::number((int)value));
+        } else {
+            _lineEdit->setText(QString::number(value, 'g', _floatPrecision));
         }
     }
 
-    if (value == _value) return;
+    if (value == _value)
+        return;
 
     _value = value;
     if (_intType) {
-        emit valueChanged((int) value);
-    }
-    else {
+        emit valueChanged((int)value);
+    } else {
         emit valueChanged(value);
     }
 }
@@ -166,36 +155,36 @@ void Combo::setSlider() {
 
     VAssert(min <= pos && max >= pos);
 
-    double value = ((double) (pos - min) / (double) (max-min)) * 
-        (_maxValid - _minValid) + _minValid;
+    double value =
+        ((double)(pos - min) / (double)(max - min)) * (_maxValid - _minValid) + _minValid;
 
-    if (value == _value) return;
+    if (value == _value)
+        return;
 
     _value = value;
     if (_intType) {
-        emit valueChanged((int) value);
-    }
-    else {
+        emit valueChanged((int)value);
+    } else {
         emit valueChanged(value);
     }
 }
 
-// This mini version only changes the values displayed in _lineEdit, 
+// This mini version only changes the values displayed in _lineEdit,
 // but not emit any other signals.
-void Combo::setSliderMini( int pos ) {
+void Combo::setSliderMini(int pos) {
     int min = _slider->minimum();
     int max = _slider->maximum();
 
     VAssert(min <= pos && max >= pos);
 
-    double value = ((double) (pos - min) / (double) (max-min)) * 
-        (_maxValid - _minValid) + _minValid;
+    double value =
+        ((double)(pos - min) / (double)(max - min)) * (_maxValid - _minValid) + _minValid;
 
     bool oldState = _lineEdit->blockSignals(true);
     if (_intType)
-        _lineEdit->setText(QString::number((int) value));
-    else 
-        _lineEdit->setText(QString::number( value, 'g', _floatPrecision ));
+        _lineEdit->setText(QString::number((int)value));
+    else
+        _lineEdit->setText(QString::number(value, 'g', _floatPrecision));
     _lineEdit->blockSignals(oldState);
 }
 
@@ -206,26 +195,22 @@ void Combo::SetSliderLineEdit(double value) {
     //
     Update(_minValid, _maxValid, value);
 }
- 
-void Combo::SetPrecision( int precision )
-{
-    if( precision > 0 )
+
+void Combo::SetPrecision(int precision) {
+    if (precision > 0)
         _floatPrecision = precision;
 }
 
-void Combo::SetIntType( bool val )
-{
-    if( val != _intType )
-    {
+void Combo::SetIntType(bool val) {
+    if (val != _intType) {
         _intType = val;
         delete _lineEditValidator;
 
-        if (_intType) 
+        if (_intType)
             _lineEditValidator = new QIntValidator(this);
-        else 
+        else
             _lineEditValidator = new QDoubleValidator(this);
-        
-        _lineEdit->setValidator( _lineEditValidator);
-    }
 
+        _lineEdit->setValidator(_lineEditValidator);
+    }
 }

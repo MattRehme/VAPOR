@@ -3,8 +3,8 @@
 
 using namespace std;
 
-#ifndef	_WaveFiltCoif_h_
-#define	_WaveFiltCoif_h_
+#ifndef _WaveFiltCoif_h_
+#define _WaveFiltCoif_h_
 
 namespace VAPoR {
 
@@ -19,22 +19,20 @@ namespace VAPoR {
 //!
 class WASP_API WaveFiltCoif : public WaveFiltBase {
 
-public:
+  public:
+    //! Create a set of Coiflet filters
+    //!
+    //! \param[in] wavename The Coiflet family wavelet member. Valid values
+    //! are "coif1", "coif2", "coif3", "coif4", and "coif5"
+    //!
+    WaveFiltCoif(const string &wavename);
+    virtual ~WaveFiltCoif();
 
- //! Create a set of Coiflet filters
- //!
- //! \param[in] wavename The Coiflet family wavelet member. Valid values
- //! are "coif1", "coif2", "coif3", "coif4", and "coif5"
- //!
- WaveFiltCoif(const string &wavename);
- virtual ~WaveFiltCoif();
-	
-
-private:
- void _analysis_initialize (int member);
- void _synthesis_initialize (int member);
+  private:
+    void _analysis_initialize(int member);
+    void _synthesis_initialize(int member);
 };
 
-}
+} // namespace VAPoR
 
 #endif

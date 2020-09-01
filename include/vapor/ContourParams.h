@@ -8,7 +8,7 @@
 
 namespace VAPoR {
 
-//class ContourParams::Contours;
+// class ContourParams::Contours;
 
 //! \class ContourParams
 //! \brief Class that supports drawing Contours based on 2D or 3D vector field
@@ -16,159 +16,145 @@ namespace VAPoR {
 //! \version 3.0
 //! \date June 2017
 class PARAMS_API ContourParams : public RenderParams {
-public:
- class Contours;
+  public:
+    class Contours;
 
- ContourParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave);
+    ContourParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave);
 
- ContourParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node);
+    ContourParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node);
 
- ContourParams(const ContourParams &rhs);
+    ContourParams(const ContourParams &rhs);
 
- ContourParams &operator=( const ContourParams& rhs);
+    ContourParams &operator=(const ContourParams &rhs);
 
- virtual ~ContourParams();
+    virtual ~ContourParams();
 
- Contours* GetCurrentContours();
+    Contours *GetCurrentContours();
 
- void MakeNewContours(string varName);
+    void MakeNewContours(string varName);
 
- //! Set the variable type being used by the barbs
- //!
- void SetVariables3D(bool val) {
-	if (val)
-		SetValueString(_varsAre3dTag, "Set variable dimensionality", "true");
-	else
-		SetValueString(_varsAre3dTag, "Set variable dimensionality", "false");
- }
+    //! Set the variable type being used by the barbs
+    //!
+    void SetVariables3D(bool val) {
+        if (val)
+            SetValueString(_varsAre3dTag, "Set variable dimensionality", "true");
+        else
+            SetValueString(_varsAre3dTag, "Set variable dimensionality", "false");
+    }
 
- //! Find out whether the barbs are using 2D or 3D variables
- //!
- bool VariablesAre3D() const {
-	if (GetValueString(_varsAre3dTag, "true") == "true") {
-		return true;
-	}
-	return false;
- }
+    //! Find out whether the barbs are using 2D or 3D variables
+    //!
+    bool VariablesAre3D() const {
+        if (GetValueString(_varsAre3dTag, "true") == "true") {
+            return true;
+        }
+        return false;
+    }
 
- //! Determine line thickness in voxels
- //! \retval double line thickness
- double GetLineThickness() const {
- 	return (GetValueDouble(_thicknessScaleTag,1.0));
- }
+    //! Determine line thickness in voxels
+    //! \retval double line thickness
+    double GetLineThickness() const { return (GetValueDouble(_thicknessScaleTag, 1.0)); }
 
- void SetLineThickness(double val) {
-	SetValueDouble(_thicknessScaleTag, "Contour thickness", val);
- }
- 
- int GetContourCount();
+    void SetLineThickness(double val) {
+        SetValueDouble(_thicknessScaleTag, "Contour thickness", val);
+    }
 
- double GetContourMin();
+    int GetContourCount();
 
- double GetContourSpacing();
+    double GetContourMin();
 
- double GetContourMax();
+    double GetContourSpacing();
 
- void SetContourSpacing(double val);
+    double GetContourMax();
 
- void GetLineColor(int lineNum, float color[3]);
+    void SetContourSpacing(double val);
 
- void SetLineColor(vector<double> vec) {
-	SetValueDoubleVec(_lineColorTag, "Line color", vec);
- }
+    void GetLineColor(int lineNum, float color[3]);
 
- void SetLockToTF(bool lock);
+    void SetLineColor(vector<double> vec) { SetValueDoubleVec(_lineColorTag, "Line color", vec); }
 
- bool GetLockToTF() const; 
+    void SetLockToTF(bool lock);
 
- bool HasIsoValues() const { return true; }
+    bool GetLockToTF() const;
+
+    bool HasIsoValues() const { return true; }
     vector<double> GetIsoValues(const string &variable);
     void SetIsoValues(const string &variable, const vector<double> &values);
-    
- vector<double> GetContourValues(const string &varName);
- void SetContourValues(const string &varName, const vector<double> &vals);
 
- // Get static string identifier for this params class
- //
- static string GetClassType() {
-	return("ContourParams");
- }
+    vector<double> GetContourValues(const string &varName);
+    void SetContourValues(const string &varName, const vector<double> &vals);
 
- int GetNumDigits() const {
-	double val = GetValueDouble(_numDigitsTag, 1.0);
-	return (int)val;
- }
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("ContourParams"); }
 
- void SetNumDigits(int digits) {
-	SetValueDouble(_numDigitsTag, "Number of digits in contour annotation",
-		digits
-	);
- }
+    int GetNumDigits() const {
+        double val = GetValueDouble(_numDigitsTag, 1.0);
+        return (int)val;
+    }
 
- int GetTextDensity() const {
-	double val = GetValueDouble(_textDensityTag, 1.0);
-	return (int)val;
- }
+    void SetNumDigits(int digits) {
+        SetValueDouble(_numDigitsTag, "Number of digits in contour annotation", digits);
+    }
 
- void SetTextDensity(int density) {
-	SetValueDouble(_textDensityTag, "Density of contour annotations",
-		density
-	);
- }
+    int GetTextDensity() const {
+        double val = GetValueDouble(_textDensityTag, 1.0);
+        return (int)val;
+    }
 
- bool GetTextEnabled() const;
- void SetTFLock(bool lock); 
- bool GetTFLock();
+    void SetTextDensity(int density) {
+        SetValueDouble(_textDensityTag, "Density of contour annotations", density);
+    }
 
-private:
+    bool GetTextEnabled() const;
+    void SetTFLock(bool lock);
+    bool GetTFLock();
 
- void _init();
- static const string _thicknessScaleTag;
- static const string _varsAre3dTag;
- static const string _lineColorTag;
- static const string _contoursTag;
- static const string _numDigitsTag;
- static const string _textDensityTag;
- static const string _textEnabledTag;
- static const string _lockToTFTag;
- ParamsContainer* _contours;
+  private:
+    void _init();
+    static const string _thicknessScaleTag;
+    static const string _varsAre3dTag;
+    static const string _lineColorTag;
+    static const string _contoursTag;
+    static const string _numDigitsTag;
+    static const string _textDensityTag;
+    static const string _textEnabledTag;
+    static const string _lockToTFTag;
+    ParamsContainer *_contours;
 
-public:
- class PARAMS_API Contours : public ParamsBase {
- public:
+  public:
+    class PARAMS_API Contours : public ParamsBase {
+      public:
+        Contours(ParamsBase::StateSave *ssave);
 
-  Contours(ParamsBase::StateSave *ssave);
+        Contours(ParamsBase::StateSave *ssave, XmlNode *node);
 
-  Contours(ParamsBase::StateSave *ssave, XmlNode *node);
+        virtual ~Contours();
 
-  virtual ~Contours();
+        vector<double> GetContourValues() const {
+            vector<double> defaultv(7, 0.);
+            if (!_node->HasElementDouble(_valuesTag))
+                return defaultv;
 
-  vector<double> GetContourValues() const {
-	vector<double> defaultv(7, 0.);
-	if (! _node->HasElementDouble(_valuesTag)) return defaultv;
+            vector<double> val = GetValueDoubleVec(_valuesTag);
+            return val;
+        }
 
-	vector<double> val = GetValueDoubleVec(_valuesTag);
-	return val;
-  }
+        void SetContourValues(vector<double> vals) {
+            SetValueDoubleVec(_valuesTag, "Set contour values", vals);
+        }
 
-  void SetContourValues(vector<double> vals) {
-	SetValueDoubleVec(_valuesTag, "Set contour values", vals);
-  }
+        double GetMin() const;
+        int GetCount() const;      // {
+        double GetSpacing() const; //{
+        static string GetClassType() { return ("Contours"); }
 
-  double GetMin() const;
-  int GetCount() const;// {
-  double GetSpacing() const; //{
-  static string GetClassType() {
-   return("Contours");
-  }
+      private:
+        static const string _valuesTag;
+    };
 
- private:
-	static const string _valuesTag;
- };
+}; // End of Class ContourParams
 
-}; //End of Class ContourParams
+}; // namespace VAPoR
 
-};
-
-#endif 
-
+#endif

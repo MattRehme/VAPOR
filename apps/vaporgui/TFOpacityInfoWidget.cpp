@@ -7,53 +7,41 @@
 #include "VLineItem.h"
 
 TFOpacityInfoWidget::TFOpacityInfoWidget(const std::string &variableNameTag)
-: TFInfoWidget(variableNameTag)
-{
-    ((QBoxLayout*)layout())->addWidget(new VLineItem("Opacity", _opacityEdit = new QLineEdit));
-    
+    : TFInfoWidget(variableNameTag) {
+    ((QBoxLayout *)layout())->addWidget(new VLineItem("Opacity", _opacityEdit = new QLineEdit));
+
     _opacityEdit->setValidator(new QDoubleValidator(0, 1, 6));
     connect(_opacityEdit, SIGNAL(returnPressed()), this, SLOT(opacityEditChanged()));
 }
 
-void TFOpacityInfoWidget::DeselectControlPoint()
-{
+void TFOpacityInfoWidget::DeselectControlPoint() {
     TFInfoWidget::DeselectControlPoint();
     _opacityEdit->clear();
 }
 
-void TFOpacityInfoWidget::SetOpacity(float opacity)
-{
+void TFOpacityInfoWidget::SetOpacity(float opacity) {
     _opacity = opacity;
     updateOpacity();
 }
 
-void TFOpacityInfoWidget::SetControlPoint(float value, float opacity)
-{
+void TFOpacityInfoWidget::SetControlPoint(float value, float opacity) {
     this->setEnabled(true);
     SetNormalizedValue(value);
     SetOpacity(opacity);
 }
 
-void TFOpacityInfoWidget::updateOpacity()
-{
+void TFOpacityInfoWidget::updateOpacity() {
     if (!isEnabled())
         return;
-    
+
     _opacityEdit->setText(QString::number(_opacity));
 }
 
-float TFOpacityInfoWidget::getOpacityFromEdit() const
-{
-    return _opacityEdit->text().toFloat();
-}
+float TFOpacityInfoWidget::getOpacityFromEdit() const { return _opacityEdit->text().toFloat(); }
 
-void TFOpacityInfoWidget::controlPointChanged()
-{
-    emit ControlPointChanged(_value, _opacity);
-}
+void TFOpacityInfoWidget::controlPointChanged() { emit ControlPointChanged(_value, _opacity); }
 
-void TFOpacityInfoWidget::opacityEditChanged()
-{
+void TFOpacityInfoWidget::opacityEditChanged() {
     _opacity = getOpacityFromEdit();
     controlPointChanged();
 }

@@ -15,15 +15,15 @@
 class VPushButton : public VContainer {
     Q_OBJECT
 
-public:
-    VPushButton( const std::string& buttonText = "Select" );
+  public:
+    VPushButton(const std::string &buttonText = "Select");
 
-private:
-    QPushButton* _pushButton;
+  private:
+    QPushButton *_pushButton;
 
-public slots:
+  public slots:
     void emitButtonClicked();
 
-signals:
+  signals:
     void ButtonClicked();
 };

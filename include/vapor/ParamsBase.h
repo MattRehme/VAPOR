@@ -14,9 +14,9 @@
 //
 //	Date:		March 2008
 //
-//	Description:	
+//	Description:
 //		Defines the ParamsBase class
-//		This is an abstract class for classes that rely on 
+//		This is an abstract class for classes that rely on
 //		accessing an XML node for get/set
 //
 
@@ -28,7 +28,7 @@
 #include <vapor/MyBase.h>
 #include <vapor/XmlNode.h>
 
-namespace VAPoR{
+namespace VAPoR {
 
 //
 //! \class ParamsBase
@@ -43,214 +43,175 @@ namespace VAPoR{
 //! session state is maintained in an XML tree that may be
 //! written to a file and subsequently used to reinitialize ParamsBase
 //! class objects.
-//! 
+//!
 //!
 class PARAMS_API ParamsBase : public Wasp::MyBase {
-	
 
-public: 
- 
- //! \class StateSave
- //! \brief State capture class
- //!
- //! A class for capturing state changes. A pointer to an 
- //! instance of this class is passed to the ParamsBase constructor.
- //! Any changes to the ParamsBase are recorded to StateSave by
- //! calling StateSave::Save() with the effected node and 
- //! a description of the change. It is expected that users of ParamsBase
- //! will re-implement StateSave to suit their own needs
- //
- class StateSave {
- public:
+  public:
+    //! \class StateSave
+    //! \brief State capture class
+    //!
+    //! A class for capturing state changes. A pointer to an
+    //! instance of this class is passed to the ParamsBase constructor.
+    //! Any changes to the ParamsBase are recorded to StateSave by
+    //! calling StateSave::Save() with the effected node and
+    //! a description of the change. It is expected that users of ParamsBase
+    //! will re-implement StateSave to suit their own needs
+    //
+    class StateSave {
+      public:
+        //! Capture current state
+        //!
+        //! If the value of GetSaveState() is true this method is called prior
+        //! to making any changes to the internal state
+        //!
+        virtual void Reinit(const XmlNode *rootNode) {}
+        virtual void Save(const XmlNode *node, string description) {}
+        virtual void BeginGroup(string description) {}
+        virtual void EndGroup() {}
+        virtual void IntermediateChange() {}
+        virtual void SetEnabled(bool onOff) {}
+        virtual bool GetEnabled() const { return (false); }
+    };
 
-  //! Capture current state
-  //!
-  //! If the value of GetSaveState() is true this method is called prior 
-  //! to making any changes to the internal state
-  //!
-  virtual void Reinit(const XmlNode *rootNode) {}
-  virtual void Save(const XmlNode *node, string description) {}
-  virtual void BeginGroup(string description) {}
-  virtual void EndGroup() {}
-  virtual void IntermediateChange() {}
-  virtual void SetEnabled(bool onOff) {}
-  virtual bool GetEnabled() const {return(false);}
- };
+    // NO DEFAULT CONSTRUCTOR
+    //
+    // ParamsBase();
 
- // NO DEFAULT CONSTRUCTOR
- //
- //ParamsBase();
+    //! Create a ParamsBase object from scratch
+    //!
+    //! \param[in] ssave StateSave class object that will be used to record
+    //! state changes made to this class.
+    //!
+    //! \param[in] classname The string identifier associated with a
+    //! derived class that will be used to create new instances of that
+    //! class via the ParamsFactory factory object.
+    //!
+    ParamsBase(StateSave *ssave, const string &classname);
 
- //! Create a ParamsBase object from scratch
- //!
- //! \param[in] ssave StateSave class object that will be used to record
- //! state changes made to this class.
- //!
- //! \param[in] classname The string identifier associated with a 
- //! derived class that will be used to create new instances of that
- //! class via the ParamsFactory factory object. 
- //!
- ParamsBase(
-	StateSave *ssave, const string &classname
- );
+    //! Create a ParamsBase object from an existing XmlNode tree
+    //!
+    //! This method will construct a ParamsBase object using an
+    //! existing XML tree. Hence it should NOT do any initialization
+    //! that changes parameter values.
+    //
+    ParamsBase(StateSave *ssave, XmlNode *node);
 
- //! Create a ParamsBase object from an existing XmlNode tree
- //!
- //! This method will construct a ParamsBase object using an 
- //! existing XML tree. Hence it should NOT do any initialization
- //! that changes parameter values.
- //
- ParamsBase(
-	StateSave *ssave, XmlNode *node
- );
+    //! Copy constructor.
+    ParamsBase(const ParamsBase &rhs);
 
- //! Copy constructor.  
- ParamsBase(const ParamsBase &rhs);
+    ParamsBase &operator=(const ParamsBase &rhs);
 
- ParamsBase &operator=( const ParamsBase& rhs );
+    //! Explicit delete the two flavors of move constructor,
+    //! so they ain't called accidentally.
+    ParamsBase(ParamsBase &&) = delete;
+    ParamsBase &operator=(ParamsBase &) = delete;
 
- //! Explicit delete the two flavors of move constructor,
- //! so they ain't called accidentally.
- ParamsBase( ParamsBase&& )           = delete;
- ParamsBase &operator=( ParamsBase& ) = delete;
+    //! Equivalence operator
+    //
+    bool operator==(const ParamsBase &rhs) const {
+        return (_ssave == rhs._ssave && *_node == *(rhs._node));
+    }
 
- //! Equivalence operator
- //
- bool operator==(const ParamsBase &rhs) const {
-	return(
-		_ssave == rhs._ssave && 
-		*_node == *(rhs._node)
-	);
- }
+    bool operator!=(const ParamsBase &rhs) const { return (!(*this == rhs)); };
 
- bool operator!=(const ParamsBase &rhs) const {
-    return(! (*this == rhs));
- };
+    //! Destroy object
+    //!
+    //! Destroys all resources except possibly the XmlNode and
+    //! its children associated
+    //! with this object. If this objects node is a root node (i.e. has
+    //! no parent) the node is freed. Otherwise it is not.
+    //!
+    virtual ~ParamsBase();
 
- //! Destroy object
- //!
- //! Destroys all resources except possibly the XmlNode and 
- //! its children associated
- //! with this object. If this objects node is a root node (i.e. has
- //! no parent) the node is freed. Otherwise it is not.
- //!
- virtual ~ParamsBase();
+    //! Set parent
+    //!
+    //! This method sets the parent of the ParamsBase class to
+    //! \p parent, modifying both this class instance and the parent
+    //!
+    //! \param[in] parent A pointer to a parent ParamsBase class . If
+    //! NULL the class will become parentless
+    //
+    void SetParent(ParamsBase *parent);
 
+    XmlNode *GetNode() const { return _node; }
 
- //! Set parent 
- //!
- //! This method sets the parent of the ParamsBase class to 
- //! \p parent, modifying both this class instance and the parent
- //!
- //! \param[in] parent A pointer to a parent ParamsBase class . If 
- //! NULL the class will become parentless
- //
- void SetParent(ParamsBase *parent);
- 
- XmlNode *GetNode() const {return _node; }
-    
     void BeginGroup(const string &description) { _ssave->BeginGroup(description); }
     void EndGroup() { _ssave->EndGroup(); }
     void IntermediateChange() { _ssave->IntermediateChange(); }
 
- virtual vector <long> GetValueLongVec(const string tag) const;
+    virtual vector<long> GetValueLongVec(const string tag) const;
 
- virtual vector <long> GetValueLongVec(
-	const string tag, const vector<long>& defaultVal
- ) const;
+    virtual vector<long> GetValueLongVec(const string tag, const vector<long> &defaultVal) const;
 
- virtual long GetValueLong(
-	const string tag, long defaultVal
- ) const;
+    virtual long GetValueLong(const string tag, long defaultVal) const;
 
- virtual vector <double> GetValueDoubleVec( const string tag) const;
+    virtual vector<double> GetValueDoubleVec(const string tag) const;
 
- virtual vector <double> GetValueDoubleVec(
-	const string tag, const vector<double>& defaultVal
- ) const;
+    virtual vector<double> GetValueDoubleVec(const string tag,
+                                             const vector<double> &defaultVal) const;
 
- virtual double GetValueDouble(
-	const string tag, double defaultVal
- ) const;
+    virtual double GetValueDouble(const string tag, double defaultVal) const;
 
- virtual vector <string> GetValueStringVec(const string tag) const;
+    virtual vector<string> GetValueStringVec(const string tag) const;
 
- virtual vector <string> GetValueStringVec(
-	const string tag, const vector<string>& defaultVal
- ) const;
+    virtual vector<string> GetValueStringVec(const string tag,
+                                             const vector<string> &defaultVal) const;
 
- virtual string GetValueString(
-	const string tag, string defaultVal
- ) const;
+    virtual string GetValueString(const string tag, string defaultVal) const;
 
- virtual void SetValueLongVec(
-	const string &tag, string description, const vector<long> &values
- );
+    virtual void SetValueLongVec(const string &tag, string description, const vector<long> &values);
 
- virtual void SetValueLong(
-	const string &tag, string description, long value
- );
+    virtual void SetValueLong(const string &tag, string description, long value);
 
- virtual void SetValueDoubleVec(
-	const string &tag, string description, const vector<double> &values
- );
+    virtual void SetValueDoubleVec(const string &tag, string description,
+                                   const vector<double> &values);
 
- virtual void SetValueDouble(
-	const string &tag, string description, double value
- );
+    virtual void SetValueDouble(const string &tag, string description, double value);
 
- virtual void SetValueStringVec(
-	const string &tag, string description, const vector <string> &values
- );
+    virtual void SetValueStringVec(const string &tag, string description,
+                                   const vector<string> &values);
 
- virtual void SetValueString(
-	const string &tag, string description, const string &value
- );
+    virtual void SetValueString(const string &tag, string description, const string &value);
 
+    //!
+    //! Method for obtaining the name and/or tag associated with the instance
+    //!
+    string GetName() const {
+        VAssert(_node);
+        return (_node->Tag());
+    }
 
- //!	
- //! Method for obtaining the name and/or tag associated with the instance
- //!
- string GetName() const {
-	VAssert(_node);
-	return(_node->Tag());
- }
+  protected:
+    ParamsBase(StateSave *ssave);
 
+    //! Delete the named branch.
+    //!
+    //! This method deletes the named child, and all decendents, of the current
+    //! destroying it's contents in the process. The
+    //! named node must be a child of the current node. If the named node
+    //! does not exist the result is a no-op.
+    //!
+    //! \param[in] name The name of the branch
+    //
+    void Remove(const string &name);
 
-protected: 
- ParamsBase(StateSave *ssave);
+    //! Return the attributes associated with the current branch
+    //!
+    //! \retval map attribute mapping
+    //
+    const map<string, string> &GetAttributes();
 
+    //! Remove (undefine) all parameters
+    //!
+    //! This method deletes any and all paramters contained in the base
+    //! class as well as deleting any tree branches.
+    //
+    void Clear();
 
- //! Delete the named branch.
- //!
- //! This method deletes the named child, and all decendents, of the current 
- //! destroying it's contents in the process. The 
- //! named node must be a child of the current node. If the named node
- //! does not exist the result is a no-op.
- //!
- //! \param[in] name The name of the branch
- //
- void Remove(const string &name);
-
- //! Return the attributes associated with the current branch
- //!
- //! \retval map attribute mapping
- //
- const map <string, string> &GetAttributes();
-
-
- //! Remove (undefine) all parameters
- //!
- //! This method deletes any and all paramters contained in the base 
- //! class as well as deleting any tree branches.
- //
- void Clear();
-
-protected:
- StateSave *_ssave;
- XmlNode *_node;
-
-
+  protected:
+    StateSave *_ssave;
+    XmlNode *_node;
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -260,28 +221,17 @@ protected:
 /////////////////////////////////////////////////////////////////////////
 
 class PARAMS_API ParamsSeparator : public ParamsBase {
-public:
- ParamsSeparator(
-	StateSave *ssave, const string &name
- );
+  public:
+    ParamsSeparator(StateSave *ssave, const string &name);
 
- ParamsSeparator(
-	StateSave *ssave, XmlNode *node
- );
+    ParamsSeparator(StateSave *ssave, XmlNode *node);
 
- ParamsSeparator(
-	ParamsSeparator *parent, const string &name
- );
+    ParamsSeparator(ParamsSeparator *parent, const string &name);
 
- virtual ~ParamsSeparator() {}
+    virtual ~ParamsSeparator() {}
 
- bool HasChild(const string &name) {
-	return(GetNode()->HasChild(name));
- }
-
+    bool HasChild(const string &name) { return (GetNode()->HasChild(name)); }
 };
-
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -289,37 +239,33 @@ public:
 //
 /////////////////////////////////////////////////////////////////////////
 
-
 class PARAMS_API ParamsFactory {
-public:
- static ParamsFactory *Instance() {
-	static ParamsFactory instance;
-	return &instance;
- }
+  public:
+    static ParamsFactory *Instance() {
+        static ParamsFactory instance;
+        return &instance;
+    }
 
- void RegisterFactoryFunction(
-	string name,
-	function<ParamsBase*(ParamsBase::StateSave *, XmlNode *)> classFactoryFunction) 
- {
+    void RegisterFactoryFunction(
+        string name,
+        function<ParamsBase *(ParamsBase::StateSave *, XmlNode *)> classFactoryFunction) {
 
-	// register the class factory function
-	m_factoryFunctionRegistry[name] = classFactoryFunction;
- }
+        // register the class factory function
+        m_factoryFunctionRegistry[name] = classFactoryFunction;
+    }
 
- ParamsBase *(CreateInstance(string classType, ParamsBase::StateSave *, XmlNode *));
+    ParamsBase *(CreateInstance(string classType, ParamsBase::StateSave *, XmlNode *));
 
- vector <string> GetFactoryNames() const;
+    vector<string> GetFactoryNames() const;
 
-private:
- map<string, function<ParamsBase * (ParamsBase::StateSave *, XmlNode *)>> 
-	m_factoryFunctionRegistry;
+  private:
+    map<string, function<ParamsBase *(ParamsBase::StateSave *, XmlNode *)>>
+        m_factoryFunctionRegistry;
 
- ParamsFactory() {}
- ParamsFactory(const ParamsFactory &) { }
- ParamsFactory &operator=(const ParamsFactory &) { return *this; }
-
+    ParamsFactory() {}
+    ParamsFactory(const ParamsFactory &) {}
+    ParamsFactory &operator=(const ParamsFactory &) { return *this; }
 };
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -329,27 +275,26 @@ private:
 //
 //	static ParamsRegistrar<ParamsClass> registrar("myclassname");
 //
-// where 'ParamsClass' is a class derived from 'ParamsBase', and 
+// where 'ParamsClass' is a class derived from 'ParamsBase', and
 // "myclassname" is the name of the class
 //
 /////////////////////////////////////////////////////////////////////////
 
-template<class T>
-class ParamsRegistrar {
-public:
- ParamsRegistrar(string classType) {
+template <class T> class ParamsRegistrar {
+  public:
+    ParamsRegistrar(string classType) {
 
-	// register the class factory function 
-	//
-	ParamsFactory::Instance()->RegisterFactoryFunction(
-		classType, [](ParamsBase::StateSave *ssave, XmlNode *node) -> ParamsBase * { 
-		if (node) return new T(ssave, node);
-		else return new T(ssave);
-	}
-	);
- }
+        // register the class factory function
+        //
+        ParamsFactory::Instance()->RegisterFactoryFunction(
+            classType, [](ParamsBase::StateSave *ssave, XmlNode *node) -> ParamsBase * {
+                if (node)
+                    return new T(ssave, node);
+                else
+                    return new T(ssave);
+            });
+    }
 };
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -381,74 +326,59 @@ public:
             |----------------|    |----------------|
 */
 class PARAMS_API ParamsContainer : public Wasp::MyBase {
-public: 
+  public:
+    ParamsContainer(ParamsBase::StateSave *ssave, const string &myname);
 
- ParamsContainer(
-	ParamsBase::StateSave *ssave, const string &myname
- ); 
+    ParamsContainer(ParamsBase::StateSave *ssave, XmlNode *node);
 
- ParamsContainer(
-	ParamsBase::StateSave *ssave, XmlNode *node
- ); 
+    //! Copy constructor.
+    ParamsContainer(const ParamsContainer &rhs);
 
- //! Copy constructor.  
- ParamsContainer(const ParamsContainer &rhs);
+    ParamsContainer &operator=(const ParamsContainer &rhs);
 
- ParamsContainer &operator=( const ParamsContainer& rhs );
+    //! Destroy object
+    //!
+    //! Destroys all resources except possibly the XmlNode associated
+    //! with this object. If this object's node is a root node (i.e. has
+    //! no parent) the node is freed. Otherwise it is not
+    //!
+    virtual ~ParamsContainer();
 
- //! Destroy object
- //!
- //! Destroys all resources except possibly the XmlNode associated
- //! with this object. If this object's node is a root node (i.e. has
- //! no parent) the node is freed. Otherwise it is not
- //!
- virtual ~ParamsContainer();
+    //! Set parent
+    //!
+    //! This method sets the parent of the ParamsBase class to
+    //! \p parent, modifying both this class instance and the parent
+    //!
+    //! \param[in] parent A pointer to a parent ParamsBase class . If
+    //! NULL the class will become parentless
+    //
+    void SetParent(ParamsBase *parent) { GetNode()->SetParent(parent->GetNode()); }
 
- //! Set parent 
- //!
- //! This method sets the parent of the ParamsBase class to 
- //! \p parent, modifying both this class instance and the parent
- //!
- //! \param[in] parent A pointer to a parent ParamsBase class . If 
- //! NULL the class will become parentless
- //
- void SetParent(ParamsBase *parent) {
-	GetNode()->SetParent(parent->GetNode());
- }
+    ParamsBase *Insert(ParamsBase *pb, string name);
 
- ParamsBase *Insert(ParamsBase *pb, string name) ;
+    ParamsBase *Create(string classType, string name);
 
- ParamsBase *Create(string classType, string name) ;
+    void Remove(string name);
 
- void Remove(string name) ;
+    void Remove(const ParamsBase *pb) { Remove(GetParamsName(pb)); }
 
- void Remove(const ParamsBase *pb) {
-	Remove(GetParamsName(pb));
- }
+    ParamsBase *GetParams(string name) const;
 
- ParamsBase *GetParams(string name) const;
+    string GetParamsName(const ParamsBase *pb) const;
 
- string GetParamsName(const ParamsBase *pb) const;
+    vector<string> GetNames() const;
 
- vector <string> GetNames() const;
+    size_t Size() const { return (_elements.size()); }
 
+    XmlNode *GetNode() const { return _separator->GetNode(); }
 
- size_t Size() const {
-	return(_elements.size());
- }
-
- XmlNode *GetNode() const {return _separator->GetNode(); }
-
-private:
- ParamsBase::StateSave *_ssave;
- //XmlNode *_node;
- ParamsSeparator *_separator;
- map <string, ParamsBase *> _elements;
-
-
+  private:
+    ParamsBase::StateSave *_ssave;
+    // XmlNode *_node;
+    ParamsSeparator *_separator;
+    map<string, ParamsBase *> _elements;
 };
 
+}; // End namespace VAPoR
 
-}; //End namespace VAPoR
-
-#endif //ParamsBase_H
+#endif // ParamsBase_H

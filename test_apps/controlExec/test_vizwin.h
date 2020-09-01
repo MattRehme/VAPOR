@@ -5,7 +5,7 @@
 //		     All Rights Reserved				*
 //									*
 //************************************************************************/
-//					
+//
 //	File:		test_vizwin.h
 //
 //	Author:		Alan Norton
@@ -22,7 +22,6 @@
 #include <vapor/glutil.h>
 #include <QGLWidget>
 #include <QWheelEvent>
-
 
 class QCloseEvent;
 class QRect;
@@ -41,40 +40,35 @@ class ControlExec;
 //!
 //!	The VizWin class is a QGLWidget that supports the rendering by the VAPOR Visualizer class.
 //! The standard rendering methods (resize, initialize, paint) are passed to the Visualizer.
-//! In addition this is the class that responds to mouse events, resulting in scene navigation 
+//! In addition this is the class that responds to mouse events, resulting in scene navigation
 //! or manipulator changes.
-//! 
-class Test_VizWin : public QGLWidget
-{
+//!
+class Test_VizWin : public QGLWidget {
     Q_OBJECT
-   
-public:
 
-	//! Force the window to update, even if nothing has changed.
-	void reallyUpdate();
+  public:
+    //! Force the window to update, even if nothing has changed.
+    void reallyUpdate();
 
-	Test_VizWin(QWidget* parent, ControlExec*, std::string winName);
+    Test_VizWin(QWidget *parent, ControlExec *, std::string winName);
 
-	virtual ~Test_VizWin() {}
+    virtual ~Test_VizWin() {}
 #ifndef DOXYGEN_SKIP_THIS
 
-private:
-	bool m_initialized;
-	void closeEvent(QCloseEvent* event);
-	virtual QSize minimumSizeHint() const 
-		{return QSize(400,400);}
-	
+  private:
+    bool m_initialized;
+    void closeEvent(QCloseEvent *event);
+    virtual QSize minimumSizeHint() const { return QSize(400, 400); }
+
     virtual void resizeGL(int width, int height);
-	virtual void initializeGL();
-	void paintGL();
-	
-	
+    virtual void initializeGL();
+    void paintGL();
+
     std::string _windowName;
-    ControlExec* _controlExec;
-	
-#endif //DOXYGEN_SKIP_THIS
+    ControlExec *_controlExec;
+
+#endif // DOXYGEN_SKIP_THIS
 };
-};
+}; // namespace VAPoR
 
 #endif // TEST_VIZWIN_H
-

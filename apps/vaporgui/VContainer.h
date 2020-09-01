@@ -16,10 +16,10 @@
 class VContainer : public QWidget {
     Q_OBJECT
 
-protected:
+  protected:
     VContainer();
 
-private:
+  private:
     static const int _LEFT_MARGIN;
     static const int _TOP_MARGIN;
     static const int _RIGHT_MARGIN;
@@ -31,11 +31,10 @@ private:
 
 #include <QObject>
 
-class MouseWheelWidgetAdjustmentGuard : public QObject
-{
-public:
+class MouseWheelWidgetAdjustmentGuard : public QObject {
+  public:
     explicit MouseWheelWidgetAdjustmentGuard(QObject *parent);
 
-protected:
-    bool eventFilter(QObject* o, QEvent* e) override;
+  protected:
+    bool eventFilter(QObject *o, QEvent *e) override;
 };

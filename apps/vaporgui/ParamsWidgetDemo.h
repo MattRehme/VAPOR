@@ -3,10 +3,10 @@
 #include <QWidget>
 
 namespace VAPoR {
-    class ParamsBase;
-    class ParamsMgr;
-    class DataMgr;
-}
+class ParamsBase;
+class ParamsMgr;
+class DataMgr;
+} // namespace VAPoR
 
 class PGroup;
 
@@ -16,10 +16,11 @@ class PGroup;
 
 class ParamsWidgetDemo : public QWidget {
     Q_OBJECT
-    
+
     PGroup *pg;
-    
-public:
+
+  public:
     ParamsWidgetDemo();
-    void Update(VAPoR::ParamsBase *params, VAPoR::ParamsMgr *paramsMgr = nullptr, VAPoR::DataMgr *dataMgr = nullptr);
+    void Update(VAPoR::ParamsBase *params, VAPoR::ParamsMgr *paramsMgr = nullptr,
+                VAPoR::DataMgr *dataMgr = nullptr);
 };

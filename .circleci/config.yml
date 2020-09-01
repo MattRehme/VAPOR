@@ -473,10 +473,10 @@ workflows:
   build:
     jobs:
       - build_ubuntu18
-      #- build_ubuntu16
-      #- build_centos7
+      - build_win10_installer
+      - build_centos7
+      - build_ubuntu16
       #- build_osx
-      #- build_win10_installer
       #- test_win10_workspace
       #- release_on_github:
       #    requires:

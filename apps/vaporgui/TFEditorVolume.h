@@ -13,10 +13,10 @@ class TFColorMap;
 class TFIsoValueMap;
 
 namespace VAPoR {
-    class DataMgr;
-    class ParamsMgr;
-    class RenderParams;
-}
+class DataMgr;
+class ParamsMgr;
+class RenderParams;
+} // namespace VAPoR
 
 // TFEditor was not designed to be inherited from.
 // It is here because it simplifies the solution to a requirement
@@ -24,22 +24,22 @@ namespace VAPoR {
 // inconveniences that manifest in an uncommon use case.
 class TFEditorVolume : public TFEditor {
     Q_OBJECT
-    
-public:
+
+  public:
     TFEditorVolume();
-    
-    virtual void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
-    
-private:
-    
+
+    virtual void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr,
+                        VAPoR::RenderParams *rParams);
+
+  private:
     ParamsWidgetCheckbox *_colormappedVariableCheckbox;
-    
+
     TFMapGroupWidget *_maps2;
     TFMapInfoGroupWidget *_mapsInfo2;
     TFMappingRangeSelector *range2;
-    
+
     TFHistogramMap *_histogramMap2;
     TFColorMap *_colorMap2;
-    
+
     QList<QAction *> _colormappedMenuSettings;
 };

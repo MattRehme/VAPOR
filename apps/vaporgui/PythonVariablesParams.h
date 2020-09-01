@@ -7,25 +7,15 @@ namespace VAPoR {
 
 class PythonScript;
 
-class PythonVariablesParams : public ParamsBase
-{
-public:
-    PythonVariablesParams(
-        DataMgr* dataMgr, 
-        ParamsBase::StateSave* ssave
-    );
+class PythonVariablesParams : public ParamsBase {
+  public:
+    PythonVariablesParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave);
 
-    PythonVariablesParams(
-        DataMgr* dataMgr, 
-        ParamsBase::StateSave* ssave,
-        XmlNode* node
-    );
+    PythonVariablesParams(DataMgr *dataMgr, ParamsBase::StateSave *ssave, XmlNode *node);
 
     ~PythonVariablesParams() {}
 
-    static string GetClassType() {
-        return ("PythonVariablesParams");
-    }
+    static string GetClassType() { return ("PythonVariablesParams"); }
 
     std::vector<string> GetPythonScripts() const;
 
@@ -34,28 +24,21 @@ public:
     void AddPythonScript(string scriptName);
     void RemovePythonScript(string scriptName);
 
-private:
-
+  private:
     VAPoR::ParamsContainer *_pythonScripts;
 
     static const string _pythonScriptsTag;
-
 };
 
 class PythonScript : public ParamsBase {
-public:
-    PythonScript(
-        VAPoR::ParamsBase::StateSave *ssave
-    );
+  public:
+    PythonScript(VAPoR::ParamsBase::StateSave *ssave);
 
-    PythonScript(
-        VAPoR::ParamsBase::StateSave *ssave, 
-        VAPoR::XmlNode *node
-    ); 
-    
+    PythonScript(VAPoR::ParamsBase::StateSave *ssave, VAPoR::XmlNode *node);
+
     ~PythonScript() {}
 
-    static string GetClassType() { return("PythonScript"); }
+    static string GetClassType() { return ("PythonScript"); }
 
     string GetScript() const;
     void SetScript(string script);
@@ -77,12 +60,12 @@ public:
 
     string GetDataMgr() const;
     void SetDataMgr(string dataMgrName);
- 
-private:
-    //string _pythonScript;
-    //string _scriptName;
-    //string _dataMgrName;
-    DataMgr* _dataMgr;
+
+  private:
+    // string _pythonScript;
+    // string _scriptName;
+    // string _dataMgrName;
+    DataMgr *_dataMgr;
     std::vector<string> _grids;
     std::vector<string> _inputVars;
     std::vector<string> _outputVars;
@@ -97,6 +80,6 @@ private:
     static const string _outputVarGridsTag;
 };
 
-};
+}; // namespace VAPoR
 
 #endif

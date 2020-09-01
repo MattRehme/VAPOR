@@ -11,26 +11,27 @@ class TFColorMap;
 class TFIsoValueMap;
 
 namespace VAPoR {
-    class DataMgr;
-    class ParamsMgr;
-    class RenderParams;
-}
+class DataMgr;
+class ParamsMgr;
+class RenderParams;
+} // namespace VAPoR
 
 class TFEditor : public VSection {
     Q_OBJECT
-    
-public:
+
+  public:
     TFEditor(bool usingColormapVariable = false);
     TFEditor(const std::string &tag);
-    
-    virtual void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
+
+    virtual void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr,
+                        VAPoR::RenderParams *rParams);
     void SetShowOpacityMap(bool b);
-    
-protected:
+
+  protected:
     TFMapGroupWidget *_maps;
     TFMapInfoGroupWidget *_mapsInfo;
     TFMappingRangeSelector *_range;
-    
+
     TFOpacityMap *_opacityMap;
     TFHistogramMap *_histogramMap;
     TFColorMap *_colorMap;

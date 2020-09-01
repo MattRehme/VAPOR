@@ -34,39 +34,34 @@
 
 class QWidget;
 
-
 class ImageFrame : public QFrame {
-	Q_OBJECT
-public:
-	ImageFrame( QWidget * parent = 0, Qt::WindowFlags f = 0 );
-#ifdef	VAPOR3_0_0_ALPHA
-	virtual ~ImageFrame();
-	
-	void setGLImageWindow(QGLWidget* wid){
-		_glImageWindow = wid;
-	}
-	QGLWidget* getGLImageWindow(){return _glImageWindow;}
-	
-	void setParams(RenderParams* p) {_renderParams = p;}
-	RenderParams* getParams() {return _renderParams;}
-	void attachRenderWindow(QGLWidget* wid, EventRouter* evr);
-	void setRect(float rLeft, float rTop){
-		_rectLeft = rLeft; _rectTop = rTop;
-	}
-	
-private:
-	float _rectLeft, _rectTop;
-	void mousePressEvent( QMouseEvent * );
-	void mouseReleaseEvent( QMouseEvent * );
-    void mouseMoveEvent( QMouseEvent * );
-	void mapPixelToFrameCoords(int ix, int iy, float* x, float* y);
-	QGLWidget* _glImageWindow;
-	VAPoR::RenderParams* _renderParams;
-	EventRouter* _eventRouter;
+    Q_OBJECT
+  public:
+    ImageFrame(QWidget *parent = 0, Qt::WindowFlags f = 0);
+#ifdef VAPOR3_0_0_ALPHA
+    virtual ~ImageFrame();
+
+    void setGLImageWindow(QGLWidget *wid) { _glImageWindow = wid; }
+    QGLWidget *getGLImageWindow() { return _glImageWindow; }
+
+    void setParams(RenderParams *p) { _renderParams = p; }
+    RenderParams *getParams() { return _renderParams; }
+    void attachRenderWindow(QGLWidget *wid, EventRouter *evr);
+    void setRect(float rLeft, float rTop) {
+        _rectLeft = rLeft;
+        _rectTop = rTop;
+    }
+
+  private:
+    float _rectLeft, _rectTop;
+    void mousePressEvent(QMouseEvent *);
+    void mouseReleaseEvent(QMouseEvent *);
+    void mouseMoveEvent(QMouseEvent *);
+    void mapPixelToFrameCoords(int ix, int iy, float *x, float *y);
+    QGLWidget *_glImageWindow;
+    VAPoR::RenderParams *_renderParams;
+    EventRouter *_eventRouter;
 #endif
-	
 };
 
-
-#endif //IMAGEFRAME_H
-
+#endif // IMAGEFRAME_H

@@ -10,9 +10,9 @@
 #endif
 
 namespace VAPoR {
-    
+
 struct GLManager;
-    
+
 //! \class LegacyGL
 //! \ingroup Public_Render
 //!
@@ -22,7 +22,7 @@ struct GLManager;
 //!
 //! \author Stanislaw Jaroszynski
 //! \date   August, 2018
-    
+
 class RENDER_API LegacyGL {
 #pragma pack(push, 4)
     struct VertexData {
@@ -32,7 +32,7 @@ class RENDER_API LegacyGL {
         float s, t;
     };
 #pragma pack(pop)
-    
+
     GLManager *_glManager;
     std::vector<VertexData> _vertices;
     unsigned int _mode;
@@ -45,8 +45,8 @@ class RENDER_API LegacyGL {
     bool _initialized, _insideBeginEndBlock;
     bool _lightingEnabled, _textureEnabled;
     float _lightDir[3];
-    
-public:
+
+  public:
     LegacyGL(GLManager *glManager);
     ~LegacyGL();
     void Initialize();
@@ -68,15 +68,14 @@ public:
     void Color4fv(const float *f);
     void TexCoord(glm::vec2);
     void TexCoord2f(float s, float t);
-    
+
     void EnableLighting();
     void DisableLighting();
     void LightDirectionfv(const float *f);
     void EnableTexture();
     void DisableTexture();
-    
+
     // void PushAttrib(int flag);
-    
 };
-    
-}
+
+} // namespace VAPoR

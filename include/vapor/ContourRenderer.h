@@ -39,39 +39,32 @@
 namespace VAPoR {
 
 class DataMgr;
-    
+
 //! \class ContourRenderer
 //! \brief Class that draws the contours (contours) as specified by IsolineParams
 //! \author Stas Jaroszynski
 //! \version 1.0
 //! \date March 2018
-class RENDER_API ContourRenderer : public Renderer
-{
+class RENDER_API ContourRenderer : public Renderer {
 
-public:
+  public:
+    ContourRenderer(const ParamsMgr *pm, string winName, string dataSetName, string instName,
+                    DataMgr *dataMgr);
 
-	ContourRenderer(const ParamsMgr* pm,
-							string winName,
-							string dataSetName,
-							string instName,
-							DataMgr* dataMgr);
+    virtual ~ContourRenderer();
 
-	virtual ~ContourRenderer();
+    static string GetClassType() { return ("Contour"); }
 
-	static string GetClassType() {
-		return("Contour");
-	}
-	
-	//! \copydoc Renderer::_initializeGL()
-	virtual int	_initializeGL();
-	//! \copydoc Renderer::_paintGL()
-    virtual int		_paintGL(bool fast);
+    //! \copydoc Renderer::_initializeGL()
+    virtual int _initializeGL();
+    //! \copydoc Renderer::_paintGL()
+    virtual int _paintGL(bool fast);
 
-private:
+  private:
     GLuint _VAO, _VBO;
     Texture1D _lutTexture;
     unsigned int _nVertices;
-    
+
     struct VertexData;
     struct {
         string varName;
@@ -84,15 +77,13 @@ private:
         vector<double> contourValues;
     } _cacheParams;
 
-    int  _buildCache();
+    int _buildCache();
     bool _isCacheDirty() const;
     void _saveCacheParams();
 
-	void _clearCache() {
-		_cacheParams.varName.clear();
-	}
+    void _clearCache() { _cacheParams.varName.clear(); }
 };
-    
-};
+
+}; // namespace VAPoR
 
 #endif // CONTOURRENDERER_H

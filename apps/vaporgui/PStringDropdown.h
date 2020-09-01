@@ -12,17 +12,18 @@ class VComboBox;
 
 class PStringDropdown : public PLineItem {
     Q_OBJECT
-    
+
     VComboBox *_vComboBox;
-    
-public:
-    PStringDropdown(const std::string &tag, const std::vector<std::string> &items, const std::string &label = "");
+
+  public:
+    PStringDropdown(const std::string &tag, const std::vector<std::string> &items,
+                    const std::string &label = "");
     //! Sets the items presented in the dropdown
     void SetItems(const std::vector<std::string> &items) const;
 
-protected:
+  protected:
     virtual void updateGUI() const override;
-    
-private slots:
+
+  private slots:
     void dropdownTextChanged(std::string text);
 };

@@ -20,86 +20,75 @@
 #ifndef STARTUPEVENTROUTER_H
 #define STARTUPEVENTROUTER_H
 
-
 #include <qobject.h>
 #include "EventRouter.h"
 #include <vapor/MyBase.h>
 #include "ui_startupTab.h"
 
-
 QT_USE_NAMESPACE
 
 namespace VAPoR {
-	class ControlExec;
+class ControlExec;
 }
-
 
 class StartupParams;
 class StartupEventRouter : public QWidget, public Ui_startupTab, public EventRouter {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public: 
-	StartupEventRouter(
-		QWidget *parent, VAPoR::ControlExec *ce
-	);
+  public:
+    StartupEventRouter(QWidget *parent, VAPoR::ControlExec *ce);
 
-	virtual ~StartupEventRouter();
+    virtual ~StartupEventRouter();
 
-	//! For the StartupEventRouter, we must override confirmText method on base class,
-	//! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
-	//! Connect signals and slots from tab
-	virtual void hookUpTab();
+    //! For the StartupEventRouter, we must override confirmText method on base class,
+    //! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
+    //! Connect signals and slots from tab
+    virtual void hookUpTab();
 
-	virtual void GetWebHelp(
-		std::vector <std::pair <string, string>> &help
-	) const;
-	
-	//! Ignore wheel event in tab (to avoid confusion)
-	virtual void wheelEvent(QWheelEvent*) {}
+    virtual void GetWebHelp(std::vector<std::pair<string, string>> &help) const;
 
- // Get static string identifier for this router class
- //
- static string GetClassType() {
-	return("Startup");
- }
- string GetType() const {return GetClassType(); }
+    //! Ignore wheel event in tab (to avoid confusion)
+    virtual void wheelEvent(QWheelEvent *) {}
 
+    // Get static string identifier for this router class
+    //
+    static string GetClassType() { return ("Startup"); }
+    string GetType() const { return GetClassType(); }
 
-protected:
- virtual void _updateTab();
- virtual void _confirmText() {}
-	
-private slots:
-	
-	void saveStartup();
-	void setStartupChanged();
-	void setDirChanged();
+  protected:
+    virtual void _updateTab();
+    virtual void _confirmText() {}
 
-	void chooseSessionPath();
-	void chooseMetadataPath();
-	void chooseImagePath();
-	void chooseTFPath();
-	void chooseFlowPath();
-	void choosePythonPath();
-	void copyLatestSession();
-	void copyLatestMetadata();
-	void copyLatestTF();
-	void copyLatestImage();
-	void copyLatestFlow();
-	void copyLatestPython();
-	void changeTextureSize(bool val);
-	void winLockChanged(bool val); 
-	void setAutoStretch(bool val);
-	void restoreDefaults();
+  private slots:
 
-private:
-	StartupEventRouter() {}
+    void saveStartup();
+    void setStartupChanged();
+    void setDirChanged();
 
-	void updateStartupChanged();
-	void updateDirChanged();
-	string choosePathHelper(string current, string help);
+    void chooseSessionPath();
+    void chooseMetadataPath();
+    void chooseImagePath();
+    void chooseTFPath();
+    void chooseFlowPath();
+    void choosePythonPath();
+    void copyLatestSession();
+    void copyLatestMetadata();
+    void copyLatestTF();
+    void copyLatestImage();
+    void copyLatestFlow();
+    void copyLatestPython();
+    void changeTextureSize(bool val);
+    void winLockChanged(bool val);
+    void setAutoStretch(bool val);
+    void restoreDefaults();
 
+  private:
+    StartupEventRouter() {}
+
+    void updateStartupChanged();
+    void updateDirChanged();
+    string choosePathHelper(string current, string help);
 };
 
-#endif //STARTUPEVENTROUTER_H 
+#endif // STARTUPEVENTROUTER_H

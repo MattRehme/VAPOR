@@ -6,38 +6,26 @@
 #include <vapor/VolumeAlgorithm.h>
 #include <glm/fwd.hpp>
 
-namespace VAPoR
-{
+namespace VAPoR {
 
-class RENDER_API VolumeRenderer : public Renderer
-{
-public:
-    VolumeRenderer(const ParamsMgr* pm,
-                std::string&        winName,
-                std::string&        dataSetName,
-                std::string&        instName,
-                DataMgr*            dataMgr );
-    VolumeRenderer(const ParamsMgr* pm,
-                   std::string&     winName,
-                   std::string&     dataSetName,
-                   std::string      paramsType,
-                   std::string      classType,
-                   std::string&     instName,
-                   DataMgr*         dataMgr );
+class RENDER_API VolumeRenderer : public Renderer {
+  public:
+    VolumeRenderer(const ParamsMgr *pm, std::string &winName, std::string &dataSetName,
+                   std::string &instName, DataMgr *dataMgr);
+    VolumeRenderer(const ParamsMgr *pm, std::string &winName, std::string &dataSetName,
+                   std::string paramsType, std::string classType, std::string &instName,
+                   DataMgr *dataMgr);
     ~VolumeRenderer();
 
-    static std::string GetClassType()
-    {
-        return ("Volume");
-    }
+    static std::string GetClassType() { return ("Volume"); }
 
-protected:
+  protected:
     int _initializeGL();
     int _paintGL(bool fast);
-    void _clearCache() {};
-    
+    void _clearCache(){};
+
     virtual std::string _getColorbarVariableName() const;
-    
+
     virtual void _setShaderUniforms(const ShaderProgram *shader, const bool fast) const;
     void _drawScreenQuad();
     void _drawScreenQuadChuncked();
@@ -57,10 +45,11 @@ protected:
     void _loadTF();
     void _loadTF(Texture1D *texture, MapperFunction *tf, MapperFunction **cacheTF);
     glm::vec3 _getVolumeScales() const;
-    void _getExtents(glm::vec3 *dataMin, glm::vec3 *dataMax, glm::vec3 *userMin, glm::vec3 *userMax) const;
+    void _getExtents(glm::vec3 *dataMin, glm::vec3 *dataMax, glm::vec3 *userMin,
+                     glm::vec3 *userMax) const;
     virtual std::string _getDefaultAlgorithmForGrid(const Grid *grid) const;
     bool _needToSetDefaultAlgorithm() const;
-    
+
     unsigned int _VAO = (int)NULL;
     unsigned int _VBO = (int)NULL;
     unsigned int _VAOChunked = (int)NULL;
@@ -70,7 +59,7 @@ protected:
     Texture1D _LUT2Texture;
     Texture2D _depthTexture;
     Framebuffer _framebuffer;
-    
+
     int _nChunks;
     double _lastRenderTime;
     bool _lastRenderWasFast;
@@ -81,28 +70,27 @@ protected:
     float _previousFramebufferRatio;
     std::vector<double> _dataMinExt;
     std::vector<double> _dataMaxExt;
-    
+
     struct Cache {
         std::string var = "";
         size_t ts = -1;
         int refinement;
         int compression;
-        
+
         bool useColorMapVar = false;
         std::string colorMapVar = "";
-        
+
         MapperFunction *tf = nullptr;
         std::vector<float> constantColor;
         MapperFunction *tf2 = nullptr;
-        
+
         std::string algorithmName = "";
 
         std::vector<double> minExt;
         std::vector<double> maxExt;
-        
+
         bool needsUpdate;
     } _cache;
 };
 
-
-};
+}; // namespace VAPoR

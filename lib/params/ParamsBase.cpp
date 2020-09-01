@@ -27,298 +27,271 @@
 #include <vapor/ParamsBase.h>
 #include <vapor/STLUtils.h>
 
-
 using namespace VAPoR;
 
 namespace {
 
-	void string_replace(vector <string> &v,string olds, string news) {
-		for (int i=0; i<v.size(); i++) {
-			if (v[i] == olds) {
-				v[i] = news;
-			}
-		}
-	}
-};
+void string_replace(vector<string> &v, string olds, string news) {
+    for (int i = 0; i < v.size(); i++) {
+        if (v[i] == olds) {
+            v[i] = news;
+        }
+    }
+}
+}; // namespace
 
+ParamsBase::ParamsBase(StateSave *ssave, const string &classname) {
+    VAssert(ssave != NULL);
 
-ParamsBase::ParamsBase(
-	StateSave *ssave, const string &classname
-) {
-	VAssert(ssave != NULL);
+    _ssave = ssave;
+    _node = NULL;
 
-	_ssave = ssave;
-	_node = NULL;
-
-	map <string, string> attrs;
-	_node = new XmlNode(classname, attrs);
+    map<string, string> attrs;
+    _node = new XmlNode(classname, attrs);
 }
 
-ParamsBase::ParamsBase(
-	StateSave *ssave, XmlNode *node
-) {
-	VAssert(ssave != NULL);
-	VAssert(node != NULL);
+ParamsBase::ParamsBase(StateSave *ssave, XmlNode *node) {
+    VAssert(ssave != NULL);
+    VAssert(node != NULL);
 
-	_ssave = ssave;
-	_node = node;
-
+    _ssave = ssave;
+    _node = node;
 }
 
-ParamsBase::ParamsBase(
-	const ParamsBase &rhs
-) {
-	_ssave = rhs._ssave;
-	_node = NULL;
+ParamsBase::ParamsBase(const ParamsBase &rhs) {
+    _ssave = rhs._ssave;
+    _node = NULL;
 
-	_node = new XmlNode(*(rhs._node));
+    _node = new XmlNode(*(rhs._node));
 }
 
 ParamsBase::ParamsBase(StateSave *ssave) {
-	VAssert(ssave != NULL);
+    VAssert(ssave != NULL);
 
-	_ssave = ssave;
-	_node = NULL;
-
+    _ssave = ssave;
+    _node = NULL;
 }
 
-ParamsBase &ParamsBase::operator=( const ParamsBase& rhs ) 
-{
-	MyBase::operator=(rhs);
+ParamsBase &ParamsBase::operator=(const ParamsBase &rhs) {
+    MyBase::operator=(rhs);
 
-	if (_node) {
-		_node->SetParent(NULL);
-		delete _node;
-	}
+    if (_node) {
+        _node->SetParent(NULL);
+        delete _node;
+    }
 
-	_ssave = rhs._ssave;
-	_node = NULL;
+    _ssave = rhs._ssave;
+    _node = NULL;
 
-	_node = new XmlNode(*(rhs._node));
+    _node = new XmlNode(*(rhs._node));
 
-	return(*this);
+    return (*this);
 }
-
-
 
 ParamsBase::~ParamsBase() {
 
-	// Only delete the Xml tree if this is the root node
-	//
-	if (_node && _node->IsRoot()) {
-		delete _node;
-	}
+    // Only delete the Xml tree if this is the root node
+    //
+    if (_node && _node->IsRoot()) {
+        delete _node;
+    }
 
-	_node = NULL;
-	_ssave = NULL;
-
+    _node = NULL;
+    _ssave = NULL;
 }
 
 void ParamsBase::SetParent(ParamsBase *parent) {
 
-	GetNode()->SetParent(parent ? parent->GetNode() : NULL);
-	_ssave->Save(GetNode(), "Set parent node");
+    GetNode()->SetParent(parent ? parent->GetNode() : NULL);
+    _ssave->Save(GetNode(), "Set parent node");
 }
 
-vector <long> ParamsBase::GetValueLongVec( const string tag) const {
+vector<long> ParamsBase::GetValueLongVec(const string tag) const {
 
-	vector <long> empty;
-	if (! _node->HasElementLong(tag)) return(empty);
+    vector<long> empty;
+    if (!_node->HasElementLong(tag))
+        return (empty);
 
-	return(_node->GetElementLong(tag));
+    return (_node->GetElementLong(tag));
 }
 
-vector <long> ParamsBase::GetValueLongVec(
-	const string tag, const vector<long>& defaultVal
-) const {
-	if (! _node->HasElementLong(tag)) return(defaultVal);
+vector<long> ParamsBase::GetValueLongVec(const string tag, const vector<long> &defaultVal) const {
+    if (!_node->HasElementLong(tag))
+        return (defaultVal);
 
-	vector <long> v = _node->GetElementLong(tag);
-	if (v.size() < defaultVal.size()) {
-		for (int i=v.size(); i<defaultVal.size(); i++) {
-			v.push_back(defaultVal[i]);
-		}
-	} 
-	else if (v.size() > defaultVal.size()) {
-		while(v.size() > defaultVal.size()) {
-			v.pop_back();
-		}
-	}
+    vector<long> v = _node->GetElementLong(tag);
+    if (v.size() < defaultVal.size()) {
+        for (int i = v.size(); i < defaultVal.size(); i++) {
+            v.push_back(defaultVal[i]);
+        }
+    } else if (v.size() > defaultVal.size()) {
+        while (v.size() > defaultVal.size()) {
+            v.pop_back();
+        }
+    }
 
-	return(v);
+    return (v);
 }
 
-long ParamsBase::GetValueLong(
-	const string tag, long defaultVal
-) const {
+long ParamsBase::GetValueLong(const string tag, long defaultVal) const {
 
-	vector <long> defaultValVec(1, defaultVal);
-	vector <long> v = ParamsBase::GetValueLongVec(tag, defaultValVec);
+    vector<long> defaultValVec(1, defaultVal);
+    vector<long> v = ParamsBase::GetValueLongVec(tag, defaultValVec);
 
-	if (! v.size()) return (defaultVal);
+    if (!v.size())
+        return (defaultVal);
 
-	return(v[0]);
+    return (v[0]);
 }
 
-vector <double> ParamsBase::GetValueDoubleVec( const string tag) const {
+vector<double> ParamsBase::GetValueDoubleVec(const string tag) const {
 
-	vector <double> empty;
+    vector<double> empty;
 
-	VAssert(_node);
+    VAssert(_node);
 
-	bool test = _node->HasElementDouble(tag);
-	if (!test) return (empty);
-	//if (! _node->HasElementDouble(tag)) return(empty);
+    bool test = _node->HasElementDouble(tag);
+    if (!test)
+        return (empty);
+    // if (! _node->HasElementDouble(tag)) return(empty);
 
-	return(_node->GetElementDouble(tag));
+    return (_node->GetElementDouble(tag));
 }
 
-vector <double> ParamsBase::GetValueDoubleVec( const string tag, 
-                                               const vector<double>& defaultVal) const 
-{
-	if (! _node->HasElementDouble(tag)) return(defaultVal);
+vector<double> ParamsBase::GetValueDoubleVec(const string tag,
+                                             const vector<double> &defaultVal) const {
+    if (!_node->HasElementDouble(tag))
+        return (defaultVal);
 
-	vector <double> v = _node->GetElementDouble(tag);
-	if (v.size() < defaultVal.size()) {
-		for (int i=v.size(); i<defaultVal.size(); i++) {
-			v.push_back(defaultVal[i]);
-		}
-	} 
-	else if (v.size() > defaultVal.size()) {
-		while(v.size() > defaultVal.size()) {
-			v.pop_back();
-		}
-	}
+    vector<double> v = _node->GetElementDouble(tag);
+    if (v.size() < defaultVal.size()) {
+        for (int i = v.size(); i < defaultVal.size(); i++) {
+            v.push_back(defaultVal[i]);
+        }
+    } else if (v.size() > defaultVal.size()) {
+        while (v.size() > defaultVal.size()) {
+            v.pop_back();
+        }
+    }
 
-	return(v);
+    return (v);
 }
 
-double ParamsBase::GetValueDouble(
-	const string tag, double defaultVal
-) const {
+double ParamsBase::GetValueDouble(const string tag, double defaultVal) const {
 
-	vector <double> defaultValVec(1, defaultVal);
-	vector <double> v = ParamsBase::GetValueDoubleVec(tag, defaultValVec);
+    vector<double> defaultValVec(1, defaultVal);
+    vector<double> v = ParamsBase::GetValueDoubleVec(tag, defaultValVec);
 
-	if (! v.size()) return (defaultVal);
+    if (!v.size())
+        return (defaultVal);
 
-	return(v[0]);
+    return (v[0]);
 }
 
-vector <string> ParamsBase::GetValueStringVec( const string tag) const {
+vector<string> ParamsBase::GetValueStringVec(const string tag) const {
 
-	vector <string> empty;
-	if (! _node->HasElementString(tag)) return(empty);
+    vector<string> empty;
+    if (!_node->HasElementString(tag))
+        return (empty);
 
-	vector <string> v;
-	_node->GetElementStringVec(tag, v);
+    vector<string> v;
+    _node->GetElementStringVec(tag, v);
 
-	string_replace(v, "NULL", "");
+    string_replace(v, "NULL", "");
 
-	return(v);
+    return (v);
 }
 
-vector <string> ParamsBase::GetValueStringVec(
-	const string tag, const vector<string>& defaultVal
-) const {
-	if (! _node->HasElementString(tag)) return(defaultVal);
+vector<string> ParamsBase::GetValueStringVec(const string tag,
+                                             const vector<string> &defaultVal) const {
+    if (!_node->HasElementString(tag))
+        return (defaultVal);
 
-	vector <string> v;
-	_node->GetElementStringVec(tag, v);
+    vector<string> v;
+    _node->GetElementStringVec(tag, v);
 
-	string_replace(v, "NULL", "");
+    string_replace(v, "NULL", "");
 
-	if (v.size() < defaultVal.size()) {
-		for (int i=v.size(); i<defaultVal.size(); i++) {
-			v.push_back(defaultVal[i]);
-		}
-	} 
-	else if (v.size() > defaultVal.size()) {
-		while(v.size() > defaultVal.size()) {
-			v.pop_back();
-		}
-	}
+    if (v.size() < defaultVal.size()) {
+        for (int i = v.size(); i < defaultVal.size(); i++) {
+            v.push_back(defaultVal[i]);
+        }
+    } else if (v.size() > defaultVal.size()) {
+        while (v.size() > defaultVal.size()) {
+            v.pop_back();
+        }
+    }
 
-	return(v);
+    return (v);
 }
 
-string ParamsBase::GetValueString(
-	const string tag, string defaultVal
-) const {
+string ParamsBase::GetValueString(const string tag, string defaultVal) const {
 
-	if (! _node->HasElementString(tag)) return(defaultVal);
+    if (!_node->HasElementString(tag))
+        return (defaultVal);
 
-	string v = _node->GetElementString(tag);
-	v = STLUtils::ReplaceAll(v, "\\ ", " ");
+    string v = _node->GetElementString(tag);
+    v = STLUtils::ReplaceAll(v, "\\ ", " ");
 
-	if (v == "NULL") {
-		v = "";
-	}
+    if (v == "NULL") {
+        v = "";
+    }
 
-	return(v);
+    return (v);
 }
 
-
-void ParamsBase::SetValueLong(
-	const string &tag, string description, long value
-) {
-	vector <long> values(1,value);
-	ParamsBase::SetValueLongVec(tag, description, values);
+void ParamsBase::SetValueLong(const string &tag, string description, long value) {
+    vector<long> values(1, value);
+    ParamsBase::SetValueLongVec(tag, description, values);
 }
 
-void ParamsBase::SetValueLongVec(
-	const string &tag, string description, const vector<long> &values
-) {
-	vector <long> current = GetValueLongVec(tag);
-	if (current == values) return;
+void ParamsBase::SetValueLongVec(const string &tag, string description,
+                                 const vector<long> &values) {
+    vector<long> current = GetValueLongVec(tag);
+    if (current == values)
+        return;
 
-	_node->SetElementLong(tag, values);
+    _node->SetElementLong(tag, values);
 
-	_ssave->Save(_node, description);
+    _ssave->Save(_node, description);
 }
 
-void ParamsBase::SetValueDouble(
-	const string &tag, string description, double value
-) {
-	vector <double> values(1,value);
-	ParamsBase::SetValueDoubleVec(tag, description, values);
+void ParamsBase::SetValueDouble(const string &tag, string description, double value) {
+    vector<double> values(1, value);
+    ParamsBase::SetValueDoubleVec(tag, description, values);
 }
 
-void ParamsBase::SetValueDoubleVec(
-	const string &tag, string description, const vector<double> &values
-) {
-	vector <double> current = GetValueDoubleVec(tag);
-	if (current == values) return;
+void ParamsBase::SetValueDoubleVec(const string &tag, string description,
+                                   const vector<double> &values) {
+    vector<double> current = GetValueDoubleVec(tag);
+    if (current == values)
+        return;
 
+    _node->SetElementDouble(tag, values);
 
-	_node->SetElementDouble(tag, values);
-
-	_ssave->Save(_node, description);
+    _ssave->Save(_node, description);
 }
 
-void ParamsBase::SetValueString(
-	const string &tag, string description, const string &value
-) {
-	vector <string> values(1,value);
-	ParamsBase::SetValueStringVec(tag, description, values);
+void ParamsBase::SetValueString(const string &tag, string description, const string &value) {
+    vector<string> values(1, value);
+    ParamsBase::SetValueStringVec(tag, description, values);
 }
 
-void ParamsBase::SetValueStringVec(
-	const string &tag, string description, const vector <string> &values
-) {
+void ParamsBase::SetValueStringVec(const string &tag, string description,
+                                   const vector<string> &values) {
 
+    vector<string> current = GetValueStringVec(tag);
+    if (current == values)
+        return;
 
-	vector <string> current = GetValueStringVec(tag);
-	if (current == values) return;
+    // Replace empty strings with a token
+    //
+    vector<string> my_values = values;
+    string_replace(my_values, "", "NULL");
 
-	// Replace empty strings with a token
-	//
-	vector <string> my_values = values;
-	string_replace(my_values, "", "NULL");
+    _node->SetElementStringVec(tag, my_values);
 
-	_node->SetElementStringVec(tag, my_values);
-
-	_ssave->Save(_node, description);
+    _ssave->Save(_node, description);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -327,32 +300,21 @@ void ParamsBase::SetValueStringVec(
 //
 /////////////////////////////////////////////////////////////////////////
 
-ParamsSeparator::ParamsSeparator(
-	StateSave *ssave, const string &name
-) : ParamsBase(ssave, name) {
+ParamsSeparator::ParamsSeparator(StateSave *ssave, const string &name) : ParamsBase(ssave, name) {}
 
+ParamsSeparator::ParamsSeparator(StateSave *ssave, XmlNode *node) : ParamsBase(ssave, node) {}
+
+ParamsSeparator::ParamsSeparator(ParamsSeparator *parent, const string &name)
+    : ParamsBase(parent->_ssave) {
+
+    if (parent->GetNode()->HasChild(name)) {
+        _node = parent->GetNode()->GetChild(name);
+        VAssert(_node);
+    } else {
+        _node = parent->GetNode()->NewChild(name);
+        parent->_ssave->Save(parent->GetNode(), "New params");
+    }
 }
-
-ParamsSeparator::ParamsSeparator(
-	StateSave *ssave, XmlNode *node
-) : ParamsBase(ssave, node) {
-
-}
-
-ParamsSeparator::ParamsSeparator(
-	ParamsSeparator *parent, const string &name
-) : ParamsBase(parent->_ssave) {
-
-	if (parent->GetNode()->HasChild(name)) {
-		_node = parent->GetNode()->GetChild(name);
-		VAssert(_node);
-	}
-	else {
-		_node = parent->GetNode()->NewChild(name);
-		parent->_ssave->Save(parent->GetNode(), "New params");
-	}
-}
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -360,36 +322,30 @@ ParamsSeparator::ParamsSeparator(
 //
 /////////////////////////////////////////////////////////////////////////
 
-
-ParamsBase *ParamsFactory::CreateInstance(
-	string className, ParamsBase::StateSave *ssave, XmlNode *node
-) {
-    ParamsBase * instance = NULL;
+ParamsBase *ParamsFactory::CreateInstance(string className, ParamsBase::StateSave *ssave,
+                                          XmlNode *node) {
+    ParamsBase *instance = NULL;
 
     // find className in the registry and call factory method.
-	//
+    //
     auto it = m_factoryFunctionRegistry.find(className);
-    if(it != m_factoryFunctionRegistry.end())
+    if (it != m_factoryFunctionRegistry.end())
         instance = it->second(ssave, node);
 
-    if(instance != NULL)
+    if (instance != NULL)
         return instance;
     else
         return NULL;
 }
 
-vector <string> ParamsFactory::GetFactoryNames() const {
-	vector <string> names;
-	map<string, function<ParamsBase * (ParamsBase::StateSave *, XmlNode *)>>::const_iterator itr;
+vector<string> ParamsFactory::GetFactoryNames() const {
+    vector<string> names;
+    map<string, function<ParamsBase *(ParamsBase::StateSave *, XmlNode *)>>::const_iterator itr;
 
-	for (
-		itr = m_factoryFunctionRegistry.begin();
-		itr!=m_factoryFunctionRegistry.end();
-		++itr
-	) {
-		names.push_back(itr->first);
-	}
-	return(names);
+    for (itr = m_factoryFunctionRegistry.begin(); itr != m_factoryFunctionRegistry.end(); ++itr) {
+        names.push_back(itr->first);
+    }
+    return (names);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -398,253 +354,233 @@ vector <string> ParamsFactory::GetFactoryNames() const {
 //
 /////////////////////////////////////////////////////////////////////////
 
-ParamsContainer::ParamsContainer(
-	ParamsBase::StateSave *ssave, const string &name
-) {
-	VAssert(ssave != NULL);
+ParamsContainer::ParamsContainer(ParamsBase::StateSave *ssave, const string &name) {
+    VAssert(ssave != NULL);
 
-	_ssave = ssave;
-	_separator = NULL;
-	_elements.clear();
+    _ssave = ssave;
+    _separator = NULL;
+    _elements.clear();
 
-	_separator = new ParamsSeparator(ssave, name);
-
+    _separator = new ParamsSeparator(ssave, name);
 }
 
-ParamsContainer::ParamsContainer(
-	ParamsBase::StateSave *ssave, XmlNode *node
-) {
-	VAssert(ssave != NULL);
-	VAssert(node != NULL);
+ParamsContainer::ParamsContainer(ParamsBase::StateSave *ssave, XmlNode *node) {
+    VAssert(ssave != NULL);
+    VAssert(node != NULL);
 
-	_ssave = ssave;
-	_separator = new ParamsSeparator(ssave, node);
-	_elements.clear();
+    _ssave = ssave;
+    _separator = new ParamsSeparator(ssave, node);
+    _elements.clear();
 
-	for (int i=0; i<node->GetNumChildren(); i++) {
-		XmlNode *eleNameNode = node->GetChild(i);
-		if (! eleNameNode->HasChild(0)) continue;	// bad node
+    for (int i = 0; i < node->GetNumChildren(); i++) {
+        XmlNode *eleNameNode = node->GetChild(i);
+        if (!eleNameNode->HasChild(0))
+            continue; // bad node
 
-		XmlNode *eleNode = eleNameNode->GetChild(0);
+        XmlNode *eleNode = eleNameNode->GetChild(0);
 
-		string eleName = eleNameNode->GetTag();
-		string classname = eleNode->GetTag();
+        string eleName = eleNameNode->GetTag();
+        string classname = eleNode->GetTag();
 
-		ParamsBase *pB = ParamsFactory::Instance()->CreateInstance(
-			classname, ssave, eleNode
-		);
-		if (pB == NULL) {
-			SetDiagMsg(
-				"ParamsContainer::ParamsContainer() unrecognized class: %s",
-				classname.c_str()
-			);
-			continue;
-		}
-				
-		_elements[eleName] = pB;
-	}
+        ParamsBase *pB = ParamsFactory::Instance()->CreateInstance(classname, ssave, eleNode);
+        if (pB == NULL) {
+            SetDiagMsg("ParamsContainer::ParamsContainer() unrecognized class: %s",
+                       classname.c_str());
+            continue;
+        }
+
+        _elements[eleName] = pB;
+    }
 }
 
-ParamsContainer::ParamsContainer(
-	const ParamsContainer &rhs
-) {
-	_ssave = rhs._ssave;
-	_separator = NULL;
-	_elements.clear();
+ParamsContainer::ParamsContainer(const ParamsContainer &rhs) {
+    _ssave = rhs._ssave;
+    _separator = NULL;
+    _elements.clear();
 
-	_ssave->BeginGroup("Params container");
+    _ssave->BeginGroup("Params container");
 
-	_separator = new ParamsSeparator(*(rhs._separator));
-	_separator->SetParent(NULL);
+    _separator = new ParamsSeparator(*(rhs._separator));
+    _separator->SetParent(NULL);
 
-	vector <string> names = rhs.GetNames();
-	for (int i=0; i<names.size(); i++) {
-		
-		// Make copy of ParamsBase
-		//
-		ParamsBase *rhspb = rhs.GetParams(names[i]);
-		XmlNode *node = new XmlNode(*(rhspb->GetNode()));
+    vector<string> names = rhs.GetNames();
+    for (int i = 0; i < names.size(); i++) {
 
-		string classname = rhspb->GetName();
-		ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(
-			classname, _ssave, node
-		);
-		mypb->SetParent(_separator);
+        // Make copy of ParamsBase
+        //
+        ParamsBase *rhspb = rhs.GetParams(names[i]);
+        XmlNode *node = new XmlNode(*(rhspb->GetNode()));
 
-		_elements[names[i]] = mypb;
-	}
+        string classname = rhspb->GetName();
+        ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(classname, _ssave, node);
+        mypb->SetParent(_separator);
 
-	_ssave->EndGroup();
+        _elements[names[i]] = mypb;
+    }
+
+    _ssave->EndGroup();
 }
 
-ParamsContainer &ParamsContainer::operator=( const ParamsContainer& rhs ) 
-{
-	VAssert(_separator);
+ParamsContainer &ParamsContainer::operator=(const ParamsContainer &rhs) {
+    VAssert(_separator);
 
-	vector <string> mynames = GetNames();
-	for (int i=0; i<mynames.size(); i++) {
-		Remove(mynames[i]);
-	}
-	_elements.clear();
+    vector<string> mynames = GetNames();
+    for (int i = 0; i < mynames.size(); i++) {
+        Remove(mynames[i]);
+    }
+    _elements.clear();
 
-	_ssave->BeginGroup("Params container");
+    _ssave->BeginGroup("Params container");
 
-	_separator = rhs._separator;
-	_ssave = rhs._ssave;
+    _separator = rhs._separator;
+    _ssave = rhs._ssave;
 
+    vector<string> names = rhs.GetNames();
+    for (int i = 0; i < names.size(); i++) {
+        XmlNode *eleNameNode = _separator->GetNode()->GetChild(names[i]);
+        VAssert(eleNameNode);
 
-	vector <string> names = rhs.GetNames();
-	for (int i=0; i<names.size(); i++) {
-		XmlNode *eleNameNode = _separator->GetNode()->GetChild(names[i]);
-		VAssert (eleNameNode);
-		
-		ParamsSeparator mySep(_ssave, eleNameNode);
+        ParamsSeparator mySep(_ssave, eleNameNode);
 
-		XmlNode *eleNode = eleNameNode->GetChild(0);
+        XmlNode *eleNode = eleNameNode->GetChild(0);
 
-		string eleName = eleNameNode->GetTag();
-		string classname = eleNode->GetTag();
+        string eleName = eleNameNode->GetTag();
+        string classname = eleNode->GetTag();
 
-		ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(
-			classname, _ssave, eleNode
-		);
-		mypb->SetParent(&mySep);
+        ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(classname, _ssave, eleNode);
+        mypb->SetParent(&mySep);
 
-		_elements[names[i]] = mypb;
-	}
+        _elements[names[i]] = mypb;
+    }
 
-	_ssave->EndGroup();
+    _ssave->EndGroup();
 
-	return(*this);
+    return (*this);
 }
 
 ParamsContainer::~ParamsContainer() {
 
-	map <string, ParamsBase *>::iterator itr;
-	for (itr = _elements.begin(); itr != _elements.end(); ++itr) {
-		if (itr->second) delete itr->second;
-	}
+    map<string, ParamsBase *>::iterator itr;
+    for (itr = _elements.begin(); itr != _elements.end(); ++itr) {
+        if (itr->second)
+            delete itr->second;
+    }
 
-	if (_separator) delete _separator;
-
+    if (_separator)
+        delete _separator;
 }
 
 ParamsBase *ParamsContainer::Insert(ParamsBase *pb, string name) {
-	VAssert(pb != NULL);
-	if (name.empty()) {
-		name = "NULL";
-	}
+    VAssert(pb != NULL);
+    if (name.empty()) {
+        name = "NULL";
+    }
 
-	map <string, ParamsBase *>::iterator itr = _elements.find(name);
-	if (itr != _elements.end()) {
-		delete itr->second;
-	}
-
-	_ssave->BeginGroup("Params container");
-
-	// Create a separator node
-	//
-	ParamsSeparator mySep(_ssave, name);
-	mySep.SetParent(_separator);
-
-	// Create element name node
-	//
-	string classname = pb->GetName();
-	XmlNode *node = new XmlNode(*(pb->GetNode()));
-	ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(
-            classname, _ssave, node
-	);
-	VAssert(mypb != NULL);
-	mypb->SetParent(&mySep);
-
-	_elements[name] = mypb;
-
-	_ssave->EndGroup();
-
-	return(mypb);
-
-}
-
-ParamsBase *ParamsContainer::Create(string className, string name) {
-	VAssert(! className.empty());
-	VAssert(! name.empty());
-
-    map <string, ParamsBase *>::iterator itr = _elements.find(name);
+    map<string, ParamsBase *>::iterator itr = _elements.find(name);
     if (itr != _elements.end()) {
         delete itr->second;
     }
 
-	_ssave->BeginGroup("Params container");
+    _ssave->BeginGroup("Params container");
 
-	// Create a separator node
-	//
-	ParamsSeparator mySep(_ssave, name);
-	mySep.SetParent(_separator);
+    // Create a separator node
+    //
+    ParamsSeparator mySep(_ssave, name);
+    mySep.SetParent(_separator);
 
-	// Create the desired class
-	//
-    ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(
-            className, _ssave, NULL
-    );
+    // Create element name node
+    //
+    string classname = pb->GetName();
+    XmlNode *node = new XmlNode(*(pb->GetNode()));
+    ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(classname, _ssave, node);
+    VAssert(mypb != NULL);
+    mypb->SetParent(&mySep);
+
+    _elements[name] = mypb;
+
+    _ssave->EndGroup();
+
+    return (mypb);
+}
+
+ParamsBase *ParamsContainer::Create(string className, string name) {
+    VAssert(!className.empty());
+    VAssert(!name.empty());
+
+    map<string, ParamsBase *>::iterator itr = _elements.find(name);
+    if (itr != _elements.end()) {
+        delete itr->second;
+    }
+
+    _ssave->BeginGroup("Params container");
+
+    // Create a separator node
+    //
+    ParamsSeparator mySep(_ssave, name);
+    mySep.SetParent(_separator);
+
+    // Create the desired class
+    //
+    ParamsBase *mypb = ParamsFactory::Instance()->CreateInstance(className, _ssave, NULL);
     VAssert(mypb != NULL);
 
     mypb->SetParent(&mySep);
 
-	_elements[name] = mypb;
+    _elements[name] = mypb;
 
-	_ssave->EndGroup();
+    _ssave->EndGroup();
 
-    return(mypb);
+    return (mypb);
 }
 
 void ParamsContainer::Remove(string name) {
 
+    map<string, ParamsBase *>::iterator itr = _elements.find(name);
+    if (itr == _elements.end())
+        return;
 
-	map <string, ParamsBase *>::iterator itr = _elements.find(name);
-	if (itr == _elements.end()) return;
+    ParamsBase *mypb = itr->second;
 
-	ParamsBase *mypb = itr->second;
+    // Set parent to root so  Xml representation will be deleted
+    //
+    mypb->SetParent(NULL);
+    delete mypb;
 
-	// Set parent to root so  Xml representation will be deleted
-	//
-	mypb->SetParent(NULL);
-	delete mypb;
+    _elements.erase(itr);
 
-	_elements.erase(itr);
-
-	_ssave->Save(_separator->GetNode(), "Delete params");
-
+    _ssave->Save(_separator->GetNode(), "Delete params");
 }
 
 ParamsBase *ParamsContainer::GetParams(string name) const {
 
-	if (name.empty()) {
-		name = "NULL";
-	}
+    if (name.empty()) {
+        name = "NULL";
+    }
 
-	map <string, ParamsBase *>::const_iterator itr = _elements.find(name);
-	if (itr != _elements.end())  return(itr->second);
+    map<string, ParamsBase *>::const_iterator itr = _elements.find(name);
+    if (itr != _elements.end())
+        return (itr->second);
 
-	return(NULL);
+    return (NULL);
 }
 
 string ParamsContainer::GetParamsName(const ParamsBase *pb) const {
-	map <string, ParamsBase *>::const_iterator itr;
-	for (itr = _elements.begin(); itr != _elements.end(); ++itr) {
-		if (itr->second == pb) return(itr->first);
-	}
+    map<string, ParamsBase *>::const_iterator itr;
+    for (itr = _elements.begin(); itr != _elements.end(); ++itr) {
+        if (itr->second == pb)
+            return (itr->first);
+    }
 
-	return("");
+    return ("");
 }
 
-vector <string> ParamsContainer::GetNames() const {
-	map <string, ParamsBase *>::const_iterator itr; 
+vector<string> ParamsContainer::GetNames() const {
+    map<string, ParamsBase *>::const_iterator itr;
 
-	vector <string> names;
-	for (itr=_elements.begin(); itr!=_elements.end(); ++itr) {
-		names.push_back(itr->first);
-	}
+    vector<string> names;
+    for (itr = _elements.begin(); itr != _elements.end(); ++itr) {
+        names.push_back(itr->first);
+    }
 
-	return(names);
+    return (names);
 }
-
