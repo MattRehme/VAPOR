@@ -5,7 +5,7 @@
 for FILE in $(git diff --cached --name-only |grep -E "\.h|\.cpp")
 do
     echo $FILE
-    clang-format -i $FILE
+    clang-format -i $FILE style=.clang-format
 done
 
 #if git rev-parse --verify HEAD >/dev/null 2>&1
