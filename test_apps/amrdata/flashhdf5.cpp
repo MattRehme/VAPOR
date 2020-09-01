@@ -145,7 +145,7 @@ int FlashHDFFile::GetNumberOfDimensions() {
         H5Dclose(dataset);
 
         //	cout << "X " << sim_params.nxb << " Y " << sim_params.nyb << " Z " << sim_params.nzb <<
-        //endl;
+        // endl;
 
         numberOfBlocks = sim_params.total_blocks;
         cellDimensions[0] = sim_params.nxb;
@@ -156,7 +156,7 @@ int FlashHDFFile::GetNumberOfDimensions() {
                 ((cellDimensions[i] > 0) ? (numberOfDimensions + 1) : numberOfDimensions);
         } // End of FOR
           //	cout << "cX " << cellDimensions[0] << " cY " << cellDimensions[1] << " cZ " <<
-          //cellDimensions[2] << endl;
+          // cellDimensions[2] << endl;
 
 #endif
     } // End of IF
@@ -212,14 +212,14 @@ int FlashHDFFile::GetNumberOfBlocks() {
         H5Dclose(dataset);
 
         //	cout << "X " << sim_params.nxb << " Y " << sim_params.nyb << " Z " << sim_params.nzb <<
-        //endl;
+        // endl;
 
         numberOfBlocks = sim_params.total_blocks;
         cellDimensions[0] = sim_params.nxb;
         cellDimensions[1] = sim_params.nyb;
         cellDimensions[2] = sim_params.nzb;
         //	cout << "cX " << cellDimensions[0] << " cY " << cellDimensions[1] << " cZ " <<
-        //cellDimensions[2] << endl;
+        // cellDimensions[2] << endl;
 
 #endif
     } // End of IF
@@ -449,7 +449,7 @@ void FlashHDFFile::GetCellDimensions(int dimensions[3]) {
     H5Dclose(dataset);
 
     //	cout << "NX " << sim_params.nxb << " NY " << sim_params.nyb << " NZ " << sim_params.nzb <<
-    //endl;
+    // endl;
 
     numberOfBlocks = sim_params.total_blocks;
     cellDimensions[0] = sim_params.nxb;

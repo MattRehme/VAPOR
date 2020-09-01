@@ -319,7 +319,8 @@ bool Box::cropToBox(const double bxExts[6]) {
     // 1.  Check if probe center works.  If not call intersectRotatedBox() to get another startPoint
     // (on middle plane) inside box.
     // 2.  Using the new startPoint, construct x-direction line.  Find its first two intersections
-    // (+ and -) with box.  Reset the start point to be the 		middle of the resulting line segment.
+    // (+ and -) with box.  Reset the start point to be the 		middle of the resulting line
+    // segment.
     // 3.  Construct the y-direction line from the new startPoint.  Again find first + and -
     // intersection points.
     // 4.  Take 4 diagonals of x- and y- direction lines, find first box intersection (or corner if
@@ -664,8 +665,8 @@ bool Box::intersectRotatedBox(double boxExts[6], double intersectPoint[3], doubl
                 }
             } else { // The two intersections must cut off a corner of the probe
                 // The possible cases for interSide's are: 0,1 (cuts of vertex 1); 0,3 (cuts off
-                // vertex 0); 1,2 (cuts off vertex 2); 2,3(cuts off vertex 3);  each case can exclude
-                // or include the corner vertex
+                // vertex 0); 1,2 (cuts off vertex 2); 2,3(cuts off vertex 3);  each case can
+                // exclude or include the corner vertex
                 if (interSide[0] == 0 && interSide[1] == 1) {
                     // new corner is midpoint of line between the two intersection points.
                     double newcorx = 0.5 * (interT[0] + 1.);
