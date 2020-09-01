@@ -4,21 +4,21 @@
 #include <QLineEdit>
 
 namespace VAPoR {
-    class RenderParams;
+class RenderParams;
 }
 
 class TFIsoValueInfoWidget : public TFInfoWidget {
     Q_OBJECT
-    
+
     using TFInfoWidget::TFInfoWidget;
-    
-protected:
+
+  protected:
     void controlPointChanged();
-    
-signals:
+
+  signals:
     void ControlPointChanged(float value);
-    
-public slots:
+
+  public slots:
     void SetControlPoint(float value);
     void Deselect();
 };

@@ -5,7 +5,7 @@
 //		     All Rights Reserved										*
 //															*
 //************************************************************************/
-//					
+//
 //	File:		VizSelectCombo.cpp
 //
 //	Author:		Alan Norton
@@ -16,7 +16,7 @@
 //
 //	Description:	Implements the VizSelectCombo class
 //		This fits in the main toolbar, enables the user to select
-//		the visualizer to activate.  
+//		the visualizer to activate.
 //
 #include <string>
 #include "vapor/VAssert.h"
@@ -26,113 +26,108 @@
 #include "VizSelectCombo.h"
 
 namespace {
-	const std::string CreateNewStr = "Create New Visualizer";
+const std::string CreateNewStr = "Create New Visualizer";
 };
 
-VizSelectCombo::VizSelectCombo(
-	QWidget* parent
-) : QComboBox(parent) {
+VizSelectCombo::VizSelectCombo(QWidget *parent) : QComboBox(parent) {
 
-	setEditable(false);
+    setEditable(false);
 
-	insertItem(0,QString::fromStdString(CreateNewStr));
+    insertItem(0, QString::fromStdString(CreateNewStr));
 
+    // This initially has just the CreateNewStr entry.
+    // Hookup signals and slots:
+    connect(this, SIGNAL(activated(const QString &)), this, SLOT(activeWin(const QString &)));
 
-	//This initially has just the CreateNewStr entry.
-	//Hookup signals and slots:
-	connect (
-		this, SIGNAL(activated(const QString &)), 
-		this, SLOT(activeWin(const QString &))
-	);
-
-	setMinimumWidth(150);
-	setToolTip("Select Active Visualizer or create new one");
+    setMinimumWidth(150);
+    setToolTip("Select Active Visualizer or create new one");
 }
 
-void VizSelectCombo::AddWindow(const QString& winName) {
+void VizSelectCombo::AddWindow(const QString &winName) {
 
-	//First look to find the right place; insert it in a gap if necessary.
+    // First look to find the right place; insert it in a gap if necessary.
 
-	VAssert(count() >= 1);	// Last item is always CreateNewStr
+    VAssert(count() >= 1); // Last item is always CreateNewStr
 
-	// Insert in alphabetical order, but leave CreateNewStr in
-	// last position
-	//
-	int index = count() - 1;	// Default is replace CreateNewStr
-	for (int i = 0; i<count()-1; i++){
-		if (itemText(i) > winName) {
-			index = i;
-			break;
-		} 
-	}
+    // Insert in alphabetical order, but leave CreateNewStr in
+    // last position
+    //
+    int index = count() - 1; // Default is replace CreateNewStr
+    for (int i = 0; i < count() - 1; i++) {
+        if (itemText(i) > winName) {
+            index = i;
+            break;
+        }
+    }
 
-	//Insert name at the specified place:
-	//
-	insertItem(index, winName);
-	SetWindowActive(winName);
+    // Insert name at the specified place:
+    //
+    insertItem(index, winName);
+    SetWindowActive(winName);
 }
 
-// 
+//
 // Remove specified window from the combobox
 //
 
-void VizSelectCombo::RemoveWindow(const QString & winName){
+void VizSelectCombo::RemoveWindow(const QString &winName) {
 
-	int index = -1;
-	for (int i=0; i<count(); i++) {
-		if (itemText(i) == winName) {
-			index = i;
-			break;
-		}
-	}
-	if (index < 0) return;
-	
-	removeItem(index);
+    int index = -1;
+    for (int i = 0; i < count(); i++) {
+        if (itemText(i) == winName) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0)
+        return;
 
-	// Make first window active
-	//
-	if (count()) {
-		SetWindowActive(itemText(0));
-	}
+    removeItem(index);
+
+    // Make first window active
+    //
+    if (count()) {
+        SetWindowActive(itemText(0));
+    }
 }
 
-// 
+//
 // Select a window when it's been made active
 //
-void VizSelectCombo::SetWindowActive(const QString & winName){
+void VizSelectCombo::SetWindowActive(const QString &winName) {
 
-	int index = -1;
-	for (int i=0; i<count()-1; i++) {
-		if (winName == itemText(i)) {
-			index = i;
-			break;
-		}
-	}
-	if (index < 0) return;
+    int index = -1;
+    for (int i = 0; i < count() - 1; i++) {
+        if (winName == itemText(i)) {
+            index = i;
+            break;
+        }
+    }
+    if (index < 0)
+        return;
 
-	// Avoid generating an event unless there really is an change.
-	//
-	if (currentIndex() != index){
-		setCurrentIndex(index);
-		emit (winActivated(winName));
-	}
+    // Avoid generating an event unless there really is an change.
+    //
+    if (currentIndex() != index) {
+        setCurrentIndex(index);
+        emit(winActivated(winName));
+    }
 }
 
-
 //
-//Convert the active index to the active winNum,
+// Convert the active index to the active winNum,
 // or launch a visualizer
 //
-void VizSelectCombo::activeWin(const QString &qS){
-	
-	// If they clicked the end, just create a new visualizer:
-	//
-	if (qS.toStdString() == CreateNewStr) {
-		emit (newWin());
-		return;
-	}
+void VizSelectCombo::activeWin(const QString &qS) {
 
-	// Otherwise notify that a new window has been selected
-	//
-	emit (winActivated(qS));
+    // If they clicked the end, just create a new visualizer:
+    //
+    if (qS.toStdString() == CreateNewStr) {
+        emit(newWin());
+        return;
+    }
+
+    // Otherwise notify that a new window has been selected
+    //
+    emit(winActivated(qS));
 }

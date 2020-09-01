@@ -22,7 +22,7 @@
 #include <string>
 #include <iterator>
 
-#include <vapor/glutil.h>    // Must be included first!!!
+#include <vapor/glutil.h> // Must be included first!!!
 
 #include <vapor/Renderer.h>
 #include <vapor/ContourRenderer.h>
@@ -47,27 +47,25 @@ struct ContourRenderer::VertexData {
 };
 #pragma pack(pop)
 
-static RendererRegistrar<ContourRenderer> registrar(
-                                                    ContourRenderer::GetClassType(), ContourParams::GetClassType()
-                                                    );
+static RendererRegistrar<ContourRenderer> registrar(ContourRenderer::GetClassType(),
+                                                    ContourParams::GetClassType());
 
-ContourRenderer::ContourRenderer(const ParamsMgr* pm, string winName,
-                                 string dataSetName, string instName,
-                                 DataMgr* dataMgr)
-: Renderer(pm, winName, dataSetName, ContourParams::GetClassType(),
-           ContourRenderer::GetClassType(), instName, dataMgr),
-_VAO(0), _VBO(0), _nVertices(0) {}
+ContourRenderer::ContourRenderer(const ParamsMgr *pm, string winName, string dataSetName,
+                                 string instName, DataMgr *dataMgr)
+    : Renderer(pm, winName, dataSetName, ContourParams::GetClassType(),
+               ContourRenderer::GetClassType(), instName, dataMgr),
+      _VAO(0), _VBO(0), _nVertices(0) {}
 
-ContourRenderer::~ContourRenderer()
-{
-    if (_VAO) glDeleteVertexArrays(1, &_VAO);
-    if (_VBO) glDeleteBuffers(1, &_VBO);
+ContourRenderer::~ContourRenderer() {
+    if (_VAO)
+        glDeleteVertexArrays(1, &_VAO);
+    if (_VBO)
+        glDeleteBuffers(1, &_VBO);
     _VAO = _VBO = 0;
 }
 
-void ContourRenderer::_saveCacheParams()
-{
-    ContourParams* p = (ContourParams*)GetActiveParams();
+void ContourRenderer::_saveCacheParams() {
+    ContourParams *p = (ContourParams *)GetActiveParams();
     _cacheParams.varName = p->GetVariableName();
     _cacheParams.heightVarName = p->GetHeightVariableName();
     _cacheParams.ts = p->GetCurrentTimestep();
@@ -78,148 +76,145 @@ void ContourRenderer::_saveCacheParams()
     _cacheParams.contourValues = p->GetContourValues(_cacheParams.varName);
 }
 
-bool ContourRenderer::_isCacheDirty() const
-{
-    ContourParams *p = (ContourParams*)GetActiveParams();
-    if (_cacheParams.varName != p->GetVariableName()) return true;
-    if (_cacheParams.heightVarName != p->GetHeightVariableName()) return true;
-    if (_cacheParams.ts      != p->GetCurrentTimestep()) return true;
-    if (_cacheParams.level   != p->GetRefinementLevel()) return true;
-    if (_cacheParams.lod     != p->GetCompressionLevel()) return true;
-    if (_cacheParams.lineThickness != p->GetLineThickness()) return true;
-    
+bool ContourRenderer::_isCacheDirty() const {
+    ContourParams *p = (ContourParams *)GetActiveParams();
+    if (_cacheParams.varName != p->GetVariableName())
+        return true;
+    if (_cacheParams.heightVarName != p->GetHeightVariableName())
+        return true;
+    if (_cacheParams.ts != p->GetCurrentTimestep())
+        return true;
+    if (_cacheParams.level != p->GetRefinementLevel())
+        return true;
+    if (_cacheParams.lod != p->GetCompressionLevel())
+        return true;
+    if (_cacheParams.lineThickness != p->GetLineThickness())
+        return true;
+
     vector<double> min, max, contourValues;
     p->GetBox()->GetExtents(min, max);
     contourValues = p->GetContourValues(_cacheParams.varName);
-    
-    if (_cacheParams.boxMin != min) return true;
-    if (_cacheParams.boxMax != max) return true;
-    if (_cacheParams.contourValues != contourValues) return true;
-    
+
+    if (_cacheParams.boxMin != min)
+        return true;
+    if (_cacheParams.boxMax != max)
+        return true;
+    if (_cacheParams.contourValues != contourValues)
+        return true;
+
     return false;
 }
 
-int ContourRenderer::_buildCache()
-{
-    ContourParams* cParams = (ContourParams*)GetActiveParams();
+int ContourRenderer::_buildCache() {
+    ContourParams *cParams = (ContourParams *)GetActiveParams();
     _saveCacheParams();
-    
+
     vector<VertexData> vertices;
     vector<pair<int, glm::vec4>> colors;
-    
-    if (cParams->GetVariableName().empty())
-    {
+
+    if (cParams->GetVariableName().empty()) {
         return 0;
     }
     vector<double> contours = cParams->GetContourValues(_cacheParams.varName);
-    
-    Grid *grid = _dataMgr->GetVariable(_cacheParams.ts, _cacheParams.varName,
-                                       _cacheParams.level, _cacheParams.lod,
-                                       _cacheParams.boxMin, _cacheParams.boxMax);
+
+    Grid *grid = _dataMgr->GetVariable(_cacheParams.ts, _cacheParams.varName, _cacheParams.level,
+                                       _cacheParams.lod, _cacheParams.boxMin, _cacheParams.boxMax);
     Grid *heightGrid = NULL;
     if (!_cacheParams.heightVarName.empty()) {
-        heightGrid = _dataMgr->GetVariable(_cacheParams.ts, _cacheParams.heightVarName,
-                                           _cacheParams.level, _cacheParams.lod,
-                                           _cacheParams.boxMin, _cacheParams.boxMax);
+        heightGrid =
+            _dataMgr->GetVariable(_cacheParams.ts, _cacheParams.heightVarName, _cacheParams.level,
+                                  _cacheParams.lod, _cacheParams.boxMin, _cacheParams.boxMax);
     }
-    
+
     if (grid == NULL || (heightGrid == NULL && !_cacheParams.heightVarName.empty())) {
         return -1;
     }
-    
-	double mv = grid->GetMissingValue();
+
+    double mv = grid->GetMissingValue();
     float Z0 = GetDefaultZ(_dataMgr, _cacheParams.ts);
 
-    Grid::ConstCellIterator it = grid->ConstCellBegin(
-		_cacheParams.boxMin, _cacheParams.boxMax
-	);
+    Grid::ConstCellIterator it = grid->ConstCellBegin(_cacheParams.boxMin, _cacheParams.boxMax);
 
     size_t maxNodes = grid->GetMaxVertexPerCell();
     size_t nodeDim = grid->GetNodeDimensions().size();
-	size_t *nodes = (size_t*)alloca(sizeof(size_t) * maxNodes * nodeDim);
+    size_t *nodes = (size_t *)alloca(sizeof(size_t) * maxNodes * nodeDim);
 
     size_t coordDim = grid->GetGeometryDim();
 
-	float *values = (float*)alloca(sizeof(float) * maxNodes);
-	double *coords = (double*)alloca(sizeof(double) * maxNodes * coordDim);
+    float *values = (float *)alloca(sizeof(float) * maxNodes);
+    double *coords = (double *)alloca(sizeof(double) * maxNodes * coordDim);
 
     Grid::ConstCellIterator end = grid->ConstCellEnd();
-    for (; it != end; ++it)
-    {
+    for (; it != end; ++it) {
         const vector<size_t> &cell = *it;
-		int numNodes;
+        int numNodes;
         grid->GetCellNodes(cell.data(), nodes, numNodes);
-        
-		bool hasMissing = false;
-        for (int i = 0; i < numNodes; i++)
-        {
-            grid->GetUserCoordinates(&nodes[i*nodeDim], &coords[i*coordDim]);
-            //values[i] = grid->GetValue(&coords[i*coordDim]);
-            values[i] = grid->GetValueAtIndex(&nodes[i*nodeDim]);
-			if (values[i] == mv) {
-				hasMissing = true;
-			}
+
+        bool hasMissing = false;
+        for (int i = 0; i < numNodes; i++) {
+            grid->GetUserCoordinates(&nodes[i * nodeDim], &coords[i * coordDim]);
+            // values[i] = grid->GetValue(&coords[i*coordDim]);
+            values[i] = grid->GetValueAtIndex(&nodes[i * nodeDim]);
+            if (values[i] == mv) {
+                hasMissing = true;
+            }
         }
-		if (hasMissing) continue;
-        
-        for (int ci = 0; ci != contours.size(); ci++)
-        {
-            for (int a=numNodes-1, b=0; b < numNodes; a++, b++)
-            {
+        if (hasMissing)
+            continue;
+
+        for (int ci = 0; ci != contours.size(); ci++) {
+            for (int a = numNodes - 1, b = 0; b < numNodes; a++, b++) {
                 if (a == numNodes)
                     a = 0;
                 float contour = contours[ci];
-                
-                if ((values[a] <= contour && values[b] <= contour)
-                    || (values[a] > contour && values[b] > contour))
+
+                if ((values[a] <= contour && values[b] <= contour) ||
+                    (values[a] > contour && values[b] > contour))
                     continue;
-                
-                float t = (contour - values[a])/(values[b] - values[a]);
+
+                float t = (contour - values[a]) / (values[b] - values[a]);
                 float v[3];
-                v[0] = coords[a*coordDim+0] + t * (coords[b*coordDim+0] - coords[a*coordDim+0]);
-                v[1] = coords[a*coordDim+1] + t * (coords[b*coordDim+1] - coords[a*coordDim+1]);
+                v[0] = coords[a * coordDim + 0] +
+                       t * (coords[b * coordDim + 0] - coords[a * coordDim + 0]);
+                v[1] = coords[a * coordDim + 1] +
+                       t * (coords[b * coordDim + 1] - coords[a * coordDim + 1]);
                 v[2] = Z0;
-                
-                if (heightGrid)
-                {
-                    //float aHeight = heightGrid->GetValue(&coords[a*coordDim]);
-                    //float bHeight = heightGrid->GetValue(&coords[b*coordDim]);
-                    float aHeight = heightGrid->GetValueAtIndex(&nodes[a*nodeDim]);
-                    float bHeight = heightGrid->GetValueAtIndex(&nodes[b*nodeDim]);
+
+                if (heightGrid) {
+                    // float aHeight = heightGrid->GetValue(&coords[a*coordDim]);
+                    // float bHeight = heightGrid->GetValue(&coords[b*coordDim]);
+                    float aHeight = heightGrid->GetValueAtIndex(&nodes[a * nodeDim]);
+                    float bHeight = heightGrid->GetValueAtIndex(&nodes[b * nodeDim]);
                     v[2] = aHeight + t * (bHeight - aHeight);
                 }
-                
-                vertices.push_back({
-                    v[0], v[1], v[2],
-                    contour
-                });
-                
+
+                vertices.push_back({v[0], v[1], v[2], contour});
             }
         }
     }
-    
+
     _nVertices = vertices.size();
     glBindVertexArray(_VAO);
     glBindBuffer(GL_ARRAY_BUFFER, _VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexData), vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VertexData), vertices.data(),
+                 GL_DYNAMIC_DRAW);
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
+
     return 0;
 }
 
-int ContourRenderer::_paintGL(bool)
-{
+int ContourRenderer::_paintGL(bool) {
     int rc = 0;
     if (_isCacheDirty())
         rc = _buildCache();
-    
+
     RenderParams *rp = GetActiveParams();
     MapperFunction *tf = rp->GetMapperFunc(rp->GetVariableName());
-    float lut[4*256];
+    float lut[4 * 256];
     tf->makeLut(lut);
     _lutTexture.TexImage(GL_RGBA8, 256, 0, 0, GL_RGBA, GL_FLOAT, lut);
-    
+
     ShaderProgram *shader = _glManager->shaderManager->GetShader("Contour");
     if (shader == nullptr)
         return -1;
@@ -228,33 +223,32 @@ int ContourRenderer::_paintGL(bool)
     shader->SetUniform("minLUTValue", tf->getMinMapValue());
     shader->SetUniform("maxLUTValue", tf->getMaxMapValue());
     shader->SetSampler("colormap", _lutTexture);
-    
+
     // glLineWidth(_cacheParams.lineThickness);
     glDepthMask(true);
     glEnable(GL_DEPTH_TEST);
     glBindVertexArray(_VAO);
     glDrawArrays(GL_LINES, 0, _nVertices);
-    
+
     glBindVertexArray(0);
     shader->UnBind();
-    
+
     return rc;
 }
 
-int ContourRenderer::_initializeGL()
-{
+int ContourRenderer::_initializeGL() {
     glGenVertexArrays(1, &_VAO);
     glBindVertexArray(_VAO);
     glGenBuffers(1, &_VBO);
     glBindBuffer(GL_ARRAY_BUFFER, _VBO);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), NULL);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(VertexData), (void*)offsetof(struct VertexData, v));
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+                          (void *)offsetof(struct VertexData, v));
     glEnableVertexAttribArray(1);
     glBindVertexArray(0);
-    
+
     _lutTexture.Generate();
 
     return 0;
 }
-

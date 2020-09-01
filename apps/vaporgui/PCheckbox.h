@@ -10,15 +10,15 @@ class VCheckBox;
 
 class PCheckbox : public PLineItem {
     Q_OBJECT
-    
-    VCheckBox *_vcheckbox;
-    
-public:
-    PCheckbox(const std::string &tag, const std::string &label="");
 
-protected:
+    VCheckBox *_vcheckbox;
+
+  public:
+    PCheckbox(const std::string &tag, const std::string &label = "");
+
+  protected:
     void updateGUI() const override;
-    
-private slots:
+
+  private slots:
     void checkboxStateChanged(bool on);
 };

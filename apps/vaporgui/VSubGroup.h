@@ -7,7 +7,7 @@
 
 class VSubGroup : public QWidget {
     Q_OBJECT
-    
-public:
+
+  public:
     VSubGroup();
 };

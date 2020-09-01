@@ -12,15 +12,15 @@ class PGroup;
 
 class PSection : public PWidget {
     Q_OBJECT
-    
+
     VSection *_vsection;
     PGroup *_pgroup;
-    
-public:
-    PSection(const std::string &label="");
+
+  public:
+    PSection(const std::string &label = "");
     //! @copydoc PGroup::Add
     PSection *Add(PWidget *pw);
 
-protected:
+  protected:
     void updateGUI() const override;
 };

@@ -4,14 +4,10 @@
 
 using namespace VAPoR;
 
+HelloVariablesSubtab::HelloVariablesSubtab(QWidget *parent)
+    : QWidget(parent), Ui_HelloVariablesGUI() {
 
-HelloVariablesSubtab::HelloVariablesSubtab(QWidget* parent)
-	: QWidget(parent), Ui_HelloVariablesGUI(){
+    setupUi(this);
 
-	setupUi(this);
-
-	_variablesWidget->Reinit(
-		(VariableFlags)(SCALAR | HEIGHT),
-		(DimFlags)(THREED)
-	);
+    _variablesWidget->Reinit((VariableFlags)(SCALAR | HEIGHT), (DimFlags)(THREED));
 }

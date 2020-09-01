@@ -17,7 +17,7 @@
 //		This is the QGLWidget that performs OpenGL rendering (using associated Visualizer)
 //		Plus supports mouse event reporting
 //
-#include <vapor/glutil.h>	// Must be included first!!!
+#include <vapor/glutil.h> // Must be included first!!!
 #include "vapor/VAssert.h"
 #include <QResizeEvent>
 #include <QFocusEvent>
@@ -34,68 +34,62 @@ using namespace VAPoR;
  *  name 'name' and widget flags set to 'f'.
  *
  */
-Test_VizWin::Test_VizWin(QWidget* parent, ControlExec* ce, string winName)
-    : QGLWidget(parent)
-{
-	
+Test_VizWin::Test_VizWin(QWidget *parent, ControlExec *ce, string winName) : QGLWidget(parent) {
+
     _windowName = winName;
-	_controlExec = ce;
-	m_initialized = false;
-	setAutoBufferSwap(false);
-	
-	return;
+    _controlExec = ce;
+    m_initialized = false;
+    setAutoBufferSwap(false);
+
+    return;
 }
 
 // React to a user-change in window size/position (or possibly max/min)
 // Either the window is minimized, maximized, restored, or just resized.
-void Test_VizWin::resizeGL(int width, int height){
-	int rc1 = CheckGLErrorMsg("GLVizWindowResizeEvent");
+void Test_VizWin::resizeGL(int width, int height) {
+    int rc1 = CheckGLErrorMsg("GLVizWindowResizeEvent");
 
-	int rc2 = _controlExec->ResizeViz(_windowName, width, height);
-	if (!rc1 && !rc2) reallyUpdate();
-	return;
+    int rc2 = _controlExec->ResizeViz(_windowName, width, height);
+    if (!rc1 && !rc2)
+        reallyUpdate();
+    return;
 }
-void Test_VizWin::initializeGL(){
-	int rc1 = CheckGLErrorMsg("GLVizWindowInitializeEvent");
-	makeCurrent();
-	int rc2 = _controlExec->InitializeViz(_windowName);
-	int rc3 = CheckGLErrorMsg("GLVizWindowInitializeEvent");
+void Test_VizWin::initializeGL() {
+    int rc1 = CheckGLErrorMsg("GLVizWindowInitializeEvent");
+    makeCurrent();
+    int rc2 = _controlExec->InitializeViz(_windowName);
+    int rc3 = CheckGLErrorMsg("GLVizWindowInitializeEvent");
 
-	if (! (rc2 < 0)) {
-		m_initialized = true;
-	} 
-	
+    if (!(rc2 < 0)) {
+        m_initialized = true;
+    }
 }
 
+void Test_VizWin::paintGL() {
 
-void Test_VizWin::paintGL(){
+    if (!m_initialized)
+        return;
 
-	if (! m_initialized) return;
+    // only paint if necessary
+    // Note that makeCurrent is needed when here we have multiple windows.
+    int rc0 = CheckGLErrorMsg("VizWindowPaintGL");
+    int rc1 = 0, rc2 = 0;
+    if (!rc0) {
+        makeCurrent();
 
-	//only paint if necessary
-	//Note that makeCurrent is needed when here we have multiple windows.
-	int rc0 = CheckGLErrorMsg("VizWindowPaintGL");
-	int rc1 = 0, rc2 = 0;
-	if (!rc0){
-		makeCurrent();
+        rc1 = _controlExec->Paint(_windowName, false);
+        if (!rc1)
+            swapBuffers();
+        rc2 = CheckGLErrorMsg("VizWindowPaintGL");
+    }
 
-		rc1 = _controlExec->Paint(_windowName, false);
-		if (!rc1) swapBuffers();
-		rc2 = CheckGLErrorMsg("VizWindowPaintGL");
-	}
-	
-	return;
-	
+    return;
 }
-void Test_VizWin::reallyUpdate(){
-	makeCurrent();
-	int rc = _controlExec->Paint(_windowName, true);
-	
-	swapBuffers();
-	return;
+void Test_VizWin::reallyUpdate() {
+    makeCurrent();
+    int rc = _controlExec->Paint(_windowName, true);
 
+    swapBuffers();
+    return;
 }
-void Test_VizWin::closeEvent(QCloseEvent* e){
-	
-	QGLWidget::closeEvent(e);
-}
+void Test_VizWin::closeEvent(QCloseEvent *e) { QGLWidget::closeEvent(e); }

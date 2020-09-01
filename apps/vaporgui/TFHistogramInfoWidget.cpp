@@ -4,19 +4,16 @@
 #include <QBoxLayout>
 
 TFHistogramInfoWidget::TFHistogramInfoWidget(const std::string &variableNameTag)
-: TFInfoWidget(variableNameTag)
-{
+    : TFInfoWidget(variableNameTag) {
     _valueEdit->setReadOnly(true);
 }
 
-void TFHistogramInfoWidget::SetControlPoint(float value)
-{
+void TFHistogramInfoWidget::SetControlPoint(float value) {
     this->setEnabled(true);
     SetNormalizedValue(value);
 }
 
-void TFHistogramInfoWidget::Deselect()
-{
+void TFHistogramInfoWidget::Deselect() {
     this->setEnabled(false);
     _valueEdit->clear();
 }

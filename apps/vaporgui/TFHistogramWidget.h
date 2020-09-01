@@ -10,49 +10,45 @@ class ParamsDropdownMenuItem;
 
 class TFHistogramMap : public TFMap {
     Q_OBJECT
-    
-    enum ScalingType {
-        Linear=0,
-        Logarithmic,
-        Boolean,
-        ScalingTypeCount
-    };
-    
-public:
+
+    enum ScalingType { Linear = 0, Logarithmic, Boolean, ScalingTypeCount };
+
+  public:
     TFHistogramMap(const std::string &variableNameTag, TFMapWidget *parent = nullptr);
-    
+
     QSize minimumSizeHint() const;
     void LostFocus() {}
     void PopulateSettingsMenu(QMenu *menu) const;
-    
-protected:
+
+  protected:
     void paramsUpdate();
     TFInfoWidget *createInfoWidget();
     void paintEvent(QPainter &p);
     void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
-//    void mouseDoubleClickEvent(QMouseEvent *event);
-    
-private:
+    //    void mouseDoubleClickEvent(QMouseEvent *event);
+
+  private:
     VAPoR::DataMgr *_dataMgr = nullptr;
     VAPoR::RenderParams *_renderParams = nullptr;
     Histo _histo;
     ParamsDropdownMenuItem *_scalingMenu;
     bool _dynamicScaling = true;
-    
+
     ScalingType _getScalingType() const;
-    
-private slots:
+
+  private slots:
     void _menuDynamicScalingToggled(bool on);
-    
-signals:
+
+  signals:
     void InfoDeselected();
     void UpdateInfo(float value);
 };
 
 class TFHistogramWidget : public TFMapWidget {
     Q_OBJECT
-public:
-    TFHistogramWidget(const std::string &variableNameTag) : TFMapWidget(new TFHistogramMap(variableNameTag, this)) {}
+  public:
+    TFHistogramWidget(const std::string &variableNameTag)
+        : TFMapWidget(new TFHistogramMap(variableNameTag, this)) {}
 };

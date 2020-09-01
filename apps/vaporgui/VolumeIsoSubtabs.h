@@ -8,89 +8,67 @@
 #include "vapor/VolumeIsoParams.h"
 #include "TFEditorIsoSurface.h"
 
-namespace VAPoR 
-{
-    class ControlExec;
-    class RenderParams;
-    class ParamsMgr;
-    class DataMgr;
-}
+namespace VAPoR {
+class ControlExec;
+class RenderParams;
+class ParamsMgr;
+class DataMgr;
+} // namespace VAPoR
 
 class PGroup;
 
-class VolumeIsoVariablesSubtab : public QWidget, public Ui_VolumeIsoVariablesGUI 
-{
+class VolumeIsoVariablesSubtab : public QWidget, public Ui_VolumeIsoVariablesGUI {
     Q_OBJECT
 
-public:
-    VolumeIsoVariablesSubtab(QWidget* parent) 
-    {
+  public:
+    VolumeIsoVariablesSubtab(QWidget *parent) {
         setupUi(this);
-        _variablesWidget->Reinit( (VariableFlags)(SCALAR | COLOR),
-                                  (DimFlags)(THREED) );
+        _variablesWidget->Reinit((VariableFlags)(SCALAR | COLOR), (DimFlags)(THREED));
     }
 
-    void Update(VAPoR::DataMgr *dataMgr,
-                VAPoR::ParamsMgr *paramsMgr,
-                VAPoR::RenderParams *params);
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *params);
 
-private slots:
+  private slots:
 
-private:
-    VAPoR::VolumeIsoParams* _isoParams;
+  private:
+    VAPoR::VolumeIsoParams *_isoParams;
 };
 
-
-class VolumeIsoAppearanceSubtab : public QWidget, public Ui_VolumeIsoAppearanceGUI 
-{
+class VolumeIsoAppearanceSubtab : public QWidget, public Ui_VolumeIsoAppearanceGUI {
     Q_OBJECT
 
-public:
-    VolumeIsoAppearanceSubtab(QWidget* parent);
+  public:
+    VolumeIsoAppearanceSubtab(QWidget *parent);
 
-    void Update( VAPoR::DataMgr      *dataMgr,
-                 VAPoR::ParamsMgr    *paramsMgr,
-                 VAPoR::RenderParams *params );
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *params);
 
-private:
+  private:
     PGroup *_pg;
-}; 
+};
 
-
-class VolumeIsoGeometrySubtab : public QWidget, public Ui_VolumeIsoGeometryGUI 
-{
+class VolumeIsoGeometrySubtab : public QWidget, public Ui_VolumeIsoGeometryGUI {
     Q_OBJECT
 
-public:
-    VolumeIsoGeometrySubtab(QWidget* parent) 
-    {
+  public:
+    VolumeIsoGeometrySubtab(QWidget *parent) {
         setupUi(this);
-        _geometryWidget->Reinit( (DimFlags)THREED,
-                                (VariableFlags)SCALAR);
+        _geometryWidget->Reinit((DimFlags)THREED, (VariableFlags)SCALAR);
     }
-    
-    void Update( VAPoR::ParamsMgr *paramsMgr,
-                VAPoR::DataMgr *dataMgr,
-                VAPoR::RenderParams *rParams) 
-    {
+
+    void Update(VAPoR::ParamsMgr *paramsMgr, VAPoR::DataMgr *dataMgr,
+                VAPoR::RenderParams *rParams) {
         _geometryWidget->Update(paramsMgr, dataMgr, rParams);
         _copyRegionWidget->Update(paramsMgr, rParams);
         _transformTable->Update(rParams->GetTransform());
     }
 };
 
-class VolumeIsoAnnotationSubtab : public QWidget, public Ui_VolumeIsoAnnotationGUI
-{
-public:
-    VolumeIsoAnnotationSubtab(QWidget* parent)
-    {
-        setupUi(this);
-    }
+class VolumeIsoAnnotationSubtab : public QWidget, public Ui_VolumeIsoAnnotationGUI {
+  public:
+    VolumeIsoAnnotationSubtab(QWidget *parent) { setupUi(this); }
 
-    void Update( VAPoR::ParamsMgr *paramsMgr,
-                VAPoR::DataMgr *dataMgr,
-                VAPoR::RenderParams *rParams) 
-    {
+    void Update(VAPoR::ParamsMgr *paramsMgr, VAPoR::DataMgr *dataMgr,
+                VAPoR::RenderParams *rParams) {
         _colorbarWidget->Update(dataMgr, paramsMgr, rParams);
     }
 };

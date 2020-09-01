@@ -10,173 +10,121 @@ namespace VAPoR {
 // A collection of Dataset params
 //
 class PARAMS_API DatasetsParams : public ParamsBase {
-public:
+  public:
+    DatasetsParams(ParamsBase::StateSave *ssave);
 
- DatasetsParams(ParamsBase::StateSave *ssave);
+    DatasetsParams(ParamsBase::StateSave *ssave, XmlNode *node);
 
- DatasetsParams(ParamsBase::StateSave *ssave, XmlNode *node);
+    DatasetsParams(const DatasetsParams &rhs);
 
- DatasetsParams(const DatasetsParams &rhs);
+    DatasetsParams &operator=(const DatasetsParams &rhs);
 
- DatasetsParams &operator=( const DatasetsParams& rhs);
+    virtual ~DatasetsParams();
 
- virtual ~DatasetsParams();
+    void SetScript(string datasetName, string name, string script,
+                   const vector<string> &inputVarNames, const vector<string> &outputVarNames,
+                   const vector<string> &outputVarMeshes, bool coordFlag);
 
- void SetScript(
-	string datasetName,
-	string name,
-	string script,
-	const vector <string> &inputVarNames,
-	const vector <string> &outputVarNames,
-	const vector <string> &outputVarMeshes,
-	bool coordFlag
- );
+    bool GetScript(string datasetName, string name, string &script, vector<string> &inputVarNames,
+                   vector<string> &outputVarNames, vector<string> &outputVarMeshes,
+                   bool &coordFlag) const;
 
- bool GetScript(
-	string datasetName,
-	string name,
-	string &script,
-	vector <string> &inputVarNames,
-	vector <string> &outputVarNames,
-	vector <string> &outputVarMeshes,
-	bool &coordFlag
- ) const;
+    void RemoveDataset(string datasetName) { _datasets->Remove(datasetName); }
 
- void RemoveDataset(string datasetName) {
-	_datasets->Remove(datasetName);
- }
+    void RemoveScript(string datasetName, string scriptName);
 
- void RemoveScript(string datasetName, string scriptName);
+    vector<string> GetScriptNames(string datasetName) const;
 
- vector <string> GetScriptNames(string datasetName) const;
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("DatasetsParams"); }
 
+  private:
+    static const string _datasetsTag;
 
- // Get static string identifier for this params class
- //
- static string GetClassType() {
-	return("DatasetsParams");
- }
-
-private:
- static const string _datasetsTag;
-
- ParamsContainer* _datasets;
-
+    ParamsContainer *_datasets;
 };
 
 //
 // Dataset params
 //
 class PARAMS_API DatasetParams : public ParamsBase {
-public:
+  public:
+    DatasetParams(ParamsBase::StateSave *ssave);
 
- DatasetParams(ParamsBase::StateSave *ssave);
+    DatasetParams(ParamsBase::StateSave *ssave, XmlNode *node);
 
- DatasetParams(ParamsBase::StateSave *ssave, XmlNode *node);
+    DatasetParams(const DatasetParams &rhs);
 
- DatasetParams(const DatasetParams &rhs);
+    DatasetParams &operator=(const DatasetParams &rhs);
 
- DatasetParams &operator=( const DatasetParams& rhs);
+    virtual ~DatasetParams();
 
- virtual ~DatasetParams();
+    void SetScript(string name, string script, const vector<string> &inputVarNames,
+                   const vector<string> &outputVarNames, const vector<string> &outputVarMeshes,
+                   bool coordFlag);
 
+    bool GetScript(string name, string &script, vector<string> &inputVarNames,
+                   vector<string> &outputVarNames, vector<string> &outputVarMeshes,
+                   bool &coordFlag) const;
 
- void SetScript(
-	string name,
-	string script,
-	const vector <string> &inputVarNames,
-	const vector <string> &outputVarNames,
-	const vector <string> &outputVarMeshes,
-	bool coordFlag
- );
+    void RemoveScript(string name) { _scripts->Remove(name); }
 
- bool GetScript(
-	string name,
-	string &script,
-	vector <string> &inputVarNames,
-	vector <string> &outputVarNames,
-	vector <string> &outputVarMeshes,
-	bool &coordFlag
- ) const;
+    vector<string> GetScriptNames() const { return (_scripts->GetNames()); }
 
- void RemoveScript(string name) {
-	_scripts->Remove(name);
- }
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("DatasetParams"); }
 
- vector <string> GetScriptNames() const {
-	return(_scripts->GetNames()); 
- }
+    class PARAMS_API ScriptParams : public ParamsBase {
+      public:
+        ScriptParams(ParamsBase::StateSave *ssave)
+            : ParamsBase(ssave, ScriptParams::GetClassType()) {}
 
- // Get static string identifier for this params class
- //
- static string GetClassType() {
-	return("DatasetParams");
- }
+        ScriptParams(ParamsBase::StateSave *ssave, XmlNode *node) : ParamsBase(ssave, node) {}
 
+        virtual ~ScriptParams() {}
 
- class PARAMS_API ScriptParams : public ParamsBase {
- public:
+        void SetScript(string script, const vector<string> &inputVarNames,
+                       const vector<string> &outputVarNames, const vector<string> &outputVarMeshes,
+                       bool coordFlag) {
+            _ssave->BeginGroup("Set derived variable script");
 
-  ScriptParams(ParamsBase::StateSave *ssave) 
-	: ParamsBase(ssave, ScriptParams::GetClassType()) {}
+            SetValueString(_scriptTag, "", script);
+            SetValueStringVec(_inputVarNamesTag, "", inputVarNames);
+            SetValueStringVec(_outputVarNamesTag, "", outputVarNames);
+            SetValueStringVec(_outputVarMeshesTag, "", outputVarMeshes);
+            SetValueLong(_coordFlagTag, "", 0);
 
-  ScriptParams(ParamsBase::StateSave *ssave, XmlNode *node) 
-	: ParamsBase(ssave, node) {}
+            _ssave->EndGroup();
+        }
 
-  virtual ~ScriptParams() {}
+        void GetScript(string &script, vector<string> &inputVarNames,
+                       vector<string> &outputVarNames, vector<string> &outputVarMeshes,
+                       bool &coordFlag) {
+            script = GetValueString(_scriptTag, "");
+            inputVarNames = GetValueStringVec(_inputVarNamesTag);
+            outputVarNames = GetValueStringVec(_outputVarNamesTag);
+            outputVarMeshes = GetValueStringVec(_outputVarMeshesTag);
+            coordFlag = GetValueLong(_coordFlagTag, 0);
+        }
 
+        static string GetClassType() { return ("ScriptParams"); }
 
-  void SetScript(
-	string script,
-	const vector <string> &inputVarNames,
-	const vector <string> &outputVarNames,
-	const vector <string> &outputVarMeshes,
-	bool coordFlag
-  ) {
-	_ssave->BeginGroup("Set derived variable script");
+      private:
+        static const string _scriptTag;
+        static const string _inputVarNamesTag;
+        static const string _outputVarNamesTag;
+        static const string _outputVarMeshesTag;
+        static const string _coordFlagTag;
+    };
 
-	SetValueString(_scriptTag, "", script);
-	SetValueStringVec(_inputVarNamesTag, "", inputVarNames);
-	SetValueStringVec(_outputVarNamesTag, "", outputVarNames);
-	SetValueStringVec(_outputVarMeshesTag, "", outputVarMeshes);
-	SetValueLong(_coordFlagTag, "", 0);
+  private:
+    static const string _datasetTag;
+    static const string _scriptsTag;
 
-	_ssave->EndGroup();
-  }
+    ParamsContainer *_scripts;
 
-  void GetScript(
-	string &script,
-	vector <string> &inputVarNames,
-	vector <string> &outputVarNames,
-	vector <string> &outputVarMeshes,
-	bool &coordFlag
-  ) {
-	script = GetValueString(_scriptTag, "");
-	inputVarNames = GetValueStringVec(_inputVarNamesTag);
-	outputVarNames = GetValueStringVec(_outputVarNamesTag);
-	outputVarMeshes = GetValueStringVec(_outputVarMeshesTag);
-	coordFlag = GetValueLong(_coordFlagTag, 0);
-  }
+}; // End of Class DatasetParams
 
-  static string GetClassType() {
-   return("ScriptParams");
-  }
-
- private:
-	static const string _scriptTag;
-	static const string _inputVarNamesTag;
-	static const string _outputVarNamesTag;
-	static const string _outputVarMeshesTag;
-	static const string _coordFlagTag;
- };
-
-private:
-
- static const string _datasetTag;
- static const string _scriptsTag;
-
- ParamsContainer* _scripts;
-
-}; //End of Class DatasetParams
-
-};
+}; // namespace VAPoR

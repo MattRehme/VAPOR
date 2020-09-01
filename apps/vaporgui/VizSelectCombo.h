@@ -5,7 +5,7 @@
 //		     All Rights Reserved				*
 //									*
 //************************************************************************/
-//					
+//
 //	File:		VizSelectCombo.h
 //
 //	Author:		Alan Norton
@@ -16,7 +16,7 @@
 //
 //	Description:	Defines the VizSelectCombo class
 //		This fits in the main toolbar, enables the user to select
-//		the visualizer to activate.  
+//		the visualizer to activate.
 //
 #ifndef VIZSELECTCOMBO_H
 #define VIZSELECTCOMBO_H
@@ -24,43 +24,39 @@
 
 class QToolBar;
 
-class VizSelectCombo : public QComboBox{
-	
-	Q_OBJECT
+class VizSelectCombo : public QComboBox {
 
-public:
- VizSelectCombo(QWidget* parent);
- int GetNumWindows() {return (count() - 1);}
- QString GetWinName(int i){ return itemText(i);}
+    Q_OBJECT
 
-public slots:
- // Remove a window from the combobox
- //
- void RemoveWindow(const QString& winName);
+  public:
+    VizSelectCombo(QWidget *parent);
+    int GetNumWindows() { return (count() - 1); }
+    QString GetWinName(int i) { return itemText(i); }
 
- void SetWindowActive(const QString &winName);
+  public slots:
+    // Remove a window from the combobox
+    //
+    void RemoveWindow(const QString &winName);
 
- // Add a new window to the combobox
- //
- void AddWindow(const QString &winName);
+    void SetWindowActive(const QString &winName);
 
-	
-private slots:
-	
- // activated window , and notify the vizWinManager
- void activeWin(const QString& winName);
+    // Add a new window to the combobox
+    //
+    void AddWindow(const QString &winName);
 
+  private slots:
 
-signals:
+    // activated window , and notify the vizWinManager
+    void activeWin(const QString &winName);
 
- // send message that a window number was activated.
- //
- void winActivated(const QString &winName);
+  signals:
 
- // send request for new window
- //
- void newWin();
+    // send message that a window number was activated.
+    //
+    void winActivated(const QString &winName);
 
+    // send request for new window
+    //
+    void newWin();
 };
-#endif //VIZSELECTCOMBO_H
-
+#endif // VIZSELECTCOMBO_H

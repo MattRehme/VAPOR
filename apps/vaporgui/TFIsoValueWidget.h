@@ -6,27 +6,31 @@
 #include <vapor/VAssert.h>
 #include <glm/glm.hpp>
 
-//class TFIsoValueInfoWidget;
+// class TFIsoValueInfoWidget;
 
 class TFIsoValueMap : public TFMap {
     Q_OBJECT
-    
-public:
+
+  public:
     bool BottomPadding = false;
-    
+
     TFIsoValueMap(const std::string &variableNameTag, TFMapWidget *parent = nullptr);
     void PopulateContextMenu(QMenu *menu, const glm::vec2 &p) override;
-    
+
     QSize minimumSizeHint() const override;
     void LostFocus() override;
-    
-    TFIsoValueMap *SetEquidistantIsoValues(bool b) { _equidistantIsoValues = b; return this; }
-    
-protected:
+
+    TFIsoValueMap *SetEquidistantIsoValues(bool b) {
+        _equidistantIsoValues = b;
+        return this;
+    }
+
+  protected:
     void paramsUpdate() override;
     TFInfoWidget *createInfoWidget() override;
     void paintEvent(QPainter &p) override;
-    void drawControl(QPainter &p, const QPointF &pos, bool selected = false, bool invalid = false) const;
+    void drawControl(QPainter &p, const QPointF &pos, bool selected = false,
+                     bool invalid = false) const;
     float GetControlPointTriangleHeight() const;
     float GetControlPointSquareHeight() const;
     QRect GetControlPointArea(const QPoint &p) const;
@@ -35,8 +39,8 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
     QMargins GetPadding() const override;
-    
-private:
+
+  private:
     bool _isDraggingControl = false;
     int _draggingControlID;
     int _selectedId = -1;
@@ -45,9 +49,9 @@ private:
     std::vector<float> _isoValues;
     std::vector<bool> _isoValuesInBounds;
     bool _equidistantIsoValues = true;
-    
+
     bool controlPointContainsPixel(const glm::vec2 &cp, const glm::vec2 &pixel) const;
-    
+
     void saveToParams(VAPoR::RenderParams *rp) const;
     void loadFromParams(VAPoR::RenderParams *rp);
     void clampIsoValuesToMappingRange();
@@ -63,21 +67,22 @@ private:
     float valueForControlX(float position) const;
     float getMapRangeMin() const;
     float getMapRangeMax() const;
-    
-signals:
+
+  signals:
     void ControlPointDeselected();
     void UpdateInfo(float value);
-    
-public slots:
+
+  public slots:
     void DeselectControlPoint();
     void UpdateFromInfo(float value);
-    
-private slots:
+
+  private slots:
     void menuDeleteControlPoint();
     void menuAddControlPoint();
 };
 
 class TFIsoValueWidget : public TFMapWidget {
-public:
-    TFIsoValueWidget(const std::string &variableNameTag) : TFMapWidget(new TFIsoValueMap(variableNameTag, this)) {}
+  public:
+    TFIsoValueWidget(const std::string &variableNameTag)
+        : TFMapWidget(new TFIsoValueMap(variableNameTag, this)) {}
 };

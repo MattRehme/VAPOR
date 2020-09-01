@@ -6,7 +6,7 @@
 //								*
 //************************************************************************/
 //
-//	File:		
+//	File:
 //
 //	Author:		John Clyne
 //			National Center for Atmospheric Research
@@ -25,9 +25,8 @@
 //!                  probably should be in the STL but aren't.
 //!
 
-
-#ifndef	_Version_h_
-#define	_Version_h_
+#ifndef _Version_h_
+#define _Version_h_
 
 #include <string>
 #include <cstdlib>
@@ -42,73 +41,70 @@ namespace Wasp {
 //
 class COMMON_API Version : public MyBase {
 
-public:
- //! Return the major version number
- //
- static int GetMajor() { return(_majorVersion); }
+  public:
+    //! Return the major version number
+    //
+    static int GetMajor() { return (_majorVersion); }
 
- //! Return the minor version number
- //
- static int GetMinor() { return(_minorVersion); }
+    //! Return the minor version number
+    //
+    static int GetMinor() { return (_minorVersion); }
 
- //! Return the sub minor version number
- //
- static int GetMinorMinor() { return(_minorMinorVersion); }
+    //! Return the sub minor version number
+    //
+    static int GetMinorMinor() { return (_minorMinorVersion); }
 
- //! Return the sub minor version number
- //
- static string GetRC() { return(VERSION_RC); }
+    //! Return the sub minor version number
+    //
+    static string GetRC() { return (VERSION_RC); }
 
- static string GetBuildType() { return(BUILD_TYPE); }
+    static string GetBuildType() { return (BUILD_TYPE); }
 
- //! Return the canonical version number as a formatted string
- //!
- //! Return the canonical version number as a formatted string of
- //! the form: X.Y.Z, where \p X is the major version number, \p Y
- //! is the minor version number, and \p Z is the sub minor version number.
- //
- static const string &GetVersionString();
+    //! Return the canonical version number as a formatted string
+    //!
+    //! Return the canonical version number as a formatted string of
+    //! the form: X.Y.Z, where \p X is the major version number, \p Y
+    //! is the minor version number, and \p Z is the sub minor version number.
+    //
+    static const string &GetVersionString();
 
- //! Return the full version as a formatted string
- //!
- //! Return the version as a formatted string of
- //! the form: MAJOR.MINOR.MICRO.RC.COMMIT
- //
- static const string &GetFullVersionString();
+    //! Return the full version as a formatted string
+    //!
+    //! Return the version as a formatted string of
+    //! the form: MAJOR.MINOR.MICRO.RC.COMMIT
+    //
+    static const string &GetFullVersionString();
 
- //! Return the git hash of the current build
- //
- static const string GetBuildHash();
+    //! Return the git hash of the current build
+    //
+    static const string GetBuildHash();
 
- //! Return a string containing the date  associated with the version number
- //!
- //! This method returns the value of the RCS \p Date keyword. In general,
- //! this should corespond to the date that the version number was last 
- //! advanced.
- //
- static const string &GetDateString() {
-	_dateString.assign(VERSION_DATE); return(_dateString);
- }
+    //! Return a string containing the date  associated with the version number
+    //!
+    //! This method returns the value of the RCS \p Date keyword. In general,
+    //! this should corespond to the date that the version number was last
+    //! advanced.
+    //
+    static const string &GetDateString() {
+        _dateString.assign(VERSION_DATE);
+        return (_dateString);
+    }
 
- //! Parse a version string into it's component major, minor,
- //! and minorminor numbers
- //
- static void Parse(
-    std::string ver, int &major, int &minor, int &minorminor, string &rc
- );
+    //! Parse a version string into it's component major, minor,
+    //! and minorminor numbers
+    //
+    static void Parse(std::string ver, int &major, int &minor, int &minorminor, string &rc);
 
- static int Compare(int major, int minor, int minorminor) ;
- static int Compare(std::string ver1, std::string ver2);
+    static int Compare(int major, int minor, int minorminor);
+    static int Compare(std::string ver1, std::string ver2);
 
-private:
- static const int _majorVersion;
- static const int _minorVersion;
- static const int _minorMinorVersion;
- static string _formatString;
- static string _dateString;
-
-
+  private:
+    static const int _majorVersion;
+    static const int _minorVersion;
+    static const int _minorMinorVersion;
+    static string _formatString;
+    static string _dateString;
 };
-}
+} // namespace Wasp
 
 #endif

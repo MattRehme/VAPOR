@@ -17,7 +17,7 @@
 //
 //	Date:		Thu Sep 30 14:06:17 MDT 2004
 //
-//	Description:	
+//	Description:
 //
 #include <iostream>
 #include <fstream>
@@ -37,987 +37,917 @@ using namespace Wasp;
 #define MEMCHECK
 
 namespace VAPoR {
-	vector <double> XmlNode::_emptyDoubleVec;
-	vector <long> XmlNode::_emptyLongVec;	
-	vector <string> XmlNode::_emptyStringVec;
-	string XmlNode::_emptyString;
-	std::vector <XmlNode *> XmlNode::_allocatedNodes;
-};
+vector<double> XmlNode::_emptyDoubleVec;
+vector<long> XmlNode::_emptyLongVec;
+vector<string> XmlNode::_emptyStringVec;
+string XmlNode::_emptyString;
+std::vector<XmlNode *> XmlNode::_allocatedNodes;
+}; // namespace VAPoR
 
 namespace {
 
-	string TypeAttr = "Type";
-	const string LongType = "Long";
-	const string DoubleType = "Double";
-	const string StringType = "String";
-};
+string TypeAttr = "Type";
+const string LongType = "Long";
+const string DoubleType = "Double";
+const string StringType = "String";
+}; // namespace
 
 namespace {
 
-	bool isValidXMLElement(string s) {
-		if (s.empty()) return(false);
-		if (! (std::isalpha(s[0]) || s[0] == '_')) return(false);
-		for (string::const_iterator itr = s.begin(); itr != s.end(); ++itr) {
-			if (! 
-				(std::isalnum(*itr) || 
-				std::isdigit(*itr) || 
-				*itr == '-' ||
-				*itr == '_' ||
-				*itr == '.')) {
+bool isValidXMLElement(string s) {
+    if (s.empty())
+        return (false);
+    if (!(std::isalpha(s[0]) || s[0] == '_'))
+        return (false);
+    for (string::const_iterator itr = s.begin(); itr != s.end(); ++itr) {
+        if (!(std::isalnum(*itr) || std::isdigit(*itr) || *itr == '-' || *itr == '_' ||
+              *itr == '.')) {
 
-				return(false);
-			}
-			if (isspace(*itr)) return(false);
-		}
+            return (false);
+        }
+        if (isspace(*itr))
+            return (false);
+    }
 
-		return(true);
-	}
-
-	string escapeStr(string s) {
-		string eS;
-		for (int i=0; i<s.length(); i++) {
-			if (s[i] == '<') {
-				eS += "&lt;";
-			}
-			else if (s[i] == '>') {
-				eS += "&gt;";
-			}
-			else if (s[i] == '"') {
-				eS += "&quot;";
-			}
-			else if (s[i] == '\'') {
-				eS += "&apos;";
-			}
-			else if (s[i] == '&') {
-				eS += "&apos;";
-			}
-			else {
-				eS += s[i];
-			}
-		}
-		return(eS);
-	}
-};
-
-XmlNode::XmlNode(
-	const string &tag, const map <string, string> &attrs, 
-	size_t numChildrenHint
-) {
-	VAssert(isValidXMLElement(tag));
-
-	_longmap.clear();
-	_doublemap.clear();
-	_stringmap.clear();
-	_attrmap.clear();
-	_children.clear();
-	_tag.clear();
-	_asciiLimit = 1024;
-	_parent = NULL;
-
-	_tag = tag;
-	_attrmap = attrs;
-
-	if (numChildrenHint) _children.reserve(numChildrenHint);
-
-#ifdef	MEMCHECK
-	_allocatedNodes.push_back(this);
-#endif
-
+    return (true);
 }
 
-XmlNode::XmlNode(
-	const string &tag,
-	size_t numChildrenHint
-) {
-	VAssert(isValidXMLElement(tag));
+string escapeStr(string s) {
+    string eS;
+    for (int i = 0; i < s.length(); i++) {
+        if (s[i] == '<') {
+            eS += "&lt;";
+        } else if (s[i] == '>') {
+            eS += "&gt;";
+        } else if (s[i] == '"') {
+            eS += "&quot;";
+        } else if (s[i] == '\'') {
+            eS += "&apos;";
+        } else if (s[i] == '&') {
+            eS += "&apos;";
+        } else {
+            eS += s[i];
+        }
+    }
+    return (eS);
+}
+}; // namespace
 
-	_longmap.clear();
-	_doublemap.clear();
-	_stringmap.clear();
-	_attrmap.clear();
-	_children.clear();
-	_tag.clear();
-	_asciiLimit = 1024;
-	_parent = NULL;
+XmlNode::XmlNode(const string &tag, const map<string, string> &attrs, size_t numChildrenHint) {
+    VAssert(isValidXMLElement(tag));
 
-	_tag = tag;
+    _longmap.clear();
+    _doublemap.clear();
+    _stringmap.clear();
+    _attrmap.clear();
+    _children.clear();
+    _tag.clear();
+    _asciiLimit = 1024;
+    _parent = NULL;
 
-	if (numChildrenHint) _children.reserve(numChildrenHint);
+    _tag = tag;
+    _attrmap = attrs;
 
-#ifdef	MEMCHECK
-	_allocatedNodes.push_back(this);
+    if (numChildrenHint)
+        _children.reserve(numChildrenHint);
+
+#ifdef MEMCHECK
+    _allocatedNodes.push_back(this);
 #endif
-
 }
 
-XmlNode::XmlNode(
-) {
-	_longmap.clear();
-	_doublemap.clear();
-	_stringmap.clear();
-	_attrmap.clear();
-	_children.clear();
-	_tag.clear();
-	_asciiLimit = 1024;
-	_parent = NULL;
+XmlNode::XmlNode(const string &tag, size_t numChildrenHint) {
+    VAssert(isValidXMLElement(tag));
 
-#ifdef	MEMCHECK
-	_allocatedNodes.push_back(this);
+    _longmap.clear();
+    _doublemap.clear();
+    _stringmap.clear();
+    _attrmap.clear();
+    _children.clear();
+    _tag.clear();
+    _asciiLimit = 1024;
+    _parent = NULL;
+
+    _tag = tag;
+
+    if (numChildrenHint)
+        _children.reserve(numChildrenHint);
+
+#ifdef MEMCHECK
+    _allocatedNodes.push_back(this);
 #endif
-
 }
 
-XmlNode::XmlNode(const XmlNode &rhs) :
-	_longmap(rhs._longmap),
-	_doublemap(rhs._doublemap),
-	_stringmap(rhs._stringmap),
-	_attrmap(rhs._attrmap),
-	_children(rhs._children),
-	_tag(rhs._tag),
-	_asciiLimit(rhs._asciiLimit),
-	_parent(NULL)	// Set parent to NULL
+XmlNode::XmlNode() {
+    _longmap.clear();
+    _doublemap.clear();
+    _stringmap.clear();
+    _attrmap.clear();
+    _children.clear();
+    _tag.clear();
+    _asciiLimit = 1024;
+    _parent = NULL;
+
+#ifdef MEMCHECK
+    _allocatedNodes.push_back(this);
+#endif
+}
+
+XmlNode::XmlNode(const XmlNode &rhs)
+    : _longmap(rhs._longmap), _doublemap(rhs._doublemap), _stringmap(rhs._stringmap),
+      _attrmap(rhs._attrmap), _children(rhs._children), _tag(rhs._tag),
+      _asciiLimit(rhs._asciiLimit), _parent(NULL) // Set parent to NULL
 {
-	_children.clear();
-	for (int i=0; i<rhs._children.size(); i++) {
-		AddChild(rhs._children[i]);
-	}
+    _children.clear();
+    for (int i = 0; i < rhs._children.size(); i++) {
+        AddChild(rhs._children[i]);
+    }
 
-#ifdef	MEMCHECK
-	_allocatedNodes.push_back(this);
+#ifdef MEMCHECK
+    _allocatedNodes.push_back(this);
 #endif
-
 }
 
-XmlNode &XmlNode::operator=( const XmlNode& rhs ) {
-	DeleteAll();
-	MyBase::operator=(rhs);
+XmlNode &XmlNode::operator=(const XmlNode &rhs) {
+    DeleteAll();
+    MyBase::operator=(rhs);
 
-	_children.clear();
-	_longmap = rhs._longmap;
-	_doublemap = rhs._doublemap;
-	_stringmap = rhs._stringmap;
-	_attrmap = rhs._attrmap;
-	_children = rhs._children;
-	_tag = rhs._tag;
-	_asciiLimit = rhs._asciiLimit;
-	_parent = NULL;	// Set parent to NULL
+    _children.clear();
+    _longmap = rhs._longmap;
+    _doublemap = rhs._doublemap;
+    _stringmap = rhs._stringmap;
+    _attrmap = rhs._attrmap;
+    _children = rhs._children;
+    _tag = rhs._tag;
+    _asciiLimit = rhs._asciiLimit;
+    _parent = NULL; // Set parent to NULL
 
-	_children.clear();
-	for (int i=0; i<rhs._children.size(); i++) {
-		AddChild(rhs._children[i]);
-	}
+    _children.clear();
+    for (int i = 0; i < rhs._children.size(); i++) {
+        AddChild(rhs._children[i]);
+    }
 
-	return(*this);
+    return (*this);
 }
 
 bool XmlNode::operator==(const XmlNode &rhs) const {
-	if (_longmap != rhs._longmap) return(false);
-	if (_doublemap != rhs._doublemap) return(false);
-	if (_stringmap != rhs._stringmap) return(false);
-	if (_attrmap != rhs._attrmap) return(false);
-	if (_tag != rhs._tag) return(false);
+    if (_longmap != rhs._longmap)
+        return (false);
+    if (_doublemap != rhs._doublemap)
+        return (false);
+    if (_stringmap != rhs._stringmap)
+        return (false);
+    if (_attrmap != rhs._attrmap)
+        return (false);
+    if (_tag != rhs._tag)
+        return (false);
 
-	if (_children.size() != rhs._children.size()) return(false);
-	for (int i=0; i<_children.size(); i++) {
+    if (_children.size() != rhs._children.size())
+        return (false);
+    for (int i = 0; i < _children.size(); i++) {
 
-		// Recusrively call '==' operator
-		//
-		if (! (*(_children[i]) ==  *(rhs._children[i]))) return(false);
-	}
+        // Recusrively call '==' operator
+        //
+        if (!(*(_children[i]) == *(rhs._children[i])))
+            return (false);
+    }
 
+    // Don't check parent!!!
+    //
+    // if (_parent != rhs._parent) return(false);
 
-	// Don't check parent!!! 
-	//
-	//if (_parent != rhs._parent) return(false);
-
-	return(true);
-
+    return (true);
 }
-
-
 
 XmlNode::~XmlNode() {
 
-	DeleteAll();
+    DeleteAll();
 
-#ifdef	MEMCHECK
-	std::vector <XmlNode *>::iterator itr;
-	for (itr = _allocatedNodes.begin(); itr != _allocatedNodes.end(); ++itr) {
-		if (*itr == this) {
-			_allocatedNodes.erase(itr);
-			break;
-		}
-	}
+#ifdef MEMCHECK
+    std::vector<XmlNode *>::iterator itr;
+    for (itr = _allocatedNodes.begin(); itr != _allocatedNodes.end(); ++itr) {
+        if (*itr == this) {
+            _allocatedNodes.erase(itr);
+            break;
+        }
+    }
 #endif
-
 }
 
-
-
-void XmlNode::SetElementLong(
-	const string &tag, const vector<long> &values
-) {
-	VAssert(isValidXMLElement(tag));
-	_longmap[tag] = values;
+void XmlNode::SetElementLong(const string &tag, const vector<long> &values) {
+    VAssert(isValidXMLElement(tag));
+    _longmap[tag] = values;
 }
 
-void XmlNode::SetElementLong(
-	const vector<string> &tags, const vector<long> &values
-) {
-	VAssert(! tags.empty());
+void XmlNode::SetElementLong(const vector<string> &tags, const vector<long> &values) {
+    VAssert(!tags.empty());
 
-	//Iterate through tags, finding associated node
-	XmlNode* currNode = this;
-	for (int i = 0; i< tags.size()-1; i++){
-		XmlNode *child = currNode->GetChild(tags[i]);
-		if (! child) {
-			child = currNode->NewChild(tags[i]);
-		}
-		currNode = child;
-	}
+    // Iterate through tags, finding associated node
+    XmlNode *currNode = this;
+    for (int i = 0; i < tags.size() - 1; i++) {
+        XmlNode *child = currNode->GetChild(tags[i]);
+        if (!child) {
+            child = currNode->NewChild(tags[i]);
+        }
+        currNode = child;
+    }
 
-	string tag = tags[tags.size()-1];
-	VAssert(isValidXMLElement(tag));
-	currNode->_longmap[tag] = values;
+    string tag = tags[tags.size() - 1];
+    VAssert(isValidXMLElement(tag));
+    currNode->_longmap[tag] = values;
 }
-	
-void XmlNode::SetElementDouble(
-	const vector<string> &tags, const vector<double> &values
-) {
-	VAssert(! tags.empty());
 
-	//Iterate through tags, finding associated node
-	XmlNode* currNode = this;
-	for (int i = 0; i< tags.size()-1; i++){
-		XmlNode *child = currNode->GetChild(tags[i]);
-		if (! child) {
-			child = currNode->NewChild(tags[i]);
-		}
-		currNode = child;
-	}
+void XmlNode::SetElementDouble(const vector<string> &tags, const vector<double> &values) {
+    VAssert(!tags.empty());
 
-	string tag = tags[tags.size()-1];
-	VAssert(isValidXMLElement(tag));
-	currNode->_doublemap[tag] = values;
+    // Iterate through tags, finding associated node
+    XmlNode *currNode = this;
+    for (int i = 0; i < tags.size() - 1; i++) {
+        XmlNode *child = currNode->GetChild(tags[i]);
+        if (!child) {
+            child = currNode->NewChild(tags[i]);
+        }
+        currNode = child;
+    }
+
+    string tag = tags[tags.size() - 1];
+    VAssert(isValidXMLElement(tag));
+    currNode->_doublemap[tag] = values;
 }
 
 const vector<long> &XmlNode::GetElementLong(const string &tag) const {
 
-	map <string, vector<long> >::const_iterator p = _longmap.find(tag);
+    map<string, vector<long>>::const_iterator p = _longmap.find(tag);
 
-	// see if entry for this key (tag) already exists
-	//
-	if (p == _longmap.end()) { 
-		return(_emptyLongVec);
-	}
+    // see if entry for this key (tag) already exists
+    //
+    if (p == _longmap.end()) {
+        return (_emptyLongVec);
+    }
 
-	return(p->second);
+    return (p->second);
 }
 
 bool XmlNode::HasElementLong(const string &tag) const {
-	map <string, vector<long> >::const_iterator p = _longmap.find(tag);
-	return(p != _longmap.end());
+    map<string, vector<long>>::const_iterator p = _longmap.find(tag);
+    return (p != _longmap.end());
 }
 
-
-void XmlNode::SetElementDouble(
-	const string &tag, const vector<double> &values
-) {
-	VAssert(isValidXMLElement(tag));
-	_doublemap[tag] = values;
+void XmlNode::SetElementDouble(const string &tag, const vector<double> &values) {
+    VAssert(isValidXMLElement(tag));
+    _doublemap[tag] = values;
 }
-	
+
 const vector<double> &XmlNode::GetElementDouble(const string &tag) const {
 
-	
-	map <string, vector<double> >::const_iterator p = _doublemap.find(tag);
+    map<string, vector<double>>::const_iterator p = _doublemap.find(tag);
 
-	// see if entry for this key (tag) already exists
-	//
-	if (p == _doublemap.end()) { 
-		return(_emptyDoubleVec);
-	}
+    // see if entry for this key (tag) already exists
+    //
+    if (p == _doublemap.end()) {
+        return (_emptyDoubleVec);
+    }
 
-	return(p->second);
+    return (p->second);
 }
 
 bool XmlNode::HasElementDouble(const string &tag) const {
-	if (_doublemap.empty()) return false;
-	map <string, vector<double> >::const_iterator p = _doublemap.find(tag);
-	return(p != _doublemap.end());
-}
-	
-void XmlNode::SetElementString(
-	const string &tag, const string &str
-) {
-	VAssert(isValidXMLElement(tag));
-
-	_stringmap[tag] = str;
-} 
-
-void XmlNode::SetElementStringVec(
-    const string &tag,const vector <string> &strvec
-) {
-	VAssert(isValidXMLElement(tag));
-
-	string s;
-	for (int i=0; i<strvec.size(); i++) {
-		s.append(STLUtils::ReplaceAll(strvec[i], " ", "\\ "));
-		if (i<strvec.size()-1) s.append(" ");
-	}
-
-	return(XmlNode::SetElementString(tag, s));
+    if (_doublemap.empty())
+        return false;
+    map<string, vector<double>>::const_iterator p = _doublemap.find(tag);
+    return (p != _doublemap.end());
 }
 
-void XmlNode::SetElementStringVec(
-    const vector<string> &tags, const vector <string> &strvec
-) {
-	VAssert(! tags.empty());
+void XmlNode::SetElementString(const string &tag, const string &str) {
+    VAssert(isValidXMLElement(tag));
 
-	//Iterate through tags, finding associated node
-	XmlNode* currNode = this;
-	for (int i = 0; i< tags.size()-1; i++){
-		XmlNode *child = currNode->GetChild(tags[i]);
-		if (! child) {
-			child = currNode->NewChild(tags[i]);
-		}
-		currNode = child;
-	}
-	string tag = tags[tags.size()-1];
-	VAssert(isValidXMLElement(tag));
-
-	string s;
-	for (int i=0; i<strvec.size(); i++) {
-		s.append(strvec[i]);
-		if (i<strvec.size()-1) s.append(" ");
-	}
-	return(currNode->SetElementString(tag, s));
+    _stringmap[tag] = str;
 }
 
+void XmlNode::SetElementStringVec(const string &tag, const vector<string> &strvec) {
+    VAssert(isValidXMLElement(tag));
 
-	
+    string s;
+    for (int i = 0; i < strvec.size(); i++) {
+        s.append(STLUtils::ReplaceAll(strvec[i], " ", "\\ "));
+        if (i < strvec.size() - 1)
+            s.append(" ");
+    }
+
+    return (XmlNode::SetElementString(tag, s));
+}
+
+void XmlNode::SetElementStringVec(const vector<string> &tags, const vector<string> &strvec) {
+    VAssert(!tags.empty());
+
+    // Iterate through tags, finding associated node
+    XmlNode *currNode = this;
+    for (int i = 0; i < tags.size() - 1; i++) {
+        XmlNode *child = currNode->GetChild(tags[i]);
+        if (!child) {
+            child = currNode->NewChild(tags[i]);
+        }
+        currNode = child;
+    }
+    string tag = tags[tags.size() - 1];
+    VAssert(isValidXMLElement(tag));
+
+    string s;
+    for (int i = 0; i < strvec.size(); i++) {
+        s.append(strvec[i]);
+        if (i < strvec.size() - 1)
+            s.append(" ");
+    }
+    return (currNode->SetElementString(tag, s));
+}
+
 const string &XmlNode::GetElementString(const string &tag) const {
 
-	map <string, string>::const_iterator p = _stringmap.find(tag);
+    map<string, string>::const_iterator p = _stringmap.find(tag);
 
-	// see if entry for this key (tag) already exists
-	//
-	if (p == _stringmap.end()) { 
-		return(_emptyString);
-	}
+    // see if entry for this key (tag) already exists
+    //
+    if (p == _stringmap.end()) {
+        return (_emptyString);
+    }
 
-	return(p->second);
+    return (p->second);
 }
 
+void XmlNode::GetElementStringVec(const string &tag, vector<string> &vec) const {
 
-void XmlNode::GetElementStringVec(const string &tag, vector <string> &vec) const {
-	
-	string s = XmlNode::GetElementString(tag);
-	StrToWordVec(s, vec);
+    string s = XmlNode::GetElementString(tag);
+    StrToWordVec(s, vec);
     for (string &e : vec)
         e = STLUtils::ReplaceAll(e, "\\ ", " ");
 }
 
-
 bool XmlNode::HasElementString(const string &tag) const {
-	map <string, string>::const_iterator p = _stringmap.find(tag);
-	return(p != _stringmap.end());
+    map<string, string>::const_iterator p = _stringmap.find(tag);
+    return (p != _stringmap.end());
 }
 
-XmlNode	*XmlNode::NewChild(
-	const string &tag, const map <string, string> &attrs, 
-	size_t numChildrenHint
-) {
+XmlNode *XmlNode::NewChild(const string &tag, const map<string, string> &attrs,
+                           size_t numChildrenHint) {
 
-	// Delete duplicates
-	//
-	if (HasChild(tag)) {
-		DeleteChild(tag);
-	}
+    // Delete duplicates
+    //
+    if (HasChild(tag)) {
+        DeleteChild(tag);
+    }
 
-	XmlNode	*mychild = Construct(tag, attrs, numChildrenHint);
+    XmlNode *mychild = Construct(tag, attrs, numChildrenHint);
 
+    mychild->_parent = this;
 
-	mychild->_parent = this;
-
-	_children.push_back(mychild);
-	return(mychild);
+    _children.push_back(mychild);
+    return (mychild);
 }
 
-XmlNode	*XmlNode::AddChild(const XmlNode *child)
-{
-	return(AddChild(*child));
+XmlNode *XmlNode::AddChild(const XmlNode *child) { return (AddChild(*child)); }
+
+XmlNode *XmlNode::AddChild(const XmlNode &child) {
+    XmlNode *mychild = new XmlNode(child);
+
+    // Delete duplicates
+    //
+    if (HasChild(mychild->Tag())) {
+        DeleteChild(mychild->Tag());
+    }
+
+    mychild->_parent = this;
+
+    _children.push_back(mychild);
+    return (mychild);
 }
 
-XmlNode	*XmlNode::AddChild( const XmlNode &child)
-{
-	XmlNode *mychild = new XmlNode(child);
+#ifdef VAPOR3_0_0_ALPHA
+int XmlNode::ReplaceChild(XmlNode *prevChildNode, XmlNode *newChildNode) {
+    for (int index = 0; index < _children.size(); index++) {
+        XmlNode *node = _children[index];
+        if (node == prevChildNode) {
+            delete node;
+            _children[index] = new XmlNode(*newChildNode);
+            newChildNode->_parent = this;
 
-	// Delete duplicates
-	//
-	if (HasChild(mychild->Tag())) {
-		DeleteChild(mychild->Tag());
-	}
-
-	mychild->_parent = this;
-	
-	_children.push_back(mychild);
-	return(mychild);
-}
-
-#ifdef	VAPOR3_0_0_ALPHA
-int XmlNode::ReplaceChild(XmlNode* prevChildNode, XmlNode* newChildNode){
-	for (int index = 0; index < _children.size(); index++){
-		XmlNode *node = _children[index];
-		if (node == prevChildNode) {
-			delete node;
-			_children[index] = new XmlNode(*newChildNode);
-			newChildNode->_parent = this;
-
-			return index;
-		}
-	}
-	SetErrMsg("Node not found");
-	return(-1);
+            return index;
+        }
+    }
+    SetErrMsg("Node not found");
+    return (-1);
 }
 #endif
 
-int	XmlNode::DeleteChild(size_t index) {
-	if (index >= _children.size()) {
-		SetErrMsg("Invalid child id : %d", index);
-		return(-1);
-	}
+int XmlNode::DeleteChild(size_t index) {
+    if (index >= _children.size()) {
+        SetErrMsg("Invalid child id : %d", index);
+        return (-1);
+    }
 
-	XmlNode	*node = _children[index];
-	VAssert(node);
+    XmlNode *node = _children[index];
+    VAssert(node);
 
+    // Remove from parent's list of children and
+    // recursively delete this node's children, if any
+    //
+    node->SetParent(NULL);
+    delete node;
 
-	// Remove from parent's list of children and 
-	// recursively delete this node's children, if any
-	//
-	node->SetParent(NULL);
-	delete node;
-
-	return(0);
+    return (0);
 }
 
-int	XmlNode::DeleteChild(const string &tag) {
-	XmlNode *child;
+int XmlNode::DeleteChild(const string &tag) {
+    XmlNode *child;
 
-	for (size_t i = 0; i<_children.size(); i++) {
-		child = GetChild(i);
-		VAssert(child);
-	
-		if (StrCmpNoCase(child->_tag, tag) == 0) {
-			return(XmlNode::DeleteChild(i));
-		}
-	}
+    for (size_t i = 0; i < _children.size(); i++) {
+        child = GetChild(i);
+        VAssert(child);
 
-	SetErrMsg("Invalid child name (does not exist) : %s", tag.c_str());
-	return(-1);
+        if (StrCmpNoCase(child->_tag, tag) == 0) {
+            return (XmlNode::DeleteChild(i));
+        }
+    }
+
+    SetErrMsg("Invalid child name (does not exist) : %s", tag.c_str());
+    return (-1);
 }
 
-XmlNode	*XmlNode::GetChild(size_t index) const {
+XmlNode *XmlNode::GetChild(size_t index) const {
 
-	if (index >= _children.size()) {
-		SetErrMsg("Invalid child id : %d", index);
-		return(NULL);
-	}
+    if (index >= _children.size()) {
+        SetErrMsg("Invalid child id : %d", index);
+        return (NULL);
+    }
 
-	return(_children[index]);
+    return (_children[index]);
 }
 
-bool XmlNode::HasChild(size_t index) const {
+bool XmlNode::HasChild(size_t index) const { return (index < _children.size()); }
 
-	return(index < _children.size());
-}
+XmlNode *XmlNode::GetChild(const string &tag) const {
 
-XmlNode	*XmlNode::GetChild(const string &tag) const {
+    XmlNode *child;
 
-	XmlNode *child;
+    for (size_t i = 0; i < _children.size(); i++) {
+        if (!(child = GetChild(i)))
+            return (NULL);
 
-	for (size_t i = 0; i<_children.size(); i++) {
-		if (! (child = GetChild(i))) return(NULL);
-	
-		if (StrCmpNoCase(child->_tag, tag) == 0) return(child);
-	}
+        if (StrCmpNoCase(child->_tag, tag) == 0)
+            return (child);
+    }
 
-	return(NULL);
+    return (NULL);
 }
 
 bool XmlNode::HasChild(const string &tag) const {
 
-	XmlNode *child = NULL;
+    XmlNode *child = NULL;
 
-	for (size_t i = 0; i<_children.size(); i++) {
-		child = GetChild(i);
-		VAssert (child != NULL);
-	
-		if (StrCmpNoCase(child->_tag, tag) == 0) return(true);
-	}
-	return(false);
+    for (size_t i = 0; i < _children.size(); i++) {
+        child = GetChild(i);
+        VAssert(child != NULL);
+
+        if (StrCmpNoCase(child->_tag, tag) == 0)
+            return (true);
+    }
+    return (false);
 }
 
-XmlNode *XmlNode::GetNode(
-	std::vector <string> path, bool absolute
-) const {
+XmlNode *XmlNode::GetNode(std::vector<string> path, bool absolute) const {
 
-	if (path.empty()) return (NULL);
+    if (path.empty())
+        return (NULL);
 
-	const XmlNode *node = this;
+    const XmlNode *node = this;
 
-	// If absolute path find the root of the tree
-	//
-	if (absolute) {
-		while (node->GetParent() != NULL) {
-			node = node->GetParent();
-		}
-		if (node->GetTag() != path[0]) return(NULL); 
-		path.erase(path.begin());
-	}
+    // If absolute path find the root of the tree
+    //
+    if (absolute) {
+        while (node->GetParent() != NULL) {
+            node = node->GetParent();
+        }
+        if (node->GetTag() != path[0])
+            return (NULL);
+        path.erase(path.begin());
+    }
 
-	// Now walk the path down to the last node in the path
-	//
-	for (int i=0; i<path.size(); i++) {
-		if (! node->HasChild(path[i])) return(NULL);
+    // Now walk the path down to the last node in the path
+    //
+    for (int i = 0; i < path.size(); i++) {
+        if (!node->HasChild(path[i]))
+            return (NULL);
 
-		node = node->GetChild(path[i]);
-	}
+        node = node->GetChild(path[i]);
+    }
 
-	return((XmlNode *) node);
+    return ((XmlNode *)node);
 }
 
 XmlNode *XmlNode::GetNode(string path) const {
-	if (path.empty()) return (NULL);
+    if (path.empty())
+        return (NULL);
 
-	vector <string> pathvec;
-	Wasp::SplitString(path, '/', pathvec);
+    vector<string> pathvec;
+    Wasp::SplitString(path, '/', pathvec);
 
-	// Absolute or relative path?
-	//
-	if (path[0] == '/') {
-		return(GetNode(pathvec, true));
-	}
-	else {
-		return(GetNode(pathvec, false));
-	}
+    // Absolute or relative path?
+    //
+    if (path[0] == '/') {
+        return (GetNode(pathvec, true));
+    } else {
+        return (GetNode(pathvec, false));
+    }
 }
-
-
 
 void XmlNode::SetParent(XmlNode *parent) {
 
-	// No-op case
-	//
-	if (parent == _parent) return;
-	
-	// Delete duplicates on new parent
-	//
-	if (parent && parent->HasChild(Tag())) {
-		parent->DeleteChild(Tag());
-	}
-	
+    // No-op case
+    //
+    if (parent == _parent)
+        return;
 
-	// Remove from current parent's list of children
-	//
-	if (_parent) {
-		vector <XmlNode *>::iterator itr = _parent->_children.begin();
-		for (; itr != _parent->_children.end(); ++itr) {
-			XmlNode *node = *itr;
-			if (node->Tag() == Tag()) {
-				_parent->_children.erase(itr);
-				break;
-			}
-		}
-	}
+    // Delete duplicates on new parent
+    //
+    if (parent && parent->HasChild(Tag())) {
+        parent->DeleteChild(Tag());
+    }
 
-	// If new parent is not NULL
-	//
-	if (parent) {
-		parent->_children.push_back(this);
-	}
+    // Remove from current parent's list of children
+    //
+    if (_parent) {
+        vector<XmlNode *>::iterator itr = _parent->_children.begin();
+        for (; itr != _parent->_children.end(); ++itr) {
+            XmlNode *node = *itr;
+            if (node->Tag() == Tag()) {
+                _parent->_children.erase(itr);
+                break;
+            }
+        }
+    }
 
-	_parent = parent;
+    // If new parent is not NULL
+    //
+    if (parent) {
+        parent->_children.push_back(this);
+    }
+
+    _parent = parent;
 }
 
-
-//Recursively delete all descendants of this node
+// Recursively delete all descendants of this node
 //
 void XmlNode::DeleteAll() {
 
-	for (int i=0; i<(int)_children.size(); i++) {
-		if (_children[i]) {
-			XmlNode *node = _children[i];
-			VAssert(node);
+    for (int i = 0; i < (int)_children.size(); i++) {
+        if (_children[i]) {
+            XmlNode *node = _children[i];
+            VAssert(node);
 
-			delete node;
-		}
-	}
-	_children.clear();
+            delete node;
+        }
+    }
+    _children.clear();
 }
 
+vector<string> XmlNode::GetPathVec() const {
 
-vector <string> XmlNode::GetPathVec() const {
+    vector<string> path;
+    path.push_back(GetTag());
 
-	vector <string> path;
-	path.push_back(GetTag());
+    const XmlNode *child = this;
+    const XmlNode *parent = NULL;
+    while ((parent = child->GetParent()) != NULL) {
+        path.push_back(parent->GetTag());
+        child = parent;
+    }
 
-	const XmlNode *child = this; 
-	const XmlNode *parent = NULL;
-	while ((parent = child->GetParent()) != NULL) {
-		path.push_back(parent->GetTag());
-		child = parent;
-	}
+    // Reverse so root is first
+    //
+    reverse(path.begin(), path.end());
 
-	// Reverse so root is first
-	//
-	reverse(path.begin(), path.end());
-
-	return(path);
+    return (path);
 }
 
 string XmlNode::GetPath() const {
-	vector <string> tags = GetPathVec();
-	string path;
+    vector<string> tags = GetPathVec();
+    string path;
 
-	for (int i=0; i<tags.size(); i++) {
-		path += "/";
-		path += tags[i];
-	}
-	return(path);
+    for (int i = 0; i < tags.size(); i++) {
+        path += "/";
+        path += tags[i];
+    }
+    return (path);
 }
 
 XmlNode *XmlNode::GetRoot() const {
-	const XmlNode *node = this;	// Why must node be const?
-	while (node->GetParent()) {
-		node = node->GetParent();
-	} 
-	return((XmlNode *) node);
+    const XmlNode *node = this; // Why must node be const?
+    while (node->GetParent()) {
+        node = node->GetParent();
+    }
+    return ((XmlNode *)node);
 }
 
-
-ostream&
-XmlNode::streamOut(ostream&os, const XmlNode& node) {
-	os << node;
-	return os;
+ostream &XmlNode::streamOut(ostream &os, const XmlNode &node) {
+    os << node;
+    return os;
 }
 
 namespace VAPoR {
-std::ostream& operator<<(ostream& os, const VAPoR::XmlNode& node) {
+std::ostream &operator<<(ostream &os, const VAPoR::XmlNode &node) {
 
-	map <string, vector<long> >::const_iterator plong;
-	map <string, vector<double> >::const_iterator pdouble;
-	map <string, string>::const_iterator pstring;
-	map <string, string>::const_iterator pattr;
+    map<string, vector<long>>::const_iterator plong;
+    map<string, vector<double>>::const_iterator pdouble;
+    map<string, string>::const_iterator pstring;
+    map<string, string>::const_iterator pattr;
 
-	int	i;
+    int i;
 
-//	os.setf(ios_base::scientific, ios_base::floatfield);
-	os.precision(16);
+    //	os.setf(ios_base::scientific, ios_base::floatfield);
+    os.precision(16);
 
-	plong = node._longmap.begin();
-	pdouble = node._doublemap.begin();
-	pstring = node._stringmap.begin();
-	pattr = node._attrmap.begin();
+    plong = node._longmap.begin();
+    pdouble = node._doublemap.begin();
+    pstring = node._stringmap.begin();
+    pattr = node._attrmap.begin();
 
-	os << "<" << node._tag;
+    os << "<" << node._tag;
 
-	for(; pattr != node._attrmap.end(); pattr++) {
-		const string &name = pattr->first;
-		const string &value = pattr->second;
+    for (; pattr != node._attrmap.end(); pattr++) {
+        const string &name = pattr->first;
+        const string &value = pattr->second;
 
-		os << " " << name << "=\"" << value << "\" ";
+        os << " " << name << "=\"" << value << "\" ";
+    }
+    os << ">" << endl;
 
-	}
-	os << ">" << endl;
+    for (; plong != node._longmap.end(); plong++) {
+        const string &tag = plong->first;
 
-	for(; plong != node._longmap.end(); plong++) {
-		const string &tag = plong->first;
+        const vector<long> &v = plong->second;
 
+        os << "<" << tag << " Type=\"Long\">" << endl;
 
-		const vector<long> &v = plong->second;
+        for (i = 0; i < (int)v.size(); i++) {
+            os << v[i] << " ";
+        }
+        os << endl;
 
-		os << "<" << tag << " Type=\"Long\">" << endl;
+        os << "</" << tag << ">" << endl;
+    }
 
-		for(i=0; i<(int)v.size(); i++) {
-			os << v[i] << " ";
-		}
-		os << endl;
+    for (; pdouble != node._doublemap.end(); pdouble++) {
+        const string &tag = pdouble->first;
 
-		os << "</" << tag << ">" << endl;
-	}
+        os << "<" << tag << " Type=\"Double\">" << endl;
 
-	for(; pdouble != node._doublemap.end(); pdouble++) {
-		const string &tag = pdouble->first;
+        const vector<double> &v = pdouble->second;
 
-		os << "<" << tag << " Type=\"Double\">" << endl;
+        for (i = 0; i < (int)v.size(); i++) {
+            os << v[i] << " ";
+        }
+        os << endl;
 
-		const vector<double> &v = pdouble->second;
+        os << "</" << tag << ">" << endl;
+    }
 
-		for(i=0; i<(int)v.size(); i++) {
-			os << v[i] << " ";
-		}
-		os << endl;
+    for (; pstring != node._stringmap.end(); pstring++) {
+        const string &tag = pstring->first;
 
-		os << "</" << tag << ">" << endl;
-	}
+        os << "<" << tag << " Type=\"String\">" << endl;
 
-	for(; pstring != node._stringmap.end(); pstring++) {
-		const string &tag = pstring->first;
+        string v = escapeStr(pstring->second);
 
-		os << "<" << tag << " Type=\"String\">" << endl;
+        os << v;
 
-		string v = escapeStr(pstring->second);
+        os << endl;
 
-		os << v;
+        os << "</" << tag << ">" << endl;
+    }
 
-		os << endl;
+    if (node._children.size()) {
 
-		os << "</" << tag << ">" << endl;
-	}
+        for (int i = 0; i < (int)node._children.size(); i++) {
+            XmlNode *childptr;
 
-	if (node._children.size()) {
+            childptr = node._children[i];
+            os << *childptr;
+        }
+    }
 
-		for (int i = 0; i<(int)node._children.size(); i++) {
-			XmlNode *childptr;
+    os << "</" << node._tag << ">" << endl;
 
-			childptr = node._children[i];
-			os << *childptr;
-		}
-
-	}
-
-	os << "</" << node._tag << ">" << endl;
-
-	return (os);
+    return (os);
 }
 
-void    _StartElementHandler(
-	void *userData, const char *tag, const char **attrs
-) {
-	XmlParser* parser = (XmlParser *) userData;
-	string mytag(tag);
+void _StartElementHandler(void *userData, const char *tag, const char **attrs) {
+    XmlParser *parser = (XmlParser *)userData;
+    string mytag(tag);
 
-	map <string, string> myattrs;
-	while (*attrs) {
-		string key = *attrs;
-		attrs++;
-		VAssert(*attrs);
-		string value = *attrs;
-		attrs++;
-		myattrs[key] = value;
-	}
-	parser->_startElementHandler(mytag, myattrs);
+    map<string, string> myattrs;
+    while (*attrs) {
+        string key = *attrs;
+        attrs++;
+        VAssert(*attrs);
+        string value = *attrs;
+        attrs++;
+        myattrs[key] = value;
+    }
+    parser->_startElementHandler(mytag, myattrs);
 }
 
 void _EndElementHandler(void *userData, const char *tag) {
-	XmlParser* parser = (XmlParser *) userData;
-	string mytag(tag);
+    XmlParser *parser = (XmlParser *)userData;
+    string mytag(tag);
 
-	parser->_endElementHandler(mytag);
+    parser->_endElementHandler(mytag);
 }
 
+void _CharDataHandler(void *userData, const char *s, int len) {
+    XmlParser *parser = (XmlParser *)userData;
+    string mys(s, len);
 
-void    _CharDataHandler(
-	void *userData, const char *s, int len
-) {
-	XmlParser* parser = (XmlParser *) userData;
-	string mys(s, len);
-
-	parser->_charDataHandler(mys);
+    parser->_charDataHandler(mys);
 }
 
-
-};
-
+}; // namespace VAPoR
 
 XmlParser::XmlParser() {
-	_root = NULL;
-	_nodeType = UNKNOWN;
-	//_nodeStack.clear(); // No stack clear! Sigh
-	_stringData.clear();
+    _root = NULL;
+    _nodeType = UNKNOWN;
+    //_nodeStack.clear(); // No stack clear! Sigh
+    _stringData.clear();
 }
 
 int XmlParser::LoadFromFile(XmlNode *node, string path) {
-	VAssert(node != NULL);
+    VAssert(node != NULL);
 
-	_root = node;
-	_nodeType = UNKNOWN;
-	_stringData.clear();
+    _root = node;
+    _nodeType = UNKNOWN;
+    _stringData.clear();
 
-	//_nodeStack.clear();
-	while (_nodeStack.size()) _nodeStack.pop();
-	
-	// Delete all current children
-	//
-	_root->DeleteAll();
+    //_nodeStack.clear();
+    while (_nodeStack.size())
+        _nodeStack.pop();
 
-	ifstream in(path);
-	if (! in) {
-		SetErrMsg("Failed to open file %s : %M", path.c_str());
-		return(-1);
-	}
+    // Delete all current children
+    //
+    _root->DeleteAll();
 
-	XML_Parser expatParser = XML_ParserCreate(NULL);
-	VAssert(expatParser != NULL);
+    ifstream in(path);
+    if (!in) {
+        SetErrMsg("Failed to open file %s : %M", path.c_str());
+        return (-1);
+    }
 
-	XML_SetElementHandler(
-		expatParser, _StartElementHandler, _EndElementHandler
-	);
-	XML_SetCharacterDataHandler(expatParser, _CharDataHandler);
+    XML_Parser expatParser = XML_ParserCreate(NULL);
+    VAssert(expatParser != NULL);
 
-	XML_SetUserData(expatParser, (void *) this);
+    XML_SetElementHandler(expatParser, _StartElementHandler, _EndElementHandler);
+    XML_SetCharacterDataHandler(expatParser, _CharDataHandler);
 
-	// Parse the file until we run out of elements or a parsing error occurs
-	//
-	char line[1024];
-	while(in.good()) {
+    XML_SetUserData(expatParser, (void *)this);
 
-		int rc;
-		in.read(line, sizeof(line)-1);
-		if ((rc = in.gcount()) > 0) {
-			if (XML_Parse(expatParser, line, rc, 0) == XML_STATUS_ERROR) {
-				SetErrMsg(
-					"Error parsing xml file at line %d : %s",
-					XML_GetCurrentLineNumber(expatParser),
-					XML_ErrorString(XML_GetErrorCode(expatParser))
-				);
-				XML_ParserFree(expatParser);
-				return(-1);
-			}
-		}
-	}
-	XML_ParserFree(expatParser);
+    // Parse the file until we run out of elements or a parsing error occurs
+    //
+    char line[1024];
+    while (in.good()) {
 
-	if (in.bad() || ! _nodeStack.empty()) {
-		SetErrMsg("IO Error reading XML file");
-		return(-1);
-	}
-	in.close();
+        int rc;
+        in.read(line, sizeof(line) - 1);
+        if ((rc = in.gcount()) > 0) {
+            if (XML_Parse(expatParser, line, rc, 0) == XML_STATUS_ERROR) {
+                SetErrMsg("Error parsing xml file at line %d : %s",
+                          XML_GetCurrentLineNumber(expatParser),
+                          XML_ErrorString(XML_GetErrorCode(expatParser)));
+                XML_ParserFree(expatParser);
+                return (-1);
+            }
+        }
+    }
+    XML_ParserFree(expatParser);
 
-	return(0);
+    if (in.bad() || !_nodeStack.empty()) {
+        SetErrMsg("IO Error reading XML file");
+        return (-1);
+    }
+    in.close();
+
+    return (0);
 }
 
-void XmlParser::_startElementHandler(
-	string tag, map <string, string> &myattrs
-) {
+void XmlParser::_startElementHandler(string tag, map<string, string> &myattrs) {
 
+    _nodeType = UNKNOWN;
+    _stringData.clear();
 
-	_nodeType = UNKNOWN;
-	_stringData.clear();
-
-
-	type dtype;
-	if (_isParentElement(tag, myattrs)) {
-		_nodeType = PARENT;
-		XmlNode *parent = NULL;
-		if (_nodeStack.empty()) {
-			parent = _root;
-			parent->Tag() = tag;
-			parent->Attrs() = myattrs;
-			_nodeStack.push(parent);
-		}
-		else {
-			XmlNode child(tag, myattrs);
-			parent = _nodeStack.top();
-			XmlNode *childptr = parent->AddChild(&child);
-			_nodeStack.push(childptr);
-		}
-	}
-	else if (_isDataElement(tag, myattrs, dtype)) {
-		VAssert(! _nodeStack.empty());
-		_nodeType = dtype;
-	}
-	//cout << "_startElementHandler() tag, type " << tag << " " << _nodeType << endl;
+    type dtype;
+    if (_isParentElement(tag, myattrs)) {
+        _nodeType = PARENT;
+        XmlNode *parent = NULL;
+        if (_nodeStack.empty()) {
+            parent = _root;
+            parent->Tag() = tag;
+            parent->Attrs() = myattrs;
+            _nodeStack.push(parent);
+        } else {
+            XmlNode child(tag, myattrs);
+            parent = _nodeStack.top();
+            XmlNode *childptr = parent->AddChild(&child);
+            _nodeStack.push(childptr);
+        }
+    } else if (_isDataElement(tag, myattrs, dtype)) {
+        VAssert(!_nodeStack.empty());
+        _nodeType = dtype;
+    }
+    // cout << "_startElementHandler() tag, type " << tag << " " << _nodeType << endl;
 }
 
 void XmlParser::_endElementHandler(string tag) {
 
-	VAssert(! _nodeStack.empty());
+    VAssert(!_nodeStack.empty());
 
-	//cout << "_endElementHandler() tag, type /" << tag << " " << _nodeType << endl;
+    // cout << "_endElementHandler() tag, type /" << tag << " " << _nodeType << endl;
 
-	// remove leading and trailing white space from the XML char data
-	//
-	StrRmWhiteSpace(_stringData);
+    // remove leading and trailing white space from the XML char data
+    //
+    StrRmWhiteSpace(_stringData);
 
-	XmlNode *node = _nodeStack.top();
+    XmlNode *node = _nodeStack.top();
 
-	switch (_nodeType) {
-	case PARENT:
-		VAssert(tag == node->Tag());
-		_nodeStack.pop();
-	break;
+    switch (_nodeType) {
+    case PARENT:
+        VAssert(tag == node->Tag());
+        _nodeStack.pop();
+        break;
 
-	case LONG_DATA: {
-		istringstream ist(_stringData);
-		long v;
-		vector <long> values;
-		while (ist >> v) values.push_back(v);
-		
-		node->SetElementLong(tag, values);
-		break;
-	}
-	case DOUBLE_DATA: {
-		istringstream ist(_stringData);
-		double v;
-		vector <double> values;
-		while (ist >> v) values.push_back(v);
+    case LONG_DATA: {
+        istringstream ist(_stringData);
+        long v;
+        vector<long> values;
+        while (ist >> v)
+            values.push_back(v);
 
-		node->SetElementDouble(tag, values);
-		break;
-	}
-	case STRING_DATA:
-		node->SetElementString(tag, _stringData);
-	break;
-	default:
-		VAssert(0);
-	}
-	_nodeType = PARENT;
+        node->SetElementLong(tag, values);
+        break;
+    }
+    case DOUBLE_DATA: {
+        istringstream ist(_stringData);
+        double v;
+        vector<double> values;
+        while (ist >> v)
+            values.push_back(v);
+
+        node->SetElementDouble(tag, values);
+        break;
+    }
+    case STRING_DATA:
+        node->SetElementString(tag, _stringData);
+        break;
+    default:
+        VAssert(0);
+    }
+    _nodeType = PARENT;
 }
 
 void XmlParser::_charDataHandler(string s) {
 
-	if (!(_nodeType == LONG_DATA || _nodeType == DOUBLE_DATA || _nodeType == STRING_DATA)) return;
+    if (!(_nodeType == LONG_DATA || _nodeType == DOUBLE_DATA || _nodeType == STRING_DATA))
+        return;
 
-	//cout << "_CharDataHandler() : " << "\""<<s<<"\"" << endl;
+    // cout << "_CharDataHandler() : " << "\""<<s<<"\"" << endl;
 
-	_stringData.append(s);
-
+    _stringData.append(s);
 }
 
-bool XmlParser::_isParentElement(
-	string tag, map <string, string> myattrs
-) const {
-	type dtype;
+bool XmlParser::_isParentElement(string tag, map<string, string> myattrs) const {
+    type dtype;
 
-	if (_isDataElement(tag, myattrs, dtype)) return (false);
+    if (_isDataElement(tag, myattrs, dtype))
+        return (false);
 
-	return(true);
+    return (true);
 }
 
-bool XmlParser::_isDataElement(
-	string tag, map <string, string> myattrs, type &dtype
-) const {
-	dtype = UNKNOWN;
+bool XmlParser::_isDataElement(string tag, map<string, string> myattrs, type &dtype) const {
+    dtype = UNKNOWN;
 
-	if (myattrs.size() != 1) return false;
+    if (myattrs.size() != 1)
+        return false;
 
-	map <string, string>::const_iterator itr = myattrs.begin();
-	if (StrCmpNoCase(itr->first, TypeAttr) != 0) return false; 
+    map<string, string>::const_iterator itr = myattrs.begin();
+    if (StrCmpNoCase(itr->first, TypeAttr) != 0)
+        return false;
 
-	if (StrCmpNoCase(itr->second, LongType) == 0) {
-		dtype = LONG_DATA;
-		return true; 
-	}
-	else if (StrCmpNoCase(itr->second, DoubleType) == 0) {
-		dtype = DOUBLE_DATA;
-		return true; 
-	}
-	else if (StrCmpNoCase(itr->second, StringType) == 0) {
-		dtype = STRING_DATA;
-		return true; 
-	}
+    if (StrCmpNoCase(itr->second, LongType) == 0) {
+        dtype = LONG_DATA;
+        return true;
+    } else if (StrCmpNoCase(itr->second, DoubleType) == 0) {
+        dtype = DOUBLE_DATA;
+        return true;
+    } else if (StrCmpNoCase(itr->second, StringType) == 0) {
+        dtype = STRING_DATA;
+        return true;
+    }
 
-	return(false);
+    return (false);
 }

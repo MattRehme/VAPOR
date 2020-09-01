@@ -5,29 +5,29 @@
 #include "QColorWidget.h"
 
 namespace VAPoR {
-    class RenderParams;
+class RenderParams;
 }
 
 class TFColorInfoWidget : public TFInfoWidget {
     Q_OBJECT
-    
-public:
+
+  public:
     TFColorInfoWidget(const std::string &variableNameTag);
     void SetColor(const QColor &color);
-    
-protected:
+
+  protected:
     void controlPointChanged();
-    
-private:
+
+  private:
     QColorWidget *_colorEdit;
-    
-signals:
+
+  signals:
     void ControlPointChanged(float value, QColor color);
-    
-public slots:
+
+  public slots:
     void SetControlPoint(float value, const QColor &color);
     void DeselectControlPoint();
-    
-private slots:
+
+  private slots:
     void colorEditChanged();
 };

@@ -20,103 +20,93 @@
 #ifndef SETTINGSEVENTROUTER_H
 #define SETTINGSEVENTROUTER_H
 
-
 #include <qobject.h>
 #include "EventRouter.h"
 #include <vapor/MyBase.h>
 #include "ui_SettingsGUI.h"
 
-
 QT_USE_NAMESPACE
 
 namespace VAPoR {
-	class ControlExec;
+class ControlExec;
 }
 
 class SettingsEventRouter : public QWidget, public Ui_SettingsGUI, public EventRouter {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public: 
-	SettingsEventRouter(
-		QWidget *parent, VAPoR::ControlExec *ce
-	);
+  public:
+    SettingsEventRouter(QWidget *parent, VAPoR::ControlExec *ce);
 
-	virtual ~SettingsEventRouter();
+    virtual ~SettingsEventRouter();
 
-	//! For the SettingsEventRouter, we must override confirmText method on base class,
-	//! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
-	//! Connect signals and slots from tab
-	virtual void hookUpTab();
+    //! For the SettingsEventRouter, we must override confirmText method on base class,
+    //! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
+    //! Connect signals and slots from tab
+    virtual void hookUpTab();
 
-	virtual void GetWebHelp(
-		std::vector <std::pair <string, string>> &help
-	) const;
-	
-	//! Ignore wheel event in tab (to avoid confusion)
-	virtual void wheelEvent(QWheelEvent*) {}
+    virtual void GetWebHelp(std::vector<std::pair<string, string>> &help) const;
 
- // Get static string identifier for this router class
- //
- static string GetClassType() {
-	return("SettingsEventRouter");
- }
- string GetType() const {return GetClassType(); }
+    //! Ignore wheel event in tab (to avoid confusion)
+    virtual void wheelEvent(QWheelEvent *) {}
 
+    // Get static string identifier for this router class
+    //
+    static string GetClassType() { return ("SettingsEventRouter"); }
+    string GetType() const { return GetClassType(); }
 
-protected:
- virtual void _updateTab();
- virtual void _confirmText() {}
-	
-private slots:
+  protected:
+    virtual void _updateTab();
+    virtual void _confirmText() {}
 
-	void _enableAutoStretch(bool enabled);
-	void _enableAutoSave(bool enabled);
-	void _changesPerSaveChanged();
-	void _autoSaveFileChanged();
-	void _chooseAutoSaveFile();
+  private slots:
 
-	void _numThreadsChanged();
-	void _cacheSizeChanged();
-	void _enableWinSize(bool enabled);
-	void _windowSizeChanged();
-	
-	void _saveSettings();
-	void _setSessionPath();
-	void _setMetadataPath();
-	void _setTFPath();
-	void _setFlowPath();
-	void _setPythonPath();
+    void _enableAutoStretch(bool enabled);
+    void _enableAutoSave(bool enabled);
+    void _changesPerSaveChanged();
+    void _autoSaveFileChanged();
+    void _chooseAutoSaveFile();
 
-	void _chooseSessionPath();
-	void _chooseMetadataPath();
-	void _chooseTFPath();
-	void _chooseFlowPath();
-	void _choosePythonPath();
-	void _winLockChanged(bool val); 
-	void _restoreDefaults();
+    void _numThreadsChanged();
+    void _cacheSizeChanged();
+    void _enableWinSize(bool enabled);
+    void _windowSizeChanged();
 
-private:
-	void _setFilePath(void (SettingsParams::*setFunc)(string),
-		string (SettingsParams::*getFunc)() const,
-		SettingsParams &sParams,
-		QLineEdit* lineEdit);
-	void _blockSignals(bool block);
+    void _saveSettings();
+    void _setSessionPath();
+    void _setMetadataPath();
+    void _setTFPath();
+    void _setFlowPath();
+    void _setPythonPath();
 
-	void _updateGeneralSettings();
-	void _updateStartupSettings();
-	void _updateDirectoryPaths();
+    void _chooseSessionPath();
+    void _chooseMetadataPath();
+    void _chooseTFPath();
+    void _chooseFlowPath();
+    void _choosePythonPath();
+    void _winLockChanged(bool val);
+    void _restoreDefaults();
+
+  private:
+    void _setFilePath(void (SettingsParams::*setFunc)(string),
+                      string (SettingsParams::*getFunc)() const, SettingsParams &sParams,
+                      QLineEdit *lineEdit);
+    void _blockSignals(bool block);
+
+    void _updateGeneralSettings();
+    void _updateStartupSettings();
+    void _updateDirectoryPaths();
 
     // Checks if a file exists on the disk, and warns the user if it does.
     // Returns true if 1) there is no such file on disk; and
     //                 2) the user says YES to overwrite.
     // Returns false if the users says NO to overwrite.
     //
-    bool _confirmFileExist( QString& filename );
+    bool _confirmFileExist(QString &filename);
 
-	SettingsParams* _defaultParams;
+    SettingsParams *_defaultParams;
 
-	string _choosePathHelper(string current, string help);
+    string _choosePathHelper(string current, string help);
 };
 
-#endif //SETTINGSEVENTROUTER_H 
+#endif // SETTINGSEVENTROUTER_H

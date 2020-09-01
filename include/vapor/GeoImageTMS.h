@@ -22,58 +22,43 @@ namespace VAPoR {
 //!
 //
 class RENDER_API GeoImageTMS : public GeoImage {
-public:
+  public:
+    GeoImageTMS();
+    virtual ~GeoImageTMS();
 
- GeoImageTMS();
- virtual ~GeoImageTMS();
+    int Initialize(string path, vector<double> times);
 
- int Initialize(string path, vector <double> times);
+    unsigned char *GetImage(size_t ts, size_t &width, size_t &height);
 
- unsigned char *GetImage(size_t ts, size_t &width, size_t &height);
+    unsigned char *GetImage(size_t ts, const double pcsExtentsReq[4], string proj4StringReq,
+                            size_t maxWidthReq, size_t maxHeightReq, double pcsExtentsImg[4],
+                            double geoCornersImg[8], string &proj4StringImg, size_t &width,
+                            size_t &height);
 
- unsigned char *GetImage(
-	size_t ts, const double pcsExtentsReq[4], string proj4StringReq,
-	size_t maxWidthReq, size_t maxHeightReq,
-	double pcsExtentsImg[4], double geoCornersImg[8], string &proj4StringImg,
-	size_t &width, size_t &height
- );
+  private:
+    string _dir; // path to TMS directory
+    int _maxLOD; // Maximum LOD available in TMS
 
+    unsigned char *_texture; // storage for texture image
+    size_t _textureSize;
 
-private:
+    unsigned char *_tileBuf; // storage for a single tile
+    size_t _tileBufSize;
 
- string _dir;	// path to TMS directory
- int _maxLOD;	// Maximum LOD available in TMS
- 
- unsigned char *_texture;	// storage for texture image
- size_t _textureSize;
+    GeoTileMercator *_geotile;
 
- unsigned char *_tileBuf;	// storage for a single tile
- size_t _tileBufSize;
+    string _defaultProj4String; // proj4 string for global mercator
 
- GeoTileMercator *_geotile;
+    string _tilePath(string dir, size_t tileX, size_t tileY, int lod) const;
 
- string _defaultProj4String;	// proj4 string for global mercator
+    int _tileSize(string dir, size_t tileX, size_t tileY, int lod, size_t &w, size_t &h);
 
- string _tilePath(string dir, size_t tileX, size_t tileY, int lod) const;
+    int _tileRead(string dir, size_t tileX, size_t tileY, int lod, unsigned char *tile);
 
- int _tileSize(
-	string dir, size_t tileX, size_t tileY, int lod, size_t &w, size_t &h
- ); 
+    int _getBestLOD(const double myGeoExtentsData[4], int maxWidthReq, int maxHeightReq) const;
 
- int _tileRead(
-    string dir, size_t tileX, size_t tileY, int lod, unsigned char *tile
- );
-
- int _getBestLOD(
-	const double myGeoExtentsData[4], int maxWidthReq, int maxHeightReq
- ) const;
-
- int _getMap(
-	const size_t pixelSW[2], const size_t pixelNE[2], 
-	int lod, unsigned char *texture
- ) ;
-
+    int _getMap(const size_t pixelSW[2], const size_t pixelNE[2], int lod, unsigned char *texture);
 };
 
-};
+}; // namespace VAPoR
 #endif

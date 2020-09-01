@@ -8,7 +8,7 @@
 //
 //	File:		AnnotationParams.cpp
 //
-//	Author:	Scott Pearse	
+//	Author:	Scott Pearse
 //			Alan Norton
 //			National Center for Atmospheric Research
 //			PO 3000, Boulder, Colorado
@@ -20,8 +20,8 @@
 //		visualizer features in the annotation panel
 //
 #ifdef WIN32
-//Annoying unreferenced formal parameter warning
-#pragma warning( disable : 4100 )
+// Annoying unreferenced formal parameter warning
+#pragma warning(disable : 4100)
 #endif
 
 #include <vector>
@@ -29,7 +29,6 @@
 #include <iostream>
 
 #include <vapor/AnnotationParams.h>
-
 
 using namespace VAPoR;
 
@@ -70,195 +69,178 @@ vector<double> AnnotationParams::_previousStretch;
 static ParamsRegistrar<AnnotationParams> registrar(AnnotationParams::GetClassType());
 
 namespace {
-	string defaultAnnotation = "default";
+string defaultAnnotation = "default";
 }
 
-AnnotationParams::AnnotationParams(
-	ParamsBase::StateSave *ssave
-) : ParamsBase(ssave, AnnotationParams::GetClassType()) {
+AnnotationParams::AnnotationParams(ParamsBase::StateSave *ssave)
+    : ParamsBase(ssave, AnnotationParams::GetClassType()) {
 
-	_init();
+    _init();
 
-	_axisAnnotations = new ParamsContainer(ssave, _axisAnnotationsTag);
-	_axisAnnotations->SetParent(this);
+    _axisAnnotations = new ParamsContainer(ssave, _axisAnnotationsTag);
+    _axisAnnotations->SetParent(this);
 }
 
-AnnotationParams::AnnotationParams(
-	ParamsBase::StateSave *ssave, XmlNode *node
-) : ParamsBase(ssave, node) 
-{
-	if (node->HasChild(_axisAnnotationsTag)) {
-		_axisAnnotations = new ParamsContainer(
-			ssave, 
-			node->GetChild(_axisAnnotationsTag)
-		);
-	}
-	else {
-		_axisAnnotations = new ParamsContainer(
-			ssave, _axisAnnotationsTag);
-		_axisAnnotations->SetParent(this);
-	}
+AnnotationParams::AnnotationParams(ParamsBase::StateSave *ssave, XmlNode *node)
+    : ParamsBase(ssave, node) {
+    if (node->HasChild(_axisAnnotationsTag)) {
+        _axisAnnotations = new ParamsContainer(ssave, node->GetChild(_axisAnnotationsTag));
+    } else {
+        _axisAnnotations = new ParamsContainer(ssave, _axisAnnotationsTag);
+        _axisAnnotations->SetParent(this);
+    }
 }
 
-AnnotationParams::AnnotationParams(const AnnotationParams &rhs
-) : ParamsBase(rhs) {
-	_axisAnnotations = new ParamsContainer(*(rhs._axisAnnotations));
+AnnotationParams::AnnotationParams(const AnnotationParams &rhs) : ParamsBase(rhs) {
+    _axisAnnotations = new ParamsContainer(*(rhs._axisAnnotations));
 }
 
 void AnnotationParams::_init() {
-	vector<double> clr (3,1.0);
-	SetDomainColor(clr);
-	//SetAxisColor(clr);
-	clr[1] = 0.;
-	clr[2] = 0.;
-	SetRegionColor(clr);
-	clr[0] = 0.;
-	SetBackgroundColor(clr);
-	SetUseRegionFrame(false);
-	SetUseDomainFrame(true);
-	vector<double> dvec(3, 0.0);
-	SetAxisArrowCoords(dvec);
-	SetShowAxisArrows(false);
+    vector<double> clr(3, 1.0);
+    SetDomainColor(clr);
+    // SetAxisColor(clr);
+    clr[1] = 0.;
+    clr[2] = 0.;
+    SetRegionColor(clr);
+    clr[0] = 0.;
+    SetBackgroundColor(clr);
+    SetUseRegionFrame(false);
+    SetUseDomainFrame(true);
+    vector<double> dvec(3, 0.0);
+    SetAxisArrowCoords(dvec);
+    SetShowAxisArrows(false);
 }
 
-void AnnotationParams::_getColor(vector <double> &color, string tag) const {
-	color.clear();
+void AnnotationParams::_getColor(vector<double> &color, string tag) const {
+    color.clear();
 
-	vector <double> defaultv(3,1.0);
-	color =  GetValueDoubleVec(tag, defaultv);
-	for (int i=0; i<color.size(); i++) {
-		if (color[i] < 0.0) color[i] = 0.0;
-		if (color[i] > 1.0) color[i] = 1.0;
-	}
+    vector<double> defaultv(3, 1.0);
+    color = GetValueDoubleVec(tag, defaultv);
+    for (int i = 0; i < color.size(); i++) {
+        if (color[i] < 0.0)
+            color[i] = 0.0;
+        if (color[i] > 1.0)
+            color[i] = 1.0;
+    }
 }
 
-void AnnotationParams::m_setColor(vector<double> color, string tag, string msg){
-	VAssert(color.size() == 3);
-	for (int i=0; i<color.size(); i++) {
-		if (color[i] < 0.0) color[i] = 0.0;
-		if (color[i] > 1.0) color[i] = 1.0;
-	}
-	SetValueDoubleVec(tag, msg, color);
+void AnnotationParams::m_setColor(vector<double> color, string tag, string msg) {
+    VAssert(color.size() == 3);
+    for (int i = 0; i < color.size(); i++) {
+        if (color[i] < 0.0)
+            color[i] = 0.0;
+        if (color[i] > 1.0)
+            color[i] = 1.0;
+    }
+    SetValueDoubleVec(tag, msg, color);
 }
 
-void AnnotationParams::GetDomainColor(double color[3]) const {
-	m_getColor(color, _domainColorTag);
-}
+void AnnotationParams::GetDomainColor(double color[3]) const { m_getColor(color, _domainColorTag); }
 
 void AnnotationParams::SetDomainColor(vector<double> color) {
-	m_setColor(color, _domainColorTag, "Set domain frame color");
+    m_setColor(color, _domainColorTag, "Set domain frame color");
 }
 
-void AnnotationParams::GetRegionColor(double color[3]) const {
-	m_getColor(color, _regionColorTag);
-}
+void AnnotationParams::GetRegionColor(double color[3]) const { m_getColor(color, _regionColorTag); }
 
 void AnnotationParams::SetRegionColor(vector<double> color) {
-	m_setColor(color, _regionColorTag, "Set region frame color");
+    m_setColor(color, _regionColorTag, "Set region frame color");
 }
 
 void AnnotationParams::GetBackgroundColor(double color[3]) const {
-	m_getColor(color, _backgroundColorTag);
+    m_getColor(color, _backgroundColorTag);
 }
 
 void AnnotationParams::SetBackgroundColor(vector<double> color) {
-	m_setColor(color, _backgroundColorTag, "Set background color");
+    m_setColor(color, _backgroundColorTag, "Set background color");
 }
 
 string AnnotationParams::GetCurrentAxisDataMgrName() const {
-	return GetValueString(_currentAxisDataMgrTag, defaultAnnotation);
+    return GetValueString(_currentAxisDataMgrTag, defaultAnnotation);
 }
 
 void AnnotationParams::SetCurrentAxisDataMgrName(string dmName) {
-	string msg = "Setting current DataMgr w.r.t. axis annotations";
-	SetValueString(_currentAxisDataMgrTag, msg, dmName);
+    string msg = "Setting current DataMgr w.r.t. axis annotations";
+    SetValueString(_currentAxisDataMgrTag, msg, dmName);
 }
 
-AxisAnnotation* AnnotationParams::GetAxisAnnotation() {
-	vector<string> names = _axisAnnotations->GetNames();
-	if (_axisAnnotations->GetParams(defaultAnnotation) == NULL) {
-		AxisAnnotation newAnnotation(_ssave);
-		_axisAnnotations->Insert(&newAnnotation, defaultAnnotation);
-	}
-	AxisAnnotation* aa;
-	aa = (AxisAnnotation*)_axisAnnotations->GetParams(defaultAnnotation);
-	return aa;
+AxisAnnotation *AnnotationParams::GetAxisAnnotation() {
+    vector<string> names = _axisAnnotations->GetNames();
+    if (_axisAnnotations->GetParams(defaultAnnotation) == NULL) {
+        AxisAnnotation newAnnotation(_ssave);
+        _axisAnnotations->Insert(&newAnnotation, defaultAnnotation);
+    }
+    AxisAnnotation *aa;
+    aa = (AxisAnnotation *)_axisAnnotations->GetParams(defaultAnnotation);
+    return aa;
 }
 
 void AnnotationParams::SetShowAxisArrows(bool val) {
-	SetValueLong(_showAxisArrowsTag, "Toggle Axis Arrows", val);
+    SetValueLong(_showAxisArrowsTag, "Toggle Axis Arrows", val);
 }
 
 bool AnnotationParams::GetShowAxisArrows() const {
-	return (0 != GetValueLong(_showAxisArrowsTag, (long)false));
+    return (0 != GetValueLong(_showAxisArrowsTag, (long)false));
 }
 
-void AnnotationParams::SetAxisArrowCoords(vector<double> val){
-	VAssert(val.size() == 3);
-	SetValueDoubleVec(_axisArrowCoordsTag, "Set axis arrow coords", val);
+void AnnotationParams::SetAxisArrowCoords(vector<double> val) {
+    VAssert(val.size() == 3);
+    SetValueDoubleVec(_axisArrowCoordsTag, "Set axis arrow coords", val);
 }
 
 void AnnotationParams::SetXAxisArrowPosition(float val) {
-	std::vector<double> pos = GetAxisArrowCoords();
-	pos[0] = val;
-	SetAxisArrowCoords(pos);
+    std::vector<double> pos = GetAxisArrowCoords();
+    pos[0] = val;
+    SetAxisArrowCoords(pos);
 }
 
 void AnnotationParams::SetYAxisArrowPosition(float val) {
-	std::vector<double> pos = GetAxisArrowCoords();
-	pos[1] = val;
-	SetAxisArrowCoords(pos);
+    std::vector<double> pos = GetAxisArrowCoords();
+    pos[1] = val;
+    SetAxisArrowCoords(pos);
 }
 
 void AnnotationParams::SetZAxisArrowPosition(float val) {
-	std::vector<double> pos = GetAxisArrowCoords();
-	pos[2] = val;
-	SetAxisArrowCoords(pos);
+    std::vector<double> pos = GetAxisArrowCoords();
+    pos[2] = val;
+    SetAxisArrowCoords(pos);
 }
 
-vector<double> AnnotationParams::GetAxisArrowCoords() const{
-	vector <double> defaultv(3,0.0);
-	return GetValueDoubleVec(_axisArrowCoordsTag, defaultv);
+vector<double> AnnotationParams::GetAxisArrowCoords() const {
+    vector<double> defaultv(3, 0.0);
+    return GetValueDoubleVec(_axisArrowCoordsTag, defaultv);
 }
 
-int AnnotationParams::GetTimeLLX() const {
-	return (int)GetValueDouble(_timeLLXTag, 10);
-}
+int AnnotationParams::GetTimeLLX() const { return (int)GetValueDouble(_timeLLXTag, 10); }
 
 void AnnotationParams::SetTimeLLX(int llx) {
-	SetValueDouble(_timeLLXTag, "Timestep llx coordinate", llx);
+    SetValueDouble(_timeLLXTag, "Timestep llx coordinate", llx);
 }
 
-int AnnotationParams::GetTimeLLY() const {
-	return (int)GetValueDouble(_timeLLYTag, 10);
-}
+int AnnotationParams::GetTimeLLY() const { return (int)GetValueDouble(_timeLLYTag, 10); }
 
 void AnnotationParams::SetTimeLLY(int lly) {
-	SetValueDouble(_timeLLYTag, "Timestep lly coordinate", lly);
+    SetValueDouble(_timeLLYTag, "Timestep lly coordinate", lly);
 }
 
 std::vector<double> AnnotationParams::GetTimeColor() const {
-	std::vector<double> defaultv(3,1.0);
-	std::vector<double> val = GetValueDoubleVec(_timeColorTag, defaultv);
-	return val;
+    std::vector<double> defaultv(3, 1.0);
+    std::vector<double> val = GetValueDoubleVec(_timeColorTag, defaultv);
+    return val;
 }
 
 void AnnotationParams::SetTimeColor(vector<double> color) {
-	SetValueDoubleVec(_timeColorTag, "Timestep color", color);
+    SetValueDoubleVec(_timeColorTag, "Timestep color", color);
 }
 
-int AnnotationParams::GetTimeType() const {
-	return (int)GetValueDouble(_timeTypeTag, 0);
-}
+int AnnotationParams::GetTimeType() const { return (int)GetValueDouble(_timeTypeTag, 0); }
 
 void AnnotationParams::SetTimeType(int type) {
-	SetValueDouble(_timeTypeTag, "Timestep annotation type", type);
+    SetValueDouble(_timeTypeTag, "Timestep annotation type", type);
 }
 
-int AnnotationParams::GetTimeSize() const {
-	return (int)GetValueDouble(_timeSizeTag, 24);
-}
+int AnnotationParams::GetTimeSize() const { return (int)GetValueDouble(_timeSizeTag, 24); }
 
 void AnnotationParams::SetTimeSize(int size) {
-	SetValueDouble(_timeSizeTag, "Timestep font size", size);
+    SetValueDouble(_timeSizeTag, "Timestep font size", size);
 }

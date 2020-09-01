@@ -27,11 +27,10 @@
 #include "RangeCombos.h"
 #include "ui_ColorbarWidgetGUI.h"
 
-
 namespace VAPoR {
-	class ColorbarPbase;
-	class ParamsBase;
-}
+class ColorbarPbase;
+class ParamsBase;
+} // namespace VAPoR
 
 //! \class ColorbarWidget
 //! \ingroup Public_GUI
@@ -48,56 +47,51 @@ namespace VAPoR {
 //!
 
 class ColorbarWidget : public QFrame, public Ui_ColorbarWidgetGUI {
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	ColorbarWidget( QWidget * parent = 0);
-	~ColorbarWidget();
+  public:
+    ColorbarWidget(QWidget *parent = 0);
+    ~ColorbarWidget();
 
-	void SetEventRouter(RenderEventRouter *er) {
-		_eventRouter = er;
-	}
+    void SetEventRouter(RenderEventRouter *er) { _eventRouter = er; }
 
-	//! Update the values displayed in this frame, by obtaining them from the
-	//! ColorbarPbase instance in the Params.
-	//! \param[in] p Params associated with this frame.
-	void Update(VAPoR::DataMgr *dataMgr,
-				VAPoR::ParamsMgr *paramsMgr,
-				VAPoR::RenderParams *rParams);
+    //! Update the values displayed in this frame, by obtaining them from the
+    //! ColorbarPbase instance in the Params.
+    //! \param[in] p Params associated with this frame.
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
 
-signals:
+  signals:
 
-protected slots:
-	void xPosChanged(double);
-	void yPosChanged(double);
-	void xSizeChanged(double);
-	void ySizeChanged(double);
-	void fontSizeChanged(int);
-	void fontDigitsChanged(int);
-	void numTicksChanged(int);
+  protected slots:
+    void xPosChanged(double);
+    void yPosChanged(double);
+    void xSizeChanged(double);
+    void ySizeChanged(double);
+    void fontSizeChanged(int);
+    void fontDigitsChanged(int);
+    void numTicksChanged(int);
 
-	void titleChanged();
-	void enableDisable(int);
-	void setBackgroundColor();
-	void applyToAll();
+    void titleChanged();
+    void enableDisable(int);
+    void setBackgroundColor();
+    void applyToAll();
 
-private:
-	RenderEventRouter * _eventRouter;
-	void connectWidgets();
-	
-	bool _textChangedFlag;
-	VAPoR::ParamsMgr* _paramsMgr;
-	VAPoR::DataMgr* _dataMgr;
-	VAPoR::ColorbarPbase* _cbPbase;
+  private:
+    RenderEventRouter *_eventRouter;
+    void connectWidgets();
 
-	Combo* _xPosCombo;
-	Combo* _yPosCombo;
-	Combo* _xSizeCombo;
-	Combo* _ySizeCombo;
-	Combo* _fontSizeCombo;
-	Combo* _fontDigitsCombo;
-	Combo* _numTicksCombo;
+    bool _textChangedFlag;
+    VAPoR::ParamsMgr *_paramsMgr;
+    VAPoR::DataMgr *_dataMgr;
+    VAPoR::ColorbarPbase *_cbPbase;
+
+    Combo *_xPosCombo;
+    Combo *_yPosCombo;
+    Combo *_xSizeCombo;
+    Combo *_ySizeCombo;
+    Combo *_fontSizeCombo;
+    Combo *_fontDigitsCombo;
+    Combo *_numTicksCombo;
 };
 
-#endif //COLORBARWIDGET_H
-
+#endif // COLORBARWIDGET_H

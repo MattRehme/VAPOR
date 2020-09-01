@@ -20,83 +20,71 @@
 #ifndef APPSETTINGSEVENTROUTER_H
 #define APPSETTINGSEVENTROUTER_H
 
-
 #include <qobject.h>
 #include "EventRouter.h"
 #include <vapor/MyBase.h>
 #include "ui_appSettingsTab.h"
 
 namespace VAPoR {
-	class ControlExec;
+class ControlExec;
 }
-
 
 QT_USE_NAMESPACE
 
-
 class AppSettingsEventRouter : public QWidget, public Ui_appSettingsTab, public EventRouter {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public: 
-	AppSettingsEventRouter(
-		QWidget *parent, VAPoR::ControlExec *ce
-	);
+  public:
+    AppSettingsEventRouter(QWidget *parent, VAPoR::ControlExec *ce);
 
-	virtual ~AppSettingsEventRouter();
+    virtual ~AppSettingsEventRouter();
 
-	//! For the AppSettingsEventRouter, we must override confirmText method on base class,
-	//! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
-	//! supplying a special UndoRedo helper method
-	//!
-	virtual void confirmText();
+    //! For the AppSettingsEventRouter, we must override confirmText method on base class,
+    //! so that text changes issue Command::CaptureStart and Command::CaptureEnd,
+    //! supplying a special UndoRedo helper method
+    //!
+    virtual void confirmText();
 
-	//! Connect signals and slots from tab
-	virtual void hookUpTab();
+    //! Connect signals and slots from tab
+    virtual void hookUpTab();
 
-     virtual void GetWebHelp(
-        std::vector <std::pair <string, string>> &help
-     ) const; 
-	
-	//! Ignore wheel event in tab (to avoid confusion)
-	virtual void wheelEvent(QWheelEvent*) {}
+    virtual void GetWebHelp(std::vector<std::pair<string, string>> &help) const;
 
-	
- // Get static string identifier for this router class
- //
- static string GetClassType() {
-	return("AppSettings");
- }
+    //! Ignore wheel event in tab (to avoid confusion)
+    virtual void wheelEvent(QWheelEvent *) {}
 
- string GetType() const {return GetClassType(); }
+    // Get static string identifier for this router class
+    //
+    static string GetClassType() { return ("AppSettings"); }
 
+    string GetType() const { return GetClassType(); }
 
-protected slots:
-	
-	void setAppSettingsTextChanged(const QString& qs);
-	void appSettingsReturnPressed();
-	void setNoCitation(bool);
-	void warningChanged(bool);
-	void trackMouseChanged(bool);
-	void lowerAccuracyChanged(bool);
-	void setAutoSave(bool);
-	void save();
-	void restoreDefaults();
-	void chooseLogFilePath();
-	void chooseAutoSaveFilename();
-	void silenceAllMessages(bool);
-	void unsilenceMessages();
-	void enableLogfile(bool);
+  protected slots:
 
-private:
-	AppSettingsEventRouter() {}
+    void setAppSettingsTextChanged(const QString &qs);
+    void appSettingsReturnPressed();
+    void setNoCitation(bool);
+    void warningChanged(bool);
+    void trackMouseChanged(bool);
+    void lowerAccuracyChanged(bool);
+    void setAutoSave(bool);
+    void save();
+    void restoreDefaults();
+    void chooseLogFilePath();
+    void chooseAutoSaveFilename();
+    void silenceAllMessages(bool);
+    void unsilenceMessages();
+    void enableLogfile(bool);
 
-	void invalidateText();
-	virtual void _confirmText();
-	virtual void _updateTab();
+  private:
+    AppSettingsEventRouter() {}
 
-	bool _settingsChanged;
+    void invalidateText();
+    virtual void _confirmText();
+    virtual void _updateTab();
 
+    bool _settingsChanged;
 };
 
-#endif //APPSETTINGSEVENTROUTER_H 
+#endif // APPSETTINGSEVENTROUTER_H

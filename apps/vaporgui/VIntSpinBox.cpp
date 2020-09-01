@@ -1,32 +1,22 @@
 #include "VIntSpinBox.h"
 
-VIntSpinBox::VIntSpinBox( int min, int max )
-: VContainer()
-{
+VIntSpinBox::VIntSpinBox(int min, int max) : VContainer() {
     _spinBox = new QSpinBox;
-    SetRange( min, max );
-    SetValue( min );
+    SetRange(min, max);
+    SetValue(min);
     layout()->addWidget(_spinBox);
 
-    connect( _spinBox, &QSpinBox::editingFinished,
-        this, &VIntSpinBox::emitSpinBoxChanged );
+    connect(_spinBox, &QSpinBox::editingFinished, this, &VIntSpinBox::emitSpinBoxChanged);
 }
 
-
-void VIntSpinBox::SetValue( int value ) {
+void VIntSpinBox::SetValue(int value) {
     _spinBox->blockSignals(true);
-    _spinBox->setValue( value );
+    _spinBox->setValue(value);
     _spinBox->blockSignals(false);
 }
 
-void VIntSpinBox::SetRange( int min, int max ) {
-    _spinBox->setRange( min, max );
-}
+void VIntSpinBox::SetRange(int min, int max) { _spinBox->setRange(min, max); }
 
-int VIntSpinBox::GetValue() const {
-    return _spinBox->value();
-}
+int VIntSpinBox::GetValue() const { return _spinBox->value(); }
 
-void VIntSpinBox::emitSpinBoxChanged() {
-    emit ValueChanged( GetValue() );
-}
+void VIntSpinBox::emitSpinBoxChanged() { emit ValueChanged(GetValue()); }

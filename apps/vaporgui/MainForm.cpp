@@ -7,7 +7,7 @@
 /************************************************************************/
 
 //
-//	File:		MainForm.cpp 
+//	File:		MainForm.cpp
 //
 //	Author:		Alan Norton
 //			National Center for Atmospheric Research
@@ -26,7 +26,7 @@
 #ifdef WIN32
 #pragma warning(disable : 4251 4100)
 #endif
-#include <vapor/glutil.h>	// Must be included first!!!
+#include <vapor/glutil.h> // Must be included first!!!
 #include <iostream>
 #include <fstream>
 #include "vapor/VAssert.h"
@@ -84,7 +84,7 @@
 #include "MouseModeParams.h"
 #include "ParamsWidgetDemo.h"
 
-//Following shortcuts are provided:
+// Following shortcuts are provided:
 // CTRL_N: new session
 // CTRL_O: open session
 // CTRL_S: Save current session
@@ -103,23 +103,21 @@
 // CTRL_V: View all
 // CTRL_H: Home viewpoint
 
-
-//The following are pixmaps that are used in gui:
+// The following are pixmaps that are used in gui:
 #include "images/vapor-icon-32.xpm"
 #include "images/cascade.xpm"
 #include "images/tiles.xpm"
 #include "images/wheel.xpm"
 
 #include "images/home.xpm"
-#include "images/sethome.xpm" 
+#include "images/sethome.xpm"
 #include "images/eye.xpm"
 #include "images/magnify.xpm"
 #include "images/playreverse.xpm"
-#include "images/playforward.xpm" 
+#include "images/playforward.xpm"
 #include "images/pauseimage.xpm"
 #include "images/stepfwd.xpm"
 #include "images/stepback.xpm"
-
 
 //
 // TODO:
@@ -130,8 +128,6 @@
 //
 //
 
-
-
 /*
  *  Constructs a MainForm as a child of 'parent', with the
  *  name 'name' and widget flags set to 'f'.
@@ -140,230 +136,215 @@
 using namespace std;
 using namespace VAPoR;
 
-
-
-const QEvent::Type MainForm::ParamsChangeEvent             = (QEvent::Type)QEvent::registerEventType();
-const QEvent::Type MainForm::ParamsIntermediateChangeEvent = (QEvent::Type)QEvent::registerEventType();
+const QEvent::Type MainForm::ParamsChangeEvent = (QEvent::Type)QEvent::registerEventType();
+const QEvent::Type MainForm::ParamsIntermediateChangeEvent =
+    (QEvent::Type)QEvent::registerEventType();
 const std::string MainForm::_documentationURL = "http://www.docs.vapor.ucar.edu";
 
 namespace {
 
 string makename(string file) {
-	QFileInfo qFileInfo (QString(file.c_str()));
+    QFileInfo qFileInfo(QString(file.c_str()));
 
-	return(
-		ControlExec::MakeStringConformant(qFileInfo.fileName().toStdString())
-	);
+    return (ControlExec::MakeStringConformant(qFileInfo.fileName().toStdString()));
 }
 
-};
-
+}; // namespace
 
 void MainForm::_initMembers() {
 
-	_mdiArea = NULL;
-	_App = NULL;
+    _mdiArea = NULL;
+    _App = NULL;
 
-	_playForwardAction = NULL;
-	_playBackwardAction = NULL;
-	_pauseAction = NULL;
+    _playForwardAction = NULL;
+    _playBackwardAction = NULL;
+    _pauseAction = NULL;
 
-	_navigationAction = NULL;
-	_editUndoAction = NULL;
-	_editRedoAction = NULL;
-	_timeStepEdit = NULL;
-	_timeStepEditValidator = NULL;
+    _navigationAction = NULL;
+    _editUndoAction = NULL;
+    _editRedoAction = NULL;
+    _timeStepEdit = NULL;
+    _timeStepEditValidator = NULL;
 
-	_alignViewCombo = NULL;
-	_modeCombo = NULL;
-	_main_Menubar = NULL;
-	_File = NULL;
-	_Edit = NULL;
-	_Tools = NULL;
-	_captureMenu = NULL;
-	_helpMenu = NULL;
+    _alignViewCombo = NULL;
+    _modeCombo = NULL;
+    _main_Menubar = NULL;
+    _File = NULL;
+    _Edit = NULL;
+    _Tools = NULL;
+    _captureMenu = NULL;
+    _helpMenu = NULL;
 
-	_modeToolBar = NULL;
-	_vizToolBar = NULL;
-	_animationToolBar = NULL;
+    _modeToolBar = NULL;
+    _vizToolBar = NULL;
+    _animationToolBar = NULL;
 
-	_dataMenu = NULL;
-	_closeVDCMenu = NULL;
-	_importMenu = NULL;
-	_sessionMenu = NULL;
+    _dataMenu = NULL;
+    _closeVDCMenu = NULL;
+    _importMenu = NULL;
+    _sessionMenu = NULL;
 
-	_fileOpenAction = NULL;
-	_fileSaveAction = NULL;
-	_fileSaveAsAction = NULL;
-	_fileExitAction = NULL;
-	_fileNew_SessionAction = NULL;
+    _fileOpenAction = NULL;
+    _fileSaveAction = NULL;
+    _fileSaveAsAction = NULL;
+    _fileExitAction = NULL;
+    _fileNew_SessionAction = NULL;
 
-	_helpAboutAction = NULL;
-	_whatsThisAction = NULL;
-	_installCLIToolsAction = NULL;
+    _helpAboutAction = NULL;
+    _whatsThisAction = NULL;
+    _installCLIToolsAction = NULL;
     _webDocumentationAction = NULL;
 
-	_dataImportWRF_Action = NULL;
-	_dataImportCF_Action = NULL;
-	_dataImportMPAS_Action = NULL;
-	_dataLoad_MetafileAction = NULL;
-	_dataClose_MetafileAction = NULL;
-	_plotAction = NULL;
-	_statsAction = NULL;
+    _dataImportWRF_Action = NULL;
+    _dataImportCF_Action = NULL;
+    _dataImportMPAS_Action = NULL;
+    _dataLoad_MetafileAction = NULL;
+    _dataClose_MetafileAction = NULL;
+    _plotAction = NULL;
+    _statsAction = NULL;
     _pythonAction = NULL;
 
     _singleImageMenu = NULL;
-	_captureSingleJpegAction = NULL;
-	_captureSinglePngAction = NULL;
-	_captureSingleTiffAction = NULL;
+    _captureSingleJpegAction = NULL;
+    _captureSinglePngAction = NULL;
+    _captureSingleTiffAction = NULL;
 
-    _imageSequenceMenu = NULL;	
+    _imageSequenceMenu = NULL;
     _captureJpegSequenceAction = NULL;
-	_capturePngSequenceAction = NULL;
-	_captureTiffSequenceAction = NULL;
+    _capturePngSequenceAction = NULL;
+    _captureTiffSequenceAction = NULL;
 
-	_captureEndImageAction = NULL;
+    _captureEndImageAction = NULL;
 
-	_mouseModeActions = NULL;
-	_tileAction = NULL;
-	_cascadeAction = NULL;
-	_homeAction = NULL;
-	_sethomeAction = NULL;
-	_viewAllAction = NULL;
-	_viewRegionAction = NULL;
-	_stepForwardAction = NULL;
-	_stepBackAction = NULL;
-	_interactiveRefinementSpin = NULL;
-	_tabDockWindow = NULL;
+    _mouseModeActions = NULL;
+    _tileAction = NULL;
+    _cascadeAction = NULL;
+    _homeAction = NULL;
+    _sethomeAction = NULL;
+    _viewAllAction = NULL;
+    _viewRegionAction = NULL;
+    _stepForwardAction = NULL;
+    _stepBackAction = NULL;
+    _interactiveRefinementSpin = NULL;
+    _tabDockWindow = NULL;
 
-	_stats = NULL;
-	_plot = NULL;
+    _stats = NULL;
+    _plot = NULL;
     _pythonVariables = NULL;
-	_banner = NULL;
-	_windowSelector = NULL;
-	_modeStatusWidget = NULL;
-	_controlExec = NULL;
-	_paramsMgr = NULL;
-	_tabMgr = NULL;
-	_vizWinMgr = NULL;
+    _banner = NULL;
+    _windowSelector = NULL;
+    _modeStatusWidget = NULL;
+    _controlExec = NULL;
+    _paramsMgr = NULL;
+    _tabMgr = NULL;
+    _vizWinMgr = NULL;
 
-	_capturingAnimationVizName.clear();
+    _capturingAnimationVizName.clear();
 
-	_stateChangeFlag = false;
-	_sessionNewFlag = false;
-	_begForCitation = false;
-	_eventsSinceLastSave = 0;
-	_buttonPressed = false;
-
+    _stateChangeFlag = false;
+    _sessionNewFlag = false;
+    _begForCitation = false;
+    _eventsSinceLastSave = 0;
+    _buttonPressed = false;
 }
 
 // Only the main program should call the constructor:
 //
-MainForm::MainForm(
-	vector<QString> files, QApplication* app, QWidget* parent
-) : QMainWindow( parent) {
+MainForm::MainForm(vector<QString> files, QApplication *app, QWidget *parent)
+    : QMainWindow(parent) {
 
-	_initMembers();
+    _initMembers();
 
-	_App = app;
-    _sessionNewFlag = true; 
-	_begForCitation = true;
+    _App = app;
+    _sessionNewFlag = true;
+    _begForCitation = true;
 
-	setWindowTitle(
-		tr( "VAPoR:  NCAR Visualization and Analysis Platform for Research" ) 
-	);
+    setWindowTitle(tr("VAPoR:  NCAR Visualization and Analysis Platform for Research"));
 
-	setAttribute(Qt::WA_DeleteOnClose);
+    setAttribute(Qt::WA_DeleteOnClose);
 
-	// For vertical screens, reverse aspect ratio for window size
-    QScreen* screen = QGuiApplication::primaryScreen();
+    // For vertical screens, reverse aspect ratio for window size
+    QScreen *screen = QGuiApplication::primaryScreen();
     QRect screenSize = screen->geometry();
 
-	if (screenSize.width() < screenSize.height()) {
-		resize(
-			screenSize.width() * .7, 
-			screenSize.width() * .7 * screenSize.width() / 
-				(float)screenSize.height()
-		);
-	}
-	else {
-		resize(screenSize.width() * .7, screenSize.height() * .7);
-	}
-	
-	setWindowIcon(QPixmap(vapor_icon___));
+    if (screenSize.width() < screenSize.height()) {
+        resize(screenSize.width() * .7,
+               screenSize.width() * .7 * screenSize.width() / (float)screenSize.height());
+    } else {
+        resize(screenSize.width() * .7, screenSize.height() * .7);
+    }
+
+    setWindowIcon(QPixmap(vapor_icon___));
 
     // insert my qmdiArea:
-	//
+    //
     _mdiArea = new QMdiArea;
     _mdiArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     _mdiArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     setCentralWidget(_mdiArea);
 
-
     // Now add a docking tabbed window on the left side.
-	//
-    _tabDockWindow = new QDockWidget(this );
-    addDockWidget(Qt::LeftDockWidgetArea, _tabDockWindow );
+    //
+    _tabDockWindow = new QDockWidget(this);
+    addDockWidget(Qt::LeftDockWidgetArea, _tabDockWindow);
     _tabDockWindow->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
     _tabDockWindow->setFeatures(QDockWidget::NoDockWidgetFeatures);
 
-	// Register additional params with the ParamsMgr
-	//
-	vector <string> myParams;
-	myParams.push_back(GUIStateParams::GetClassType());
-	myParams.push_back(SettingsParams::GetClassType());
-	myParams.push_back(AnimationParams::GetClassType());
-	myParams.push_back(AnnotationParams::GetClassType());
-	
-	vector <string> myRenParams;
-	myRenParams.push_back(StatisticsParams::GetClassType());
-	myRenParams.push_back(PlotParams::GetClassType());
+    // Register additional params with the ParamsMgr
+    //
+    vector<string> myParams;
+    myParams.push_back(GUIStateParams::GetClassType());
+    myParams.push_back(SettingsParams::GetClassType());
+    myParams.push_back(AnimationParams::GetClassType());
+    myParams.push_back(AnnotationParams::GetClassType());
 
-	// Force creation of the static error reporter, which registers
-	// callback's with the MyBase error logger used by the vapor render
-	// library.
-	//
-	_errRep = new ErrorReporter(this);
+    vector<string> myRenParams;
+    myRenParams.push_back(StatisticsParams::GetClassType());
+    myRenParams.push_back(PlotParams::GetClassType());
 
-	// Create the Control executive before the VizWinMgr. Disable
-	// state saving until completely initalized
-	//
-	_controlExec = new ControlExec(myParams, myRenParams);
-	_controlExec->SetSaveStateEnabled(false);
+    // Force creation of the static error reporter, which registers
+    // callback's with the MyBase error logger used by the vapor render
+    // library.
+    //
+    _errRep = new ErrorReporter(this);
 
-	_paramsMgr = _controlExec->GetParamsMgr();
-	_paramsMgr->RegisterStateChangeCB(
-		std::bind(&MainForm::_stateChangeCB,this)
-	);
+    // Create the Control executive before the VizWinMgr. Disable
+    // state saving until completely initalized
+    //
+    _controlExec = new ControlExec(myParams, myRenParams);
+    _controlExec->SetSaveStateEnabled(false);
+
+    _paramsMgr = _controlExec->GetParamsMgr();
+    _paramsMgr->RegisterStateChangeCB(std::bind(&MainForm::_stateChangeCB, this));
     _paramsMgr->RegisterIntermediateStateChangeCB([this]() {
         QEvent *event = new QEvent(ParamsIntermediateChangeEvent);
         QApplication::postEvent(this, event);
     });
-	_paramsMgr->RegisterStateChangeFlag( &_stateChangeFlag );
+    _paramsMgr->RegisterStateChangeFlag(&_stateChangeFlag);
 
-	// Set Defaults from startup file
-	//
-	SettingsParams *sP = GetSettingsParams();
-	_controlExec->SetCacheSize(sP->GetCacheMB());
-	_controlExec->SetNumThreads(sP->GetNumThreads());
+    // Set Defaults from startup file
+    //
+    SettingsParams *sP = GetSettingsParams();
+    _controlExec->SetCacheSize(sP->GetCacheMB());
+    _controlExec->SetNumThreads(sP->GetNumThreads());
 
-	bool lockSize = sP->GetWinSizeLock();
-	if (lockSize) {
-		size_t width, height;
-		sP->GetWinSize(width, height);
-		setFixedSize(QSize(width, height));
-	}
+    bool lockSize = sP->GetWinSizeLock();
+    if (lockSize) {
+        size_t width, height;
+        sP->GetWinSize(width, height);
+        setFixedSize(QSize(width, height));
+    }
 
-	_vizWinMgr = new VizWinMgr(this, _mdiArea, _controlExec);
-	
-	_tabMgr = new TabManager(this, _controlExec);
+    _vizWinMgr = new VizWinMgr(this, _mdiArea, _controlExec);
+
+    _tabMgr = new TabManager(this, _controlExec);
     _tabMgr->setUsesScrollButtons(true);
 
-	int dpi = qApp->desktop()->logicalDpiX();
-	if (dpi > 96)
-		_tabMgr->setMinimumWidth(675);
-	else
-		_tabMgr->setMinimumWidth(460);
+    int dpi = qApp->desktop()->logicalDpiX();
+    if (dpi > 96)
+        _tabMgr->setMinimumWidth(675);
+    else
+        _tabMgr->setMinimumWidth(460);
 
     _tabMgr->setMinimumHeight(500);
 
@@ -371,76 +352,76 @@ MainForm::MainForm(
 
     createMenus();
 
-	createToolBars();	
-	
-	addMouseModes();
+    createToolBars();
+
+    addMouseModes();
     (void)statusBar();
     _main_Menubar->adjustSize();
-	hookupSignals();   
-	enableWidgets(false);
+    hookupSignals();
+    enableWidgets(false);
 
-	//Load preferences at start, set preferences directory
-	loadStartingPrefs();
-	
-	setUpdatesEnabled(true);
+    // Load preferences at start, set preferences directory
+    loadStartingPrefs();
+
+    setUpdatesEnabled(true);
 
     show();
 
-	// Command line options:
-	//
-	// - Session file
-	// - Session file + data file
-	// - data file
-	//
-    
-	if (files.size() && files[0].endsWith(".vs3")) {
-		sessionOpen(files[0]);
-		files.erase(files.begin());
-	}
-	else {
-		sessionNew();
-	}
+    // Command line options:
+    //
+    // - Session file
+    // - Session file + data file
+    // - data file
+    //
 
-    
-	if (files.size()) {
+    if (files.size() && files[0].endsWith(".vs3")) {
+        sessionOpen(files[0]);
+        files.erase(files.begin());
+    } else {
+        sessionNew();
+    }
+
+    if (files.size()) {
         vector<string> paths;
         for (auto &f : files)
             paths.push_back(f.toStdString());
-        
+
         string fmt;
         if (determineDatasetFormat(paths, &fmt)) {
             loadDataHelper(paths, "", "", fmt, true);
         } else {
             MSG_ERR("Could not determine dataset format for command line parameters");
         }
-        
-        _stateChangeCB();
-	}
-    
-	app->installEventFilter(this);
 
-	_controlExec->SetSaveStateEnabled(true);
-	_controlExec->RebaseStateSave();
+        _stateChangeCB();
+    }
+
+    app->installEventFilter(this);
+
+    _controlExec->SetSaveStateEnabled(true);
+    _controlExec->RebaseStateSave();
 }
 
 /*
  *  Destroys the object and frees any allocated resources
  */
-MainForm::~MainForm()
-{
+MainForm::~MainForm() {
     if (_paramsWidgetDemo) {
         _paramsWidgetDemo->close();
-	}
+    }
 
-	if (_modeStatusWidget) delete _modeStatusWidget;
-    if (_banner) delete _banner;
-	if (_controlExec) delete _controlExec;
-	
+    if (_modeStatusWidget)
+        delete _modeStatusWidget;
+    if (_banner)
+        delete _banner;
+    if (_controlExec)
+        delete _controlExec;
+
     // no need to delete child widgets, Qt does it all for us?? (see closeEvent)
 }
 
-template<class T> bool MainForm::isDatasetValidFormat(const std::vector<std::string> &paths) const
-{
+template <class T>
+bool MainForm::isDatasetValidFormat(const std::vector<std::string> &paths) const {
     T dc;
     bool errReportingEnabled = Wasp::MyBase::EnableErrMsg(false);
     int ret = dc.Initialize(paths);
@@ -448,8 +429,8 @@ template<class T> bool MainForm::isDatasetValidFormat(const std::vector<std::str
     return ret == 0;
 }
 
-bool MainForm::determineDatasetFormat(const std::vector<std::string> &paths, std::string *fmt) const
-{
+bool MainForm::determineDatasetFormat(const std::vector<std::string> &paths,
+                                      std::string *fmt) const {
     if (isDatasetValidFormat<VDCNetCDF>(paths))
         *fmt = "vdc";
     else if (isDatasetValidFormat<DCWRF>(paths))
@@ -465,506 +446,359 @@ bool MainForm::determineDatasetFormat(const std::vector<std::string> &paths, std
 
 void MainForm::_createModeToolBar() {
 
-	_mouseModeActions = new QActionGroup(this);
-	QPixmap* wheelIcon = new QPixmap(wheel);
-	
-	_navigationAction = new QAction(
-		*wheelIcon, "Navigation Mode", _mouseModeActions
-	);
+    _mouseModeActions = new QActionGroup(this);
+    QPixmap *wheelIcon = new QPixmap(wheel);
 
-	_navigationAction->setCheckable(true);
-	_navigationAction->setChecked(true);
+    _navigationAction = new QAction(*wheelIcon, "Navigation Mode", _mouseModeActions);
+
+    _navigationAction->setCheckable(true);
+    _navigationAction->setChecked(true);
 
     // mouse mode toolbar:
-	//
-    _modeToolBar = addToolBar("Mouse Modes"); 
-	_modeToolBar->setWindowTitle( tr( "Mouse Modes" ) );
-	_modeToolBar->setParent(this);
-	_modeToolBar->addWidget(new QLabel(" Modes: "));
-	QString qws = QString(
-		"The mouse modes are used to enable various manipulation tools ") +
-		"that can be used to control the location and position of objects in "+
-		"the 3D scene, by dragging box-handles in the scene. "+
-		"Select the desired mode from the pull-down menu,"+
-		"or revert to the default (Navigation) by clicking the button";
+    //
+    _modeToolBar = addToolBar("Mouse Modes");
+    _modeToolBar->setWindowTitle(tr("Mouse Modes"));
+    _modeToolBar->setParent(this);
+    _modeToolBar->addWidget(new QLabel(" Modes: "));
+    QString qws = QString("The mouse modes are used to enable various manipulation tools ") +
+                  "that can be used to control the location and position of objects in " +
+                  "the 3D scene, by dragging box-handles in the scene. " +
+                  "Select the desired mode from the pull-down menu," +
+                  "or revert to the default (Navigation) by clicking the button";
 
-	_modeToolBar->setWhatsThis(qws);
+    _modeToolBar->setWhatsThis(qws);
 
-	// add mode buttons, left to right:
-	//
-	_modeToolBar->addAction(_navigationAction);
-	
-	_modeCombo = new QComboBox(_modeToolBar);
-	_modeCombo->setToolTip("Select the mouse mode to use in the visualizer");
-	
-	_modeToolBar->addWidget(_modeCombo);
+    // add mode buttons, left to right:
+    //
+    _modeToolBar->addAction(_navigationAction);
 
-	connect(
-		_modeCombo, SIGNAL(currentIndexChanged(int)), 
-		this, SLOT( modeChange(int))
-	);
+    _modeCombo = new QComboBox(_modeToolBar);
+    _modeCombo->setToolTip("Select the mouse mode to use in the visualizer");
+
+    _modeToolBar->addWidget(_modeCombo);
+
+    connect(_modeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(modeChange(int)));
 }
 
 void MainForm::_createAnimationToolBar() {
 
-	// Create actions for each animation control button:
-	//
-	QPixmap* playForwardIcon = new QPixmap(playforward);
-	_playForwardAction = new QAction(
-		*playForwardIcon,QString(tr("Play Forward  ")), this
-	);
-	_playForwardAction->setShortcut(Qt::CTRL+Qt::Key_P);
-	_playForwardAction->setCheckable(true);
+    // Create actions for each animation control button:
+    //
+    QPixmap *playForwardIcon = new QPixmap(playforward);
+    _playForwardAction = new QAction(*playForwardIcon, QString(tr("Play Forward  ")), this);
+    _playForwardAction->setShortcut(Qt::CTRL + Qt::Key_P);
+    _playForwardAction->setCheckable(true);
 
-	QPixmap* playBackwardIcon = new QPixmap(playreverse);
-	_playBackwardAction = new QAction(
-		*playBackwardIcon,QString(tr("Play Backward  ")),this
-	);
-	_playBackwardAction->setShortcut(Qt::CTRL+Qt::Key_B);
-	_playBackwardAction->setCheckable(true);
+    QPixmap *playBackwardIcon = new QPixmap(playreverse);
+    _playBackwardAction = new QAction(*playBackwardIcon, QString(tr("Play Backward  ")), this);
+    _playBackwardAction->setShortcut(Qt::CTRL + Qt::Key_B);
+    _playBackwardAction->setCheckable(true);
 
-	QPixmap* pauseIcon = new QPixmap(pauseimage);
-	_pauseAction = new QAction(
-		*pauseIcon,
-		QString(tr("End animation and unsteady flow integration  ")), this
-	);
-	_pauseAction->setShortcut(Qt::CTRL+Qt::Key_E);
+    QPixmap *pauseIcon = new QPixmap(pauseimage);
+    _pauseAction =
+        new QAction(*pauseIcon, QString(tr("End animation and unsteady flow integration  ")), this);
+    _pauseAction->setShortcut(Qt::CTRL + Qt::Key_E);
 
-	QPixmap* stepForwardIcon = new QPixmap(stepfwd);
-	_stepForwardAction = new QAction(
-		*stepForwardIcon,QString(tr("Step forward  ")), this
-	);
-	_stepForwardAction->setShortcut(Qt::CTRL+Qt::Key_F);
+    QPixmap *stepForwardIcon = new QPixmap(stepfwd);
+    _stepForwardAction = new QAction(*stepForwardIcon, QString(tr("Step forward  ")), this);
+    _stepForwardAction->setShortcut(Qt::CTRL + Qt::Key_F);
 
-	QPixmap* stepBackIcon = new QPixmap(stepback);
-	_stepBackAction = new QAction(*stepBackIcon,"Step back",this);
+    QPixmap *stepBackIcon = new QPixmap(stepback);
+    _stepBackAction = new QAction(*stepBackIcon, "Step back", this);
 
+    _animationToolBar = addToolBar("animation control");
+    _timeStepEditValidator = new QIntValidator(0, 99999, _animationToolBar);
+    _timeStepEdit = new QLineEdit(_animationToolBar);
+    _timeStepEdit->setAlignment(Qt::AlignHCenter);
+    _timeStepEdit->setMaximumWidth(40);
+    _timeStepEdit->setToolTip("Edit/Display current time step");
+    _timeStepEdit->setValidator(_timeStepEditValidator);
+    _animationToolBar->addWidget(_timeStepEdit);
 
-	_animationToolBar = addToolBar("animation control");
-	_timeStepEditValidator = new QIntValidator(0,99999,_animationToolBar);
-	_timeStepEdit = new QLineEdit(_animationToolBar);
-	_timeStepEdit->setAlignment(Qt::AlignHCenter);
-	_timeStepEdit->setMaximumWidth(40);
-	_timeStepEdit->setToolTip( "Edit/Display current time step");
-	_timeStepEdit->setValidator(_timeStepEditValidator);
-	_animationToolBar->addWidget(_timeStepEdit);
-	
-	_animationToolBar->addAction(_playBackwardAction);
-	_animationToolBar->addAction(_stepBackAction);
-	_animationToolBar->addAction(_pauseAction);
-	_animationToolBar->addAction(_stepForwardAction);
-	_animationToolBar->addAction(_playForwardAction);
-	
-	QString qat = QString(
-		"The animation toolbar enables control of the time steps "
-		"in the current active visualizer.  Additional controls are " 
-		"available in the animation tab "
-	);
+    _animationToolBar->addAction(_playBackwardAction);
+    _animationToolBar->addAction(_stepBackAction);
+    _animationToolBar->addAction(_pauseAction);
+    _animationToolBar->addAction(_stepForwardAction);
+    _animationToolBar->addAction(_playForwardAction);
 
-	_animationToolBar->setWhatsThis(qat);
+    QString qat = QString("The animation toolbar enables control of the time steps "
+                          "in the current active visualizer.  Additional controls are "
+                          "available in the animation tab ");
 
-	connect (
-		_playForwardAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(AnimationPlayForward())
-	);
-	connect (
-		_playBackwardAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(AnimationPlayBackward())
-	);
-	connect (
-		_pauseAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(AnimationPause())
-	);
-	connect (
-		_stepForwardAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(AnimationStepForward())
-	);
-	connect (
-		_stepBackAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(AnimationStepBackward())
-	);
-	connect (
-		_timeStepEdit, SIGNAL(returnPressed()),
-		this, SLOT(_setTimeStep())
-	);
+    _animationToolBar->setWhatsThis(qat);
+
+    connect(_playForwardAction, SIGNAL(triggered()), _tabMgr, SLOT(AnimationPlayForward()));
+    connect(_playBackwardAction, SIGNAL(triggered()), _tabMgr, SLOT(AnimationPlayBackward()));
+    connect(_pauseAction, SIGNAL(triggered()), _tabMgr, SLOT(AnimationPause()));
+    connect(_stepForwardAction, SIGNAL(triggered()), _tabMgr, SLOT(AnimationStepForward()));
+    connect(_stepBackAction, SIGNAL(triggered()), _tabMgr, SLOT(AnimationStepBackward()));
+    connect(_timeStepEdit, SIGNAL(returnPressed()), this, SLOT(_setTimeStep()));
 }
 
 void MainForm::_createVizToolBar() {
 
-	//Actions for the viztoolbar:
-	QPixmap* homeIcon = new QPixmap(home);
-	_homeAction = new QAction(
-		*homeIcon,QString(tr("Go to Home Viewpoint  ")), this
-	);
-	_homeAction->setShortcut(QKeySequence(tr("Ctrl+H")));
-	_homeAction->setShortcut(Qt::CTRL+Qt::Key_H);
+    // Actions for the viztoolbar:
+    QPixmap *homeIcon = new QPixmap(home);
+    _homeAction = new QAction(*homeIcon, QString(tr("Go to Home Viewpoint  ")), this);
+    _homeAction->setShortcut(QKeySequence(tr("Ctrl+H")));
+    _homeAction->setShortcut(Qt::CTRL + Qt::Key_H);
 
-	QPixmap* sethomeIcon = new QPixmap(sethome);
-	_sethomeAction = new QAction(*sethomeIcon, "Set Home Viewpoint", this);
+    QPixmap *sethomeIcon = new QPixmap(sethome);
+    _sethomeAction = new QAction(*sethomeIcon, "Set Home Viewpoint", this);
 
-	QPixmap* eyeIcon = new QPixmap(eye);
-	_viewAllAction = new QAction(*eyeIcon,QString(tr("View All  ")), this);
-	_viewAllAction->setShortcut(QKeySequence(tr("Ctrl+V")));
-	_viewAllAction->setShortcut(Qt::CTRL+Qt::Key_V);
+    QPixmap *eyeIcon = new QPixmap(eye);
+    _viewAllAction = new QAction(*eyeIcon, QString(tr("View All  ")), this);
+    _viewAllAction->setShortcut(QKeySequence(tr("Ctrl+V")));
+    _viewAllAction->setShortcut(Qt::CTRL + Qt::Key_V);
 
-	QPixmap* magnifyIcon = new QPixmap(magnify);
-	_viewRegionAction = new QAction(*magnifyIcon, "View Region", this);
+    QPixmap *magnifyIcon = new QPixmap(magnify);
+    _viewRegionAction = new QAction(*magnifyIcon, "View Region", this);
 
-	QPixmap* tileIcon = new QPixmap(tiles);
-	_tileAction = new QAction(*tileIcon,QString(tr("Tile Windows  ")),this);
-	_tileAction->setShortcut(Qt::CTRL+Qt::Key_T);
+    QPixmap *tileIcon = new QPixmap(tiles);
+    _tileAction = new QAction(*tileIcon, QString(tr("Tile Windows  ")), this);
+    _tileAction->setShortcut(Qt::CTRL + Qt::Key_T);
 
-	QPixmap* cascadeIcon = new QPixmap(cascade);
-	_cascadeAction = new QAction(*cascadeIcon, "Cascade Windows", this);
+    QPixmap *cascadeIcon = new QPixmap(cascade);
+    _cascadeAction = new QAction(*cascadeIcon, "Cascade Windows", this);
 
-	// Viz tool bar:
-	//
-	_vizToolBar = addToolBar("Viewpoint Toolbar");
-    _vizToolBar->setWindowTitle( tr( "VizTools" ) );
-	QString vizHelpString = QString(
-		"The tools in the Viewpoint Toolbar help "
-		"you with shortcuts that bookmark importation viewpoints in your "
-		"scene, orient your viewpoint along axes, and configure your "
-		"visualizers"
-	);
-	_vizToolBar->setWhatsThis(vizHelpString);
+    // Viz tool bar:
+    //
+    _vizToolBar = addToolBar("Viewpoint Toolbar");
+    _vizToolBar->setWindowTitle(tr("VizTools"));
+    QString vizHelpString =
+        QString("The tools in the Viewpoint Toolbar help "
+                "you with shortcuts that bookmark importation viewpoints in your "
+                "scene, orient your viewpoint along axes, and configure your "
+                "visualizers");
+    _vizToolBar->setWhatsThis(vizHelpString);
 
-	// Add a QComboBox to toolbar to select window
-	//
-	_windowSelector = new VizSelectCombo(this);
-	_vizToolBar->addWidget(_windowSelector);
+    // Add a QComboBox to toolbar to select window
+    //
+    _windowSelector = new VizSelectCombo(this);
+    _vizToolBar->addWidget(_windowSelector);
 
-	_vizToolBar->addAction(_tileAction);
-	_vizToolBar->addAction(_cascadeAction);
-	_vizToolBar->addAction(_homeAction);
-	_vizToolBar->addAction(_sethomeAction);
-	_vizToolBar->addAction(_viewRegionAction);
-	_vizToolBar->addAction(_viewAllAction);
+    _vizToolBar->addAction(_tileAction);
+    _vizToolBar->addAction(_cascadeAction);
+    _vizToolBar->addAction(_homeAction);
+    _vizToolBar->addAction(_sethomeAction);
+    _vizToolBar->addAction(_viewRegionAction);
+    _vizToolBar->addAction(_viewAllAction);
 
+    _alignViewCombo = new QComboBox(_vizToolBar);
+    _alignViewCombo->addItem("Align View");
+    _alignViewCombo->addItem("Nearest axis");
+    _alignViewCombo->addItem("     + X ");
+    _alignViewCombo->addItem("     + Y ");
+    _alignViewCombo->addItem("     + Z ");
+    _alignViewCombo->addItem("     - X ");
+    _alignViewCombo->addItem("     - Y ");
+    _alignViewCombo->addItem("Default: - Z ");
+    _alignViewCombo->setToolTip("Rotate view to an axis-aligned viewpoint,\ncentered on current "
+                                "rotation center.");
 
-	_alignViewCombo = new QComboBox(_vizToolBar);
-	_alignViewCombo->addItem("Align View");
-	_alignViewCombo->addItem("Nearest axis");
-	_alignViewCombo->addItem("     + X ");
-	_alignViewCombo->addItem("     + Y ");
-	_alignViewCombo->addItem("     + Z ");
-	_alignViewCombo->addItem("     - X ");
-	_alignViewCombo->addItem("     - Y ");
-	_alignViewCombo->addItem("Default: - Z ");
-	_alignViewCombo->setToolTip(
-		"Rotate view to an axis-aligned viewpoint,\ncentered on current "
-		"rotation center."
-	);
-	
-	_vizToolBar->addWidget(_alignViewCombo);
+    _vizToolBar->addWidget(_alignViewCombo);
 
-	_interactiveRefinementSpin = new QSpinBox(_vizToolBar);
-	_interactiveRefinementSpin->setPrefix(" Interactive Refinement: ");
-	_interactiveRefinementSpin->setMinimumWidth(230);
-	
-	_interactiveRefinementSpin->setToolTip(
-		"Specify minimum refinement level during mouse motion,\nused "
-		"in DVR and Iso rendering"
-	);
-	_interactiveRefinementSpin->setWhatsThis(
-		QString(
-			"While the viewpoint is changing due to mouse-dragging "
-			"in a visualizer, the refinement level used by the DVR "
-			"and Iso renderers is reduced to this interactive refinement level, "
-			"if it is less than the current refinement level of the renderer."
-		)
-	);
-	_interactiveRefinementSpin->setMinimum(0);
-	_interactiveRefinementSpin->setMaximum(10);
-	
-	_vizToolBar->addWidget(_interactiveRefinementSpin);
+    _interactiveRefinementSpin = new QSpinBox(_vizToolBar);
+    _interactiveRefinementSpin->setPrefix(" Interactive Refinement: ");
+    _interactiveRefinementSpin->setMinimumWidth(230);
 
-	connect (
-		_homeAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(UseHomeViewpoint())
-	);
-	connect (
-		_viewAllAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(ViewAll())
-	);
-	connect (
-		_sethomeAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(SetHomeViewpoint())
-	);
-	connect (
-		_alignViewCombo, SIGNAL(activated(int)),
-		_tabMgr, SLOT(AlignView(int))
-	);
-	connect (
-		_viewRegionAction, SIGNAL(triggered()),
-		_tabMgr, SLOT(CenterSubRegion())
-	);
-	connect (
-		_tileAction, SIGNAL(triggered()),
-		_vizWinMgr, SLOT(FitSpace())
-	);
-	connect (
-		_cascadeAction, SIGNAL(triggered()),
-		_vizWinMgr, SLOT(Cascade())
-	);
-	connect (
-		_interactiveRefinementSpin, SIGNAL(valueChanged(int)),
-		this, SLOT(setInteractiveRefLevel(int))
-	);
+    _interactiveRefinementSpin->setToolTip(
+        "Specify minimum refinement level during mouse motion,\nused "
+        "in DVR and Iso rendering");
+    _interactiveRefinementSpin->setWhatsThis(
+        QString("While the viewpoint is changing due to mouse-dragging "
+                "in a visualizer, the refinement level used by the DVR "
+                "and Iso renderers is reduced to this interactive refinement level, "
+                "if it is less than the current refinement level of the renderer."));
+    _interactiveRefinementSpin->setMinimum(0);
+    _interactiveRefinementSpin->setMaximum(10);
+
+    _vizToolBar->addWidget(_interactiveRefinementSpin);
+
+    connect(_homeAction, SIGNAL(triggered()), _tabMgr, SLOT(UseHomeViewpoint()));
+    connect(_viewAllAction, SIGNAL(triggered()), _tabMgr, SLOT(ViewAll()));
+    connect(_sethomeAction, SIGNAL(triggered()), _tabMgr, SLOT(SetHomeViewpoint()));
+    connect(_alignViewCombo, SIGNAL(activated(int)), _tabMgr, SLOT(AlignView(int)));
+    connect(_viewRegionAction, SIGNAL(triggered()), _tabMgr, SLOT(CenterSubRegion()));
+    connect(_tileAction, SIGNAL(triggered()), _vizWinMgr, SLOT(FitSpace()));
+    connect(_cascadeAction, SIGNAL(triggered()), _vizWinMgr, SLOT(Cascade()));
+    connect(_interactiveRefinementSpin, SIGNAL(valueChanged(int)), this,
+            SLOT(setInteractiveRefLevel(int)));
 }
 
-void MainForm::createToolBars(){
+void MainForm::createToolBars() {
 
-	_createModeToolBar();
-	_createAnimationToolBar();
-	_createVizToolBar();
-	
+    _createModeToolBar();
+    _createAnimationToolBar();
+    _createVizToolBar();
 }
 
 void MainForm::hookupSignals() {
 
-	connect(
-		_tabMgr, SIGNAL(AnimationOnOffSignal(bool)), 
-		this, SLOT( _setAnimationOnOff(bool))
-	);
+    connect(_tabMgr, SIGNAL(AnimationOnOffSignal(bool)), this, SLOT(_setAnimationOnOff(bool)));
 
-	connect(
-		_tabMgr, SIGNAL(AnimationDrawSignal()), 
-		this, SLOT( _setAnimationDraw())
-	);
+    connect(_tabMgr, SIGNAL(AnimationDrawSignal()), this, SLOT(_setAnimationDraw()));
 
-	connect (
-		_tabMgr, SIGNAL(ActiveEventRouterChanged(string)),
-		this, SLOT(setActiveEventRouter(string))
-	);
+    connect(_tabMgr, SIGNAL(ActiveEventRouterChanged(string)), this,
+            SLOT(setActiveEventRouter(string)));
 
-	// Signals on the VizWinMgr
-	//
-	connect (
-		_windowSelector, SIGNAL(winActivated(const QString &)),
-		_vizWinMgr, SLOT(SetWinActive(const QString &))
-	);
-	connect (
-		_vizWinMgr, SIGNAL(newViz(const QString &)),
-		_windowSelector, SLOT(AddWindow(const QString&))
-	);
-	connect (
-		_vizWinMgr, SIGNAL(removeViz(const QString &)),
-		_windowSelector, SLOT(RemoveWindow(const QString &))
-	);
-	connect (
-		_vizWinMgr, SIGNAL(activateViz(const QString &)),
-		_windowSelector, SLOT(SetWindowActive(const QString &))
-	);
-	connect (
-		_windowSelector, SIGNAL(newWin()),
-		_vizWinMgr, SLOT(LaunchVisualizer())
-	);
+    // Signals on the VizWinMgr
+    //
+    connect(_windowSelector, SIGNAL(winActivated(const QString &)), _vizWinMgr,
+            SLOT(SetWinActive(const QString &)));
+    connect(_vizWinMgr, SIGNAL(newViz(const QString &)), _windowSelector,
+            SLOT(AddWindow(const QString &)));
+    connect(_vizWinMgr, SIGNAL(removeViz(const QString &)), _windowSelector,
+            SLOT(RemoveWindow(const QString &)));
+    connect(_vizWinMgr, SIGNAL(activateViz(const QString &)), _windowSelector,
+            SLOT(SetWindowActive(const QString &)));
+    connect(_windowSelector, SIGNAL(newWin()), _vizWinMgr, SLOT(LaunchVisualizer()));
 
-	connect(
-		_vizWinMgr, SIGNAL(activateViz(const QString &)),
-		_tabMgr, SLOT(SetActiveViz(const QString &))
-	);
+    connect(_vizWinMgr, SIGNAL(activateViz(const QString &)), _tabMgr,
+            SLOT(SetActiveViz(const QString &)));
 
-	connect(
-		_tabMgr, SIGNAL(Proj4StringChanged(string)), 
-		this, SLOT( _setProj4String(string))
-	);
-	connect (
-		_vizWinMgr, SIGNAL(removeViz(const QString &)),
-		_tabMgr, SLOT(SetActiveViz(const QString &))
-	);
+    connect(_tabMgr, SIGNAL(Proj4StringChanged(string)), this, SLOT(_setProj4String(string)));
+    connect(_vizWinMgr, SIGNAL(removeViz(const QString &)), _tabMgr,
+            SLOT(SetActiveViz(const QString &)));
 }
 
 void MainForm::_createFileMenu() {
 
-	// Actions
-	//
-    _dataLoad_MetafileAction = new QAction( this);
-    _dataLoad_MetafileAction->setText( tr( "Open V&DC" ) );
-	_dataLoad_MetafileAction->setToolTip(
-		"Specify a VDC data set to be loaded in current session"
-	);
-	_dataLoad_MetafileAction->setShortcut(tr("Ctrl+D"));
+    // Actions
+    //
+    _dataLoad_MetafileAction = new QAction(this);
+    _dataLoad_MetafileAction->setText(tr("Open V&DC"));
+    _dataLoad_MetafileAction->setToolTip("Specify a VDC data set to be loaded in current session");
+    _dataLoad_MetafileAction->setShortcut(tr("Ctrl+D"));
 
-	_dataClose_MetafileAction = new QAction( this );
-    _dataClose_MetafileAction->setText( tr( "Close VDC" ) );
-	_dataClose_MetafileAction->setToolTip(
-		"Specify a VDC data set to close in current session"
-	);
+    _dataClose_MetafileAction = new QAction(this);
+    _dataClose_MetafileAction->setText(tr("Close VDC"));
+    _dataClose_MetafileAction->setToolTip("Specify a VDC data set to close in current session");
 
-	_dataImportWRF_Action = new QAction( this );
-	_dataImportWRF_Action->setText(tr("WRF-ARW"));
-	_dataImportWRF_Action->setToolTip(
-		"Specify one or more WRF-ARW output files to import into "
-		"the current session"
-	);
+    _dataImportWRF_Action = new QAction(this);
+    _dataImportWRF_Action->setText(tr("WRF-ARW"));
+    _dataImportWRF_Action->setToolTip("Specify one or more WRF-ARW output files to import into "
+                                      "the current session");
 
-	_dataImportCF_Action = new QAction( this );
-	_dataImportCF_Action->setText(tr("NetCDF-CF"));
-	_dataImportCF_Action->setToolTip(
-		"Specify one or more NetCDF Climate Forecast (CF) convention "
-		"output files to import into the current session"
-	);
+    _dataImportCF_Action = new QAction(this);
+    _dataImportCF_Action->setText(tr("NetCDF-CF"));
+    _dataImportCF_Action->setToolTip("Specify one or more NetCDF Climate Forecast (CF) convention "
+                                     "output files to import into the current session");
 
-	_dataImportMPAS_Action = new QAction( this );
-	_dataImportMPAS_Action->setText(tr("MPAS"));
-	_dataImportMPAS_Action->setToolTip(
-		"Specify one or more MPAS output files to import into the "
-		"current session"
-	);
+    _dataImportMPAS_Action = new QAction(this);
+    _dataImportMPAS_Action->setText(tr("MPAS"));
+    _dataImportMPAS_Action->setToolTip("Specify one or more MPAS output files to import into the "
+                                       "current session");
 
-    _fileOpenAction = new QAction( this);
-	_fileOpenAction->setEnabled(true);
-    _fileSaveAction = new QAction( this );
-	_fileSaveAction->setEnabled(true);
-    _fileSaveAsAction = new QAction( this );
-	_fileSaveAsAction->setEnabled(true);
-    _fileExitAction = new QAction( this);
-	_fileNew_SessionAction = new QAction( this );
+    _fileOpenAction = new QAction(this);
+    _fileOpenAction->setEnabled(true);
+    _fileSaveAction = new QAction(this);
+    _fileSaveAction->setEnabled(true);
+    _fileSaveAsAction = new QAction(this);
+    _fileSaveAsAction->setEnabled(true);
+    _fileExitAction = new QAction(this);
+    _fileNew_SessionAction = new QAction(this);
 
-    _fileNew_SessionAction->setText( tr( "&New Session" ) );
-    
-	_fileNew_SessionAction->setToolTip(
-		"Restart the session with default settings"
-	);
-	_fileNew_SessionAction->setShortcut( Qt::CTRL + Qt::Key_N );
-    
-    _fileOpenAction->setText( tr( "&Open Session" ) );
-    _fileOpenAction->setShortcut( tr( "Ctrl+O" ) );
-	_fileOpenAction->setToolTip(
-		"Launch a file open dialog to reopen a previously saved session file"
-	);
-    
-    _fileSaveAction->setText( tr( "&Save Session" ) );
-    _fileSaveAction->setShortcut( tr( "Ctrl+S" ) );
-	_fileSaveAction->setToolTip(
-		"Launch a file-save dialog to save the state of this session in "
-		"current session file"
-	);
-    _fileSaveAsAction->setText( tr( "Save Session As..." ) );
-    
-	_fileSaveAsAction->setToolTip(
-		"Launch a file-save dialog to save the state of this session in "
-		"another session file"
-	);
- 
-    _fileExitAction->setText( tr( "E&xit" ) );
+    _fileNew_SessionAction->setText(tr("&New Session"));
+
+    _fileNew_SessionAction->setToolTip("Restart the session with default settings");
+    _fileNew_SessionAction->setShortcut(Qt::CTRL + Qt::Key_N);
+
+    _fileOpenAction->setText(tr("&Open Session"));
+    _fileOpenAction->setShortcut(tr("Ctrl+O"));
+    _fileOpenAction->setToolTip(
+        "Launch a file open dialog to reopen a previously saved session file");
+
+    _fileSaveAction->setText(tr("&Save Session"));
+    _fileSaveAction->setShortcut(tr("Ctrl+S"));
+    _fileSaveAction->setToolTip("Launch a file-save dialog to save the state of this session in "
+                                "current session file");
+    _fileSaveAsAction->setText(tr("Save Session As..."));
+
+    _fileSaveAsAction->setToolTip("Launch a file-save dialog to save the state of this session in "
+                                  "another session file");
+
+    _fileExitAction->setText(tr("E&xit"));
 
     _File = menuBar()->addMenu(tr("File"));
 
-	_File->addAction(_dataLoad_MetafileAction );
-	_closeVDCMenu = _File->addMenu("Close VDC");
+    _File->addAction(_dataLoad_MetafileAction);
+    _closeVDCMenu = _File->addMenu("Close VDC");
 
-	// closeVDCMenu items added dynamically in updateMenus()
-	//
+    // closeVDCMenu items added dynamically in updateMenus()
+    //
 
-	_importMenu = _File->addMenu("Import");
-	_importMenu->addAction(_dataImportWRF_Action);
+    _importMenu = _File->addMenu("Import");
+    _importMenu->addAction(_dataImportWRF_Action);
     _importMenu->addAction(_dataImportCF_Action);
     _importMenu->addAction(_dataImportMPAS_Action);
-	_File->addSeparator();
+    _File->addSeparator();
 
-	// _File->addAction(createTextSeparator(" Session"));
-	//
+    // _File->addAction(createTextSeparator(" Session"));
+    //
     _File->addAction(_fileNew_SessionAction);
     _File->addAction(_fileOpenAction);
     _File->addAction(_fileSaveAction);
     _File->addAction(_fileSaveAsAction);
     _File->addAction(_fileExitAction);
 
-	connect( 
-		_dataLoad_MetafileAction, SIGNAL( triggered() ),
-		this, SLOT( loadData() ) 
-	);
-	connect( 
-		_dataImportWRF_Action, SIGNAL( triggered() ),
-		this, SLOT( importWRFData() ) 
-	);
-	connect( 
-		_dataImportCF_Action, SIGNAL( triggered() ),
-		this, SLOT( importCFData() ) 
-	);
-	connect( 
-		_dataImportMPAS_Action, SIGNAL( triggered() ),
-		this, SLOT( importMPASData() ) 
-	);
+    connect(_dataLoad_MetafileAction, SIGNAL(triggered()), this, SLOT(loadData()));
+    connect(_dataImportWRF_Action, SIGNAL(triggered()), this, SLOT(importWRFData()));
+    connect(_dataImportCF_Action, SIGNAL(triggered()), this, SLOT(importCFData()));
+    connect(_dataImportMPAS_Action, SIGNAL(triggered()), this, SLOT(importMPASData()));
 
-	connect( 
-		_fileNew_SessionAction, SIGNAL( triggered() ),
-		this, SLOT( sessionNew() ) 
-	);
-	connect( 
-		_fileOpenAction, SIGNAL( triggered() ),
-		this, SLOT( sessionOpen() ) 
-	);
-	connect( 
-		_fileSaveAction, SIGNAL( triggered() ),
-		this, SLOT( fileSave() ) 
-	);
-	connect( 
-		_fileSaveAsAction, SIGNAL( triggered() ),
-		this, SLOT( fileSaveAs() ) 
-	);
-	connect( 
-		_fileExitAction, SIGNAL( triggered() ),
-		this, SLOT( fileExit() ) 
-	);
+    connect(_fileNew_SessionAction, SIGNAL(triggered()), this, SLOT(sessionNew()));
+    connect(_fileOpenAction, SIGNAL(triggered()), this, SLOT(sessionOpen()));
+    connect(_fileSaveAction, SIGNAL(triggered()), this, SLOT(fileSave()));
+    connect(_fileSaveAsAction, SIGNAL(triggered()), this, SLOT(fileSaveAs()));
+    connect(_fileExitAction, SIGNAL(triggered()), this, SLOT(fileExit()));
 }
 
 void MainForm::_createEditMenu() {
 
-	_editUndoAction = new QAction(this);
-	_editUndoAction->setText( tr( "&Undo" ) );
-    _editUndoAction->setShortcut( tr( "Ctrl+Z" ) );
-	_editUndoAction->setToolTip("Undo the most recent session state change");
-	_editUndoAction->setEnabled(true);
+    _editUndoAction = new QAction(this);
+    _editUndoAction->setText(tr("&Undo"));
+    _editUndoAction->setShortcut(tr("Ctrl+Z"));
+    _editUndoAction->setToolTip("Undo the most recent session state change");
+    _editUndoAction->setEnabled(true);
 
-	_editRedoAction = new QAction(this);
-	_editRedoAction->setText( tr( "&Redo" ) );
-    _editRedoAction->setShortcut( tr( "Ctrl+Y" ) );
-	_editRedoAction->setToolTip("Redo the last undone session state change");
-	_editRedoAction->setEnabled(false);
+    _editRedoAction = new QAction(this);
+    _editRedoAction->setText(tr("&Redo"));
+    _editRedoAction->setShortcut(tr("Ctrl+Y"));
+    _editRedoAction->setToolTip("Redo the last undone session state change");
+    _editRedoAction->setEnabled(false);
 
     _Edit = menuBar()->addMenu(tr("Edit"));
-	_Edit->addAction(_editUndoAction);
-	_Edit->addAction(_editRedoAction);
-	_Edit->addSeparator();
+    _Edit->addAction(_editUndoAction);
+    _Edit->addAction(_editRedoAction);
+    _Edit->addSeparator();
 
-	connect(
-		_editUndoAction, SIGNAL(triggered()),
-		this, SLOT (undo())
-	);
-	connect(
-		_editRedoAction, SIGNAL(triggered()),
-		this, SLOT (redo())
-	);
+    connect(_editUndoAction, SIGNAL(triggered()), this, SLOT(undo()));
+    connect(_editRedoAction, SIGNAL(triggered()), this, SLOT(redo()));
 }
 
 void MainForm::_createToolsMenu() {
 
-	_plotAction = new QAction(this);
-	_plotAction->setText("Plot Utility");
-	_plotAction->setEnabled(false);
+    _plotAction = new QAction(this);
+    _plotAction->setText("Plot Utility");
+    _plotAction->setEnabled(false);
 
-	_statsAction = new QAction(this);
-	_statsAction->setText("Data Statistics");
-	_statsAction->setEnabled(false);
+    _statsAction = new QAction(this);
+    _statsAction->setText("Data Statistics");
+    _statsAction->setEnabled(false);
 
     _pythonAction = new QAction(this);
     _pythonAction->setText("Python Variables");
     _pythonAction->setEnabled(false);
 
-	_installCLIToolsAction = new QAction(this);
-	_installCLIToolsAction->setText("Install Command Line Tools");
-	_installCLIToolsAction->setToolTip(
-		"Add VAPOR_HOME to environment and add current utilities "
-		"location to path. Needs to updated if app bundle moved"
-	);
+    _installCLIToolsAction = new QAction(this);
+    _installCLIToolsAction->setText("Install Command Line Tools");
+    _installCLIToolsAction->setToolTip("Add VAPOR_HOME to environment and add current utilities "
+                                       "location to path. Needs to updated if app bundle moved");
 
-	_Tools = menuBar()->addMenu(tr("Tools"));
-	_Tools->addAction(_plotAction);
-	_Tools->addAction(_statsAction);
+    _Tools = menuBar()->addMenu(tr("Tools"));
+    _Tools->addAction(_plotAction);
+    _Tools->addAction(_statsAction);
     _Tools->addAction(_pythonAction);
 #ifdef WIN32
 #define ADD_INSTALL_CLI_TOOLS_ACTION 1
@@ -974,83 +808,52 @@ void MainForm::_createToolsMenu() {
 #endif
 #ifdef ADD_INSTALL_CLI_TOOLS_ACTION
 
-	_Tools->addSeparator();
+    _Tools->addSeparator();
 
     _Tools->addAction(_installCLIToolsAction);
-	
-    connect(
-		_installCLIToolsAction, SIGNAL(triggered()),
-		this, SLOT(installCLITools())
-	);
+
+    connect(_installCLIToolsAction, SIGNAL(triggered()), this, SLOT(installCLITools()));
 
 #endif
 
-	connect(
-		_statsAction, SIGNAL(triggered()),
-		this, SLOT(launchStats())
-	);
-	connect(
-		_plotAction, SIGNAL(triggered()),
-		this, SLOT(launchPlotUtility())
-	);
-    connect(
-        _pythonAction, SIGNAL(triggered()),
-        this, SLOT(launchPythonVariables())
-    );
-
+    connect(_statsAction, SIGNAL(triggered()), this, SLOT(launchStats()));
+    connect(_plotAction, SIGNAL(triggered()), this, SLOT(launchPlotUtility()));
+    connect(_pythonAction, SIGNAL(triggered()), this, SLOT(launchPythonVariables()));
 }
 
 void MainForm::_createCaptureMenu() {
 
-	_captureSingleJpegAction = new QAction(this);
-	_captureSingleJpegAction->setText( tr( "JPEG" ) );
-	_captureSingleJpegAction->setToolTip(
-		"Capture one JPEG from current active visualizer"
-	);
-	_captureSinglePngAction = new QAction(this);
-	_captureSinglePngAction->setText( tr( "PNG" ) );
-	_captureSinglePngAction->setToolTip(
-		"Capture one PNG from current active visualizer"
-	);
-	_captureSingleTiffAction = new QAction(this);
-	_captureSingleTiffAction->setText( tr( "TIFF" ) );
-	_captureSingleTiffAction->setToolTip(
-		"Capture one TIFF from current active visualizer"
-	);
+    _captureSingleJpegAction = new QAction(this);
+    _captureSingleJpegAction->setText(tr("JPEG"));
+    _captureSingleJpegAction->setToolTip("Capture one JPEG from current active visualizer");
+    _captureSinglePngAction = new QAction(this);
+    _captureSinglePngAction->setText(tr("PNG"));
+    _captureSinglePngAction->setToolTip("Capture one PNG from current active visualizer");
+    _captureSingleTiffAction = new QAction(this);
+    _captureSingleTiffAction->setText(tr("TIFF"));
+    _captureSingleTiffAction->setToolTip("Capture one TIFF from current active visualizer");
 
-	_captureJpegSequenceAction = new QAction( this );
-	_captureJpegSequenceAction->setText(
-		tr( "JPEG" ) 
-	);
-	_captureJpegSequenceAction->setToolTip(
-		"Begin saving JPEG image files rendered in current active visualizer"
-	);
-	_capturePngSequenceAction = new QAction( this );
-	_capturePngSequenceAction->setText(
-		tr( "PNG" ) 
-	);
-	_capturePngSequenceAction->setToolTip(
-		"Begin saving PNG image files rendered in current active visualizer"
-	);
-	_captureTiffSequenceAction = new QAction( this );
-	_captureTiffSequenceAction->setText(
-		tr( "TIFF" ) 
-	);
-	_captureTiffSequenceAction->setToolTip(
-		"Begin saving TIFF image files rendered in current active visualizer"
-	);
+    _captureJpegSequenceAction = new QAction(this);
+    _captureJpegSequenceAction->setText(tr("JPEG"));
+    _captureJpegSequenceAction->setToolTip(
+        "Begin saving JPEG image files rendered in current active visualizer");
+    _capturePngSequenceAction = new QAction(this);
+    _capturePngSequenceAction->setText(tr("PNG"));
+    _capturePngSequenceAction->setToolTip(
+        "Begin saving PNG image files rendered in current active visualizer");
+    _captureTiffSequenceAction = new QAction(this);
+    _captureTiffSequenceAction->setText(tr("TIFF"));
+    _captureTiffSequenceAction->setToolTip(
+        "Begin saving TIFF image files rendered in current active visualizer");
 
-	_captureEndImageAction = new QAction( this);
-	_captureEndImageAction->setText( tr( "End image capture" ) );
-	_captureEndImageAction->setToolTip(
-		"End capture of image files in current active visualizer"
-	);
-	_captureEndImageAction->setEnabled(false);
+    _captureEndImageAction = new QAction(this);
+    _captureEndImageAction->setText(tr("End image capture"));
+    _captureEndImageAction->setToolTip("End capture of image files in current active visualizer");
+    _captureEndImageAction->setEnabled(false);
 
-
-	// Note that the ordering of the following 4 is significant, so that image
-	// capture actions correctly activate each other.
-	//
+    // Note that the ordering of the following 4 is significant, so that image
+    // capture actions correctly activate each other.
+    //
     _captureMenu = menuBar()->addMenu(tr("Capture"));
     _singleImageMenu = _captureMenu->addMenu(tr("Single image"));
     //_singleImageMenu->addAction(_captureSingleJpegAction);
@@ -1061,93 +864,67 @@ void MainForm::_createCaptureMenu() {
     //_imageSequenceMenu->addAction(_captureJpegSequenceAction);
     _imageSequenceMenu->addAction(_capturePngSequenceAction);
     _imageSequenceMenu->addAction(_captureTiffSequenceAction);
-	//_captureMenu->addAction(_captureStartJpegAction);
-	_captureMenu->addAction(_captureEndImageAction);
+    //_captureMenu->addAction(_captureStartJpegAction);
+    _captureMenu->addAction(_captureEndImageAction);
 
-	connect (
-		_captureSingleJpegAction, SIGNAL(triggered()),
-		this, SLOT (captureSingleJpeg())
-	);
-	connect (
-		_captureSinglePngAction, SIGNAL(triggered()),
-		this, SLOT (captureSinglePng())
-	);
-	connect (
-		_captureSingleTiffAction, SIGNAL(triggered()),
-		this, SLOT (captureSingleTiff())
-	);
+    connect(_captureSingleJpegAction, SIGNAL(triggered()), this, SLOT(captureSingleJpeg()));
+    connect(_captureSinglePngAction, SIGNAL(triggered()), this, SLOT(captureSinglePng()));
+    connect(_captureSingleTiffAction, SIGNAL(triggered()), this, SLOT(captureSingleTiff()));
 
-	connect( 
-		_captureJpegSequenceAction, SIGNAL( triggered() ),
-		this, SLOT( captureJpegSequence() ) 
-	);
-	connect( 
-		_capturePngSequenceAction, SIGNAL( triggered() ),
-		this, SLOT( capturePngSequence() ) 
-	);
-	connect( 
-		_captureTiffSequenceAction, SIGNAL( triggered() ),
-		this, SLOT( captureTiffSequence() ) 
-	);
+    connect(_captureJpegSequenceAction, SIGNAL(triggered()), this, SLOT(captureJpegSequence()));
+    connect(_capturePngSequenceAction, SIGNAL(triggered()), this, SLOT(capturePngSequence()));
+    connect(_captureTiffSequenceAction, SIGNAL(triggered()), this, SLOT(captureTiffSequence()));
 
-	connect( 
-		_captureEndImageAction, SIGNAL( triggered() ),
-		this, SLOT( endAnimCapture() ) 
-	);
+    connect(_captureEndImageAction, SIGNAL(triggered()), this, SLOT(endAnimCapture()));
 }
 
 void MainForm::_createHelpMenu() {
-	
-	_main_Menubar->addSeparator();
 
-	_whatsThisAction = QWhatsThis::createAction(this);
-	_whatsThisAction->setText( tr( "Explain This" ) );
-	_whatsThisAction->setToolTip(
-		tr("Click here, then click over an object for context-sensitive help.")
-	);
+    _main_Menubar->addSeparator();
 
-    _helpAboutAction = new QAction( this );
-    _helpAboutAction->setText( tr( "About VAPOR" ) );
-    _helpAboutAction->setToolTip( tr( "Information about VAPOR" ) );
-	_helpAboutAction->setEnabled(true);
+    _whatsThisAction = QWhatsThis::createAction(this);
+    _whatsThisAction->setText(tr("Explain This"));
+    _whatsThisAction->setToolTip(
+        tr("Click here, then click over an object for context-sensitive help."));
 
-    _webDocumentationAction = new QAction( this );
-    _webDocumentationAction->setText( "Online documentation" );
+    _helpAboutAction = new QAction(this);
+    _helpAboutAction->setText(tr("About VAPOR"));
+    _helpAboutAction->setToolTip(tr("Information about VAPOR"));
+    _helpAboutAction->setEnabled(true);
+
+    _webDocumentationAction = new QAction(this);
+    _webDocumentationAction->setText("Online documentation");
     _webDocumentationAction->setEnabled(true);
 
     _helpMenu = menuBar()->addMenu(tr("Help"));
     _helpMenu->addAction(_webDocumentationAction);
     _helpMenu->addSeparator();
     _helpMenu->addAction(_whatsThisAction);
-    _helpMenu->addAction(_helpAboutAction );
+    _helpMenu->addAction(_helpAboutAction);
 
-    connect( 
-		_helpAboutAction, SIGNAL( triggered() ),
-		this, SLOT( helpAbout() ) 
-	);
-    connect( _webDocumentationAction, &QAction::triggered, this, &MainForm::launchWebDocs );
+    connect(_helpAboutAction, SIGNAL(triggered()), this, SLOT(helpAbout()));
+    connect(_webDocumentationAction, &QAction::triggered, this, &MainForm::launchWebDocs);
 }
 
-void MainForm::_createDeveloperMenu()
-{
+void MainForm::_createDeveloperMenu() {
     _paramsWidgetDemo = new ParamsWidgetDemo;
-//    _paramsWidgetDemo->setWindowFlags(_paramsWidgetDemo->windowFlags() & ~Qt::WA_QuitOnClose);
-    
+    //    _paramsWidgetDemo->setWindowFlags(_paramsWidgetDemo->windowFlags() & ~Qt::WA_QuitOnClose);
+
     _developerMenu = menuBar()->addMenu("Developer");
     _developerMenu->addAction("Show PWidget Demo", _paramsWidgetDemo, &QWidget::show);
 }
 
-void MainForm::createMenus(){
-	
-	// menubar
-	//
+void MainForm::createMenus() {
+
+    // menubar
+    //
     _main_Menubar = menuBar();
 
-	_createFileMenu();
-	_createEditMenu();
-	_createToolsMenu();
-	_createCaptureMenu();
-	_createHelpMenu();
+    _createFileMenu();
+    _createEditMenu();
+    _createToolsMenu();
+    _createCaptureMenu();
+    _createHelpMenu();
 #ifndef NDEBUG
     _createDeveloperMenu();
 #endif
@@ -1155,107 +932,104 @@ void MainForm::createMenus(){
 
 void MainForm::sessionOpenHelper(string fileName) {
 
-	// Clear out the current session:
+    // Clear out the current session:
 
-	enableWidgets(false);
+    enableWidgets(false);
 
-	_vizWinMgr->Shutdown();
-	_tabMgr->Shutdown();
+    _vizWinMgr->Shutdown();
+    _tabMgr->Shutdown();
 
-	// Close any open data sets
-	//
-	GUIStateParams *p = GetStateParams();
-	vector <string> dataSetNames = p->GetOpenDataSetNames();
-	for (int i=0; i<dataSetNames.size(); i++) {
-		closeDataHelper(dataSetNames[i]);
-	}
+    // Close any open data sets
+    //
+    GUIStateParams *p = GetStateParams();
+    vector<string> dataSetNames = p->GetOpenDataSetNames();
+    for (int i = 0; i < dataSetNames.size(); i++) {
+        closeDataHelper(dataSetNames[i]);
+    }
 
-	if (! fileName.empty()) {
-		int rc = _controlExec->LoadState(fileName);
-		if (rc < 0) {
-			MSG_ERR("Failed to restore session from file");
-			_controlExec->LoadState();
-		}
-	}
-	else {
-		_controlExec->LoadState();
-	}
+    if (!fileName.empty()) {
+        int rc = _controlExec->LoadState(fileName);
+        if (rc < 0) {
+            MSG_ERR("Failed to restore session from file");
+            _controlExec->LoadState();
+        }
+    } else {
+        _controlExec->LoadState();
+    }
 
-	// Ugh. Load state will of course set open data sets in database
-	//
-	GUIStateParams *newP = GetStateParams();
-	dataSetNames = newP->GetOpenDataSetNames();
+    // Ugh. Load state will of course set open data sets in database
+    //
+    GUIStateParams *newP = GetStateParams();
+    dataSetNames = newP->GetOpenDataSetNames();
 
-	for (int i=0; i<dataSetNames.size(); i++) {
+    for (int i = 0; i < dataSetNames.size(); i++) {
         string name = dataSetNames[i];
         vector<string> paths = newP->GetOpenDataSetPaths(name);
-        if (std::all_of(paths.begin(), paths.end(), [](string path){ return FileUtils::Exists(path); })) {
+        if (std::all_of(paths.begin(), paths.end(),
+                        [](string path) { return FileUtils::Exists(path); })) {
             loadDataHelper(paths, "", "", newP->GetOpenDataSetFormat(name), true, false);
         } else {
             newP->RemoveOpenDateSet(name);
         }
-	}
-    
-	_vizWinMgr->Restart();
-	_tabMgr->Restart();
+    }
+
+    _vizWinMgr->Restart();
+    _tabMgr->Restart();
 }
 
-void MainForm::sessionOpen(QString qfileName)
-{
+void MainForm::sessionOpen(QString qfileName) {
     // Disable "Are you sure?" popup in debug build
 #ifdef NDEBUG
-    if( _stateChangeFlag )
-    {
-		QMessageBox msgBox; 
-		msgBox.setWindowTitle("Are you sure?");
-		msgBox.setText( "The current session settings are not saved. Do you want to continue? \nYou can choose \"No\" now to go back and save the current session." );
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-		msgBox.setDefaultButton(QMessageBox::No);
-		if(msgBox.exec() == QMessageBox::No)
-        {
-			return;
-		}
+    if (_stateChangeFlag) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Are you sure?");
+        msgBox.setText("The current session settings are not saved. Do you want to continue? \nYou "
+                       "can choose \"No\" now to go back and save the current session.");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        if (msgBox.exec() == QMessageBox::No) {
+            return;
+        }
     }
 #endif
 
-	// This launches a panel that enables the
+    // This launches a panel that enables the
     // user to choose input session save files, then to
-	// load that session
-	//
-	if (qfileName==""){	
+    // load that session
+    //
+    if (qfileName == "") {
 
-		SettingsParams *sP = GetSettingsParams();
-		string dir = sP->GetSessionDir();
+        SettingsParams *sP = GetSettingsParams();
+        string dir = sP->GetSessionDir();
 
-		vector <string> files = myGetOpenFileNames(
-			"Choose a VAPOR session file to restore a session", 
-			dir, "Vapor 3 Session Save Files (*.vs3)", false
-		);
-		if (files.empty()) 
+        vector<string> files =
+            myGetOpenFileNames("Choose a VAPOR session file to restore a session", dir,
+                               "Vapor 3 Session Save Files (*.vs3)", false);
+        if (files.empty())
             return;
 
-		qfileName = files[0].c_str();
-	}
+        qfileName = files[0].c_str();
+    }
 
-	//Make sure the name ends with .vs3
-	if (! qfileName.endsWith(".vs3")){
-		return;
-	}
+    // Make sure the name ends with .vs3
+    if (!qfileName.endsWith(".vs3")) {
+        return;
+    }
 
-	if (!FileOperationChecker::FileGoodToRead(qfileName)) {
-		MSG_ERR(FileOperationChecker::GetLastErrorMessage().toStdString());
-		return;
-	}
+    if (!FileOperationChecker::FileGoodToRead(qfileName)) {
+        MSG_ERR(FileOperationChecker::GetLastErrorMessage().toStdString());
+        return;
+    }
 
-	string fileName = qfileName.toStdString();
+    string fileName = qfileName.toStdString();
     _sessionNewFlag = false;
-	sessionOpenHelper(fileName);
+    sessionOpenHelper(fileName);
 
-	GUIStateParams *p = GetStateParams();
-	p->SetCurrentSessionFile(fileName);
+    GUIStateParams *p = GetStateParams();
+    p->SetCurrentSessionFile(fileName);
 
     _stateChangeFlag = false;
-    
+
     GUIStateParams *state = GetStateParams();
     vector<string> openDataSetNames = state->GetOpenDataSetNames();
     string vizWin = state->GetActiveVizName();
@@ -1264,362 +1038,321 @@ void MainForm::sessionOpen(QString qfileName)
     string activeDataSetName;
     state->GetActiveRenderer(vizWin, activeRendererType, activeRendererName);
     _controlExec->RenderLookup(activeRendererName, vizWin, activeDataSetName, activeRendererType);
-    
+
     if (STLUtils::Contains(openDataSetNames, activeDataSetName))
         _tabMgr->SetActiveRenderer(vizWin, activeRendererType, activeRendererName);
     else
         _tabMgr->HideRenderWidgets();
-    
+
     _stateChangeCB();
 }
 
-void MainForm::_fileSaveHelper(string path)
-{
-    if( path.empty()) {
-		SettingsParams *sP = GetSettingsParams();
+void MainForm::_fileSaveHelper(string path) {
+    if (path.empty()) {
+        SettingsParams *sP = GetSettingsParams();
         GUIStateParams *guiStateParams = GetStateParams();
-        
+
         string dir;
         if (!guiStateParams->GetCurrentSessionFile().empty())
             dir = guiStateParams->GetCurrentSessionFile();
         else
             dir = sP->GetSessionDir();
 
-        QFileDialog fileDialog(this, "Save VAPOR session file",
-                    QString::fromStdString( dir ),
-                    QString("Vapor 3 Session Save file (*.vs3)" )
-        );
+        QFileDialog fileDialog(this, "Save VAPOR session file", QString::fromStdString(dir),
+                               QString("Vapor 3 Session Save file (*.vs3)"));
 
         fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-        fileDialog.setDefaultSuffix( QString("vs3") );
-        if (fileDialog.exec() != QDialog::Accepted) return;
+        fileDialog.setDefaultSuffix(QString("vs3"));
+        if (fileDialog.exec() != QDialog::Accepted)
+            return;
 
         QStringList files = fileDialog.selectedFiles();
         if (files.isEmpty() || files.size() > 1)
             return;
 
-		path = files[0].toStdString();
-	}
+        path = files[0].toStdString();
+    }
 
-	if (!FileOperationChecker::FileGoodToWrite( QString::fromStdString( path ))) {
-		MSG_ERR(FileOperationChecker::GetLastErrorMessage().toStdString());
-		return;
-	}
+    if (!FileOperationChecker::FileGoodToWrite(QString::fromStdString(path))) {
+        MSG_ERR(FileOperationChecker::GetLastErrorMessage().toStdString());
+        return;
+    }
 
-	if( _controlExec->SaveSession(path) < 0 )
-    {
-		MSG_ERR("Saving session file failed");
-		return;
-	}
+    if (_controlExec->SaveSession(path) < 0) {
+        MSG_ERR("Saving session file failed");
+        return;
+    }
 
-	GUIStateParams *p = GetStateParams();
-	p->SetCurrentSessionFile(path);
+    GUIStateParams *p = GetStateParams();
+    p->SetCurrentSessionFile(path);
 
     _stateChangeFlag = false;
 }
 
+void MainForm::fileSave() {
+    GUIStateParams *p = GetStateParams();
+    string path = p->GetCurrentSessionFile();
 
-
-void MainForm::fileSave()
-{
-	GUIStateParams *p = GetStateParams();
-	string path = p->GetCurrentSessionFile();
-
-	_fileSaveHelper(path);
+    _fileSaveHelper(path);
 }
 
-void MainForm::fileSaveAs()
-{
-	_fileSaveHelper("");
-}
+void MainForm::fileSaveAs() { _fileSaveHelper(""); }
 
-
-void MainForm::fileExit()
-{
-	close();
-}
+void MainForm::fileExit() { close(); }
 
 void MainForm::_stateChangeCB() {
 
     // Generate an application event whenever state changes
-    //      
+    //
     QEvent *event = new QEvent(ParamsChangeEvent);
     QApplication::postEvent(this, event);
 
-	_eventsSinceLastSave++;
+    _eventsSinceLastSave++;
 }
 
 void MainForm::undoRedoHelper(bool undo) {
 
-	// Disable state saving
-	//
-	bool enabled = _controlExec->GetSaveStateEnabled();
-	_controlExec->SetSaveStateEnabled(false);
+    // Disable state saving
+    //
+    bool enabled = _controlExec->GetSaveStateEnabled();
+    _controlExec->SetSaveStateEnabled(false);
 
-	bool status;
-	_vizWinMgr->Shutdown();
-	_tabMgr->Shutdown();
+    bool status;
+    _vizWinMgr->Shutdown();
+    _tabMgr->Shutdown();
 
-	if (undo) {
-		status = _controlExec->Undo();
-	}
-	else {
-		status = _controlExec->Redo();
-	}
-	if (! status) {
-		MSG_ERR("Undo/Redo failed");
-		_controlExec->SetSaveStateEnabled(enabled);
-		return;
-	}
+    if (undo) {
+        status = _controlExec->Undo();
+    } else {
+        status = _controlExec->Redo();
+    }
+    if (!status) {
+        MSG_ERR("Undo/Redo failed");
+        _controlExec->SetSaveStateEnabled(enabled);
+        return;
+    }
 
-	_vizWinMgr->Restart();
-	_tabMgr->Restart();
+    _vizWinMgr->Restart();
+    _tabMgr->Restart();
 
-	// Restore state saving
-	//
-	_controlExec->SetSaveStateEnabled(enabled);
+    // Restore state saving
+    //
+    _controlExec->SetSaveStateEnabled(enabled);
     _stateChangeCB();
 }
 
 void MainForm::undo() {
-	if (! _controlExec->UndoSize()) return;
-	undoRedoHelper(true);
+    if (!_controlExec->UndoSize())
+        return;
+    undoRedoHelper(true);
 }
 
 void MainForm::redo() {
-	if (! _controlExec->RedoSize()) return;
-	undoRedoHelper(false);
+    if (!_controlExec->RedoSize())
+        return;
+    undoRedoHelper(false);
 }
 
-void MainForm::helpAbout()
-{
-	std::string banner_file_name = "vapor_banner.png";
-    if(_banner) delete _banner;
-	std::string banner_text = 
-		"Visualization and Analysis Platform for atmospheric, Oceanic and "
-		"solar Research.\n\n"
+void MainForm::helpAbout() {
+    std::string banner_file_name = "vapor_banner.png";
+    if (_banner)
+        delete _banner;
+    std::string banner_text =
+        "Visualization and Analysis Platform for atmospheric, Oceanic and "
+        "solar Research.\n\n"
         "Developed by the National Center for Atmospheric Research's (NCAR) \n"
         "Computational and Information Systems Lab. \n\n"
-		"Boulder, Colorado 80305, U.S.A.\n"
-		"Web site: http://www.vapor.ucar.edu\n"
+        "Boulder, Colorado 80305, U.S.A.\n"
+        "Web site: http://www.vapor.ucar.edu\n"
         "Contact: vapor@ucar.edu\n"
-        "Version: " + string(Version::GetFullVersionString().c_str());
+        "Version: " +
+        string(Version::GetFullVersionString().c_str());
 
-	_banner = new BannerGUI(
-		this, banner_file_name, -1, true, banner_text.c_str(), 
-		"http://www.vapor.ucar.edu"
-	);
+    _banner = new BannerGUI(this, banner_file_name, -1, true, banner_text.c_str(),
+                            "http://www.vapor.ucar.edu");
 }
 
 // Close a data set and remove from database
 //
 void MainForm::closeDataHelper(string dataSetName) {
-	GUIStateParams *p = GetStateParams();
+    GUIStateParams *p = GetStateParams();
 
-	p->RemoveOpenDateSet(dataSetName);
+    p->RemoveOpenDateSet(dataSetName);
 
-	_controlExec->CloseData(dataSetName);
+    _controlExec->CloseData(dataSetName);
 }
 
-// Open a data set and remove from database. If data with same name 
+// Open a data set and remove from database. If data with same name
 // already exists close it first.
 //
-bool MainForm::openDataHelper(
-	string dataSetName,
-	string format,
-	const vector <string> &files,
-	const vector <string> &options
-) {
+bool MainForm::openDataHelper(string dataSetName, string format, const vector<string> &files,
+                              const vector<string> &options) {
 
-	GUIStateParams *p = GetStateParams();
-	vector <string> dataSetNames =  p->GetOpenDataSetNames();
+    GUIStateParams *p = GetStateParams();
+    vector<string> dataSetNames = p->GetOpenDataSetNames();
 
-#ifdef	VAPOR3_0_0_ALPHA
-	// If data set with this name already exists, close it
-	//
-	for (int i=0; i<dataSetNames.size(); i++) {
-		if (dataSetNames[i] == dataSetName) {
-			closeDataHelper(dataSetName);
-		}
-	}
+#ifdef VAPOR3_0_0_ALPHA
+    // If data set with this name already exists, close it
+    //
+    for (int i = 0; i < dataSetNames.size(); i++) {
+        if (dataSetNames[i] == dataSetName) {
+            closeDataHelper(dataSetName);
+        }
+    }
 #endif
 
+    // Open the data set
+    //
+    int rc = _controlExec->OpenData(files, options, dataSetName, format);
+    if (rc < 0) {
+        MSG_ERR("Failed to load data");
+        return (false);
+        ;
+    }
 
-	// Open the data set
-	//
-	int rc = _controlExec->OpenData( 
-		files, options, dataSetName, format
-	);
-	if (rc<0) {
-		MSG_ERR("Failed to load data");
-		return (false);;
-	}
+    DataStatus *ds = _controlExec->GetDataStatus();
+    p->SetProjectionString(ds->GetMapProjection());
 
-	DataStatus* ds = _controlExec->GetDataStatus();
-	p->SetProjectionString(ds->GetMapProjection());
+    p->InsertOpenDateSet(dataSetName, format, files);
 
-	p->InsertOpenDateSet(dataSetName, format, files);
+    _tabMgr->LoadDataNotify(dataSetName);
 
-	_tabMgr->LoadDataNotify(dataSetName);
-
-	return(true);
+    return (true);
 }
 
-void MainForm::loadDataHelper(
-	const vector <string> &files, string prompt, string filter, string format,
-	bool multi, bool promptToReplaceExistingDataset
-) {
-	vector <string> myFiles = files;
+void MainForm::loadDataHelper(const vector<string> &files, string prompt, string filter,
+                              string format, bool multi, bool promptToReplaceExistingDataset) {
+    vector<string> myFiles = files;
 
-	GUIStateParams *p = GetStateParams();
-	vector <string> dataSetNames =  p->GetOpenDataSetNames();
+    GUIStateParams *p = GetStateParams();
+    vector<string> dataSetNames = p->GetOpenDataSetNames();
 
-	// This launches a panel that enables the
+    // This launches a panel that enables the
     // user to choose input data files, then to
-	// create a datamanager using those files
-    // or metafiles.  
-	//
-	if (myFiles.empty()) {
-		string defaultPath = ".";
-		if (dataSetNames.size()) {
-			string lastData = dataSetNames[dataSetNames.size()-1];
-			defaultPath = p->GetOpenDataSetPaths(lastData)[0];
-		}
-		else {
-			SettingsParams *sP = GetSettingsParams();
-			defaultPath = sP->GetMetadataDir();
-		}
+    // create a datamanager using those files
+    // or metafiles.
+    //
+    if (myFiles.empty()) {
+        string defaultPath = ".";
+        if (dataSetNames.size()) {
+            string lastData = dataSetNames[dataSetNames.size() - 1];
+            defaultPath = p->GetOpenDataSetPaths(lastData)[0];
+        } else {
+            SettingsParams *sP = GetSettingsParams();
+            defaultPath = sP->GetMetadataDir();
+        }
 
-		myFiles = myGetOpenFileNames(
-			prompt, defaultPath, filter, multi
-		);
-	}
-	
-	if (myFiles.empty()) return;
+        myFiles = myGetOpenFileNames(prompt, defaultPath, filter, multi);
+    }
 
-	// Generate data set name 
-	//
-	string dataSetName = _getDataSetName(myFiles[0], promptToReplaceExistingDataset);
-	if (dataSetName.empty()) return;
-	
+    if (myFiles.empty())
+        return;
 
-	vector <string> options = {"-project_to_pcs", "-vertical_xform"};
-    
+    // Generate data set name
+    //
+    string dataSetName = _getDataSetName(myFiles[0], promptToReplaceExistingDataset);
+    if (dataSetName.empty())
+        return;
+
+    vector<string> options = {"-project_to_pcs", "-vertical_xform"};
+
     if (!p->GetProjectionString().empty()) {
         options.push_back("-proj4");
         options.push_back(p->GetProjectionString());
     }
-    
-	bool status = openDataHelper(dataSetName, format, myFiles, options);
-	if (! status) return;
 
-	// Reinitialize all tabs
-	//
-	
-	if (_sessionNewFlag) {
-		_tabMgr->ViewAll();
-		_tabMgr->SetHomeViewpoint();
+    bool status = openDataHelper(dataSetName, format, myFiles, options);
+    if (!status)
+        return;
 
-		_sessionNewFlag = false;
-	}
+    // Reinitialize all tabs
+    //
 
-	DataStatus* ds = _controlExec->GetDataStatus();
+    if (_sessionNewFlag) {
+        _tabMgr->ViewAll();
+        _tabMgr->SetHomeViewpoint();
 
-	_tabMgr->Update();
-	_vizWinMgr->Reinit();
-	_tabMgr->Reinit();
+        _sessionNewFlag = false;
+    }
 
-	enableWidgets(true);
+    DataStatus *ds = _controlExec->GetDataStatus();
 
-	_timeStepEditValidator->setRange(0,ds->GetTimeCoordinates().size()-1);
+    _tabMgr->Update();
+    _vizWinMgr->Reinit();
+    _tabMgr->Reinit();
 
+    enableWidgets(true);
+
+    _timeStepEditValidator->setRange(0, ds->GetTimeCoordinates().size() - 1);
 }
 
-//Load data into current session
-//If current session is at default then same as loadDefaultData
+// Load data into current session
+// If current session is at default then same as loadDefaultData
 //
-void MainForm::loadData(string fileName)
-{
+void MainForm::loadData(string fileName) {
 
-	vector <string> files;
-	if (! fileName.empty()) {
-		files.push_back(fileName);
-	}
-		
-	loadDataHelper(
-		files, "Choose the Master data File to load", 
-		"Vapor VDC files (*.nc *.vdc)", "vdc", false
-	);
+    vector<string> files;
+    if (!fileName.empty()) {
+        files.push_back(fileName);
+    }
 
-	_tabMgr->adjustSize();
-	_tabDockWindow->adjustSize();
+    loadDataHelper(files, "Choose the Master data File to load", "Vapor VDC files (*.nc *.vdc)",
+                   "vdc", false);
 
-
+    _tabMgr->adjustSize();
+    _tabDockWindow->adjustSize();
 }
 
 void MainForm::closeData(string fileName) {
-	QAction* a = (QAction*)sender();
+    QAction *a = (QAction *)sender();
 
-	string dataSetName = a->text().toStdString();
+    string dataSetName = a->text().toStdString();
 
-	closeDataHelper(dataSetName);
+    closeDataHelper(dataSetName);
 
-	GUIStateParams *p = GetStateParams();
-	vector <string> dataSetNames = p->GetOpenDataSetNames();
+    GUIStateParams *p = GetStateParams();
+    vector<string> dataSetNames = p->GetOpenDataSetNames();
 
-	if (dataSetNames.size()==0) {
-		enableWidgets(false);
-	}
+    if (dataSetNames.size() == 0) {
+        enableWidgets(false);
+    }
 
-	_tabMgr->Update();
-	_vizWinMgr->Reinit();
+    _tabMgr->Update();
+    _vizWinMgr->Reinit();
 }
-	
-//import WRF data into current session
+
+// import WRF data into current session
 //
-void MainForm::importWRFData()
-{
+void MainForm::importWRFData() {
 
-	vector <string> files;
-	loadDataHelper(
-		files, "WRF-ARW NetCDF files", "", "wrf", true
-	);
-	
+    vector<string> files;
+    loadDataHelper(files, "WRF-ARW NetCDF files", "", "wrf", true);
 }
 
-void MainForm::importCFData()
-{
+void MainForm::importCFData() {
 
-	vector <string> files;
-	loadDataHelper(
-		files, "NetCDF CF files", "", "cf", true
-	);
-	
+    vector<string> files;
+    loadDataHelper(files, "NetCDF CF files", "", "cf", true);
 }
 
-void MainForm::importMPASData()
-{
+void MainForm::importMPASData() {
 
-	vector <string> files;
-	loadDataHelper(
-		files, "MPAS files", "", "mpas", true
-	);
-	
+    vector<string> files;
+    loadDataHelper(files, "MPAS files", "", "mpas", true);
 }
 
-bool MainForm::doesQStringContainNonASCIICharacter(const QString &s)
-{
+bool MainForm::doesQStringContainNonASCIICharacter(const QString &s) {
     for (int i = 0; i < s.length(); i++)
         if (s.at(i).unicode() > 127)
             return true;
     return false;
 }
 
-int MainForm::checkQStringContainsNonASCIICharacter(const QString &s)
-{
+int MainForm::checkQStringContainsNonASCIICharacter(const QString &s) {
     if (doesQStringContainNonASCIICharacter(s)) {
 #ifdef WIN32
-        MyBase::SetErrMsg("Windows will convert a colon (common in WRF timestamps) to a non-ASCII dot character. This needs to be renamed.\n");
+        MyBase::SetErrMsg("Windows will convert a colon (common in WRF timestamps) to a non-ASCII "
+                          "dot character. This needs to be renamed.\n");
 #endif
         MyBase::SetErrMsg("Vapor does not support paths with non-ASCII characters.\n");
         MSG_ERR("Non ASCII Character in path");
@@ -1628,237 +1361,226 @@ int MainForm::checkQStringContainsNonASCIICharacter(const QString &s)
     return 0;
 }
 
-vector <string> MainForm::myGetOpenFileNames(
-	string prompt, string dir, string filter, bool multi) 
-{
-	QString qPrompt(prompt.c_str());
-	QString qDir(dir.c_str());
-	QString qFilter(filter.c_str());
+vector<string> MainForm::myGetOpenFileNames(string prompt, string dir, string filter, bool multi) {
+    QString qPrompt(prompt.c_str());
+    QString qDir(dir.c_str());
+    QString qFilter(filter.c_str());
 
-	vector <string> files;
-	if (multi) {
-		QStringList fileNames = QFileDialog::getOpenFileNames(
-			this, qPrompt, qDir, qFilter
-		);
-		QStringList list = fileNames;
-		QStringList::Iterator it = list.begin();
-		while(it != list.end()) 
-        {
-            if(!it->isNull()) {
+    vector<string> files;
+    if (multi) {
+        QStringList fileNames = QFileDialog::getOpenFileNames(this, qPrompt, qDir, qFilter);
+        QStringList list = fileNames;
+        QStringList::Iterator it = list.begin();
+        while (it != list.end()) {
+            if (!it->isNull()) {
                 if (checkQStringContainsNonASCIICharacter(*it) < 0)
                     return vector<string>();
-			    files.push_back((*it).toStdString());
+                files.push_back((*it).toStdString());
             }
-			++it;
-		}
-	}
-	else {
-		QString fileName = QFileDialog::getOpenFileName(
-			this, qPrompt, qDir, qFilter );
-        if( !fileName.isNull() ) {
+            ++it;
+        }
+    } else {
+        QString fileName = QFileDialog::getOpenFileName(this, qPrompt, qDir, qFilter);
+        if (!fileName.isNull()) {
             if (checkQStringContainsNonASCIICharacter(fileName) < 0)
                 return vector<string>();
-		    files.push_back(fileName.toStdString());
+            files.push_back(fileName.toStdString());
         }
-	}
+    }
 
-	for (int i=0; i<files.size(); i++) {
-		QFileInfo fInfo(files[i].c_str());
-		if (! fInfo.isReadable() || ! fInfo.isFile()){
-			MyBase::SetErrMsg("Load Data Error \n Invalid data set\n");
-			MSG_ERR("Failed to load data");
-			return(vector <string> ());
-		}
-	}
-	return(files);
+    for (int i = 0; i < files.size(); i++) {
+        QFileInfo fInfo(files[i].c_str());
+        if (!fInfo.isReadable() || !fInfo.isFile()) {
+            MyBase::SetErrMsg("Load Data Error \n Invalid data set\n");
+            MSG_ERR("Failed to load data");
+            return (vector<string>());
+        }
+    }
+    return (files);
 }
 
-void MainForm::sessionNew()
-{
+void MainForm::sessionNew() {
     // Disable "Are you sure?" popup in debug build
 #ifdef NDEBUG
-    if( _stateChangeFlag )
-    {
-		QMessageBox msgBox; 
-		msgBox.setWindowTitle("Are you sure?");
-		msgBox.setText( "The current session settings are not saved. Do you want to continue? \nYou can choose \"No\" now to go back and save the current session." );
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-		msgBox.setDefaultButton(QMessageBox::No);
-		if(msgBox.exec() == QMessageBox::No)
-        {
-			return;
-		}
+    if (_stateChangeFlag) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Are you sure?");
+        msgBox.setText("The current session settings are not saved. Do you want to continue? \nYou "
+                       "can choose \"No\" now to go back and save the current session.");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        if (msgBox.exec() == QMessageBox::No) {
+            return;
+        }
     }
 #endif
 
-	sessionOpenHelper("");
+    sessionOpenHelper("");
 
-	_vizWinMgr->LaunchVisualizer();
+    _vizWinMgr->LaunchVisualizer();
 
     _stateChangeFlag = false;
-	_sessionNewFlag = true;
+    _sessionNewFlag = true;
 }
 
-void MainForm::setInteractiveRefLevel(int val){
-	
-}
-void MainForm::setInteractiveRefinementSpin(int val){
-	
-}
-	
+void MainForm::setInteractiveRefLevel(int val) {}
+void MainForm::setInteractiveRefinementSpin(int val) {}
+
 void MainForm::_setAnimationOnOff(bool on) {
 
-	if (on) {
-		enableAnimationWidgets(false);
+    if (on) {
+        enableAnimationWidgets(false);
 
-		_App->removeEventFilter(this);
-	}
-	else  {
-		_playForwardAction->setChecked(false);
-		_playBackwardAction->setChecked(false);
-		enableAnimationWidgets(true);
-		_App->installEventFilter(this);
+        _App->removeEventFilter(this);
+    } else {
+        _playForwardAction->setChecked(false);
+        _playBackwardAction->setChecked(false);
+        enableAnimationWidgets(true);
+        _App->installEventFilter(this);
 
-		// Generate an event and force an update
-		//
-		QEvent *event = new QEvent(ParamsChangeEvent);
-		QApplication::postEvent(this, event);
-	}
+        // Generate an event and force an update
+        //
+        QEvent *event = new QEvent(ParamsChangeEvent);
+        QApplication::postEvent(this, event);
+    }
 }
 
 void MainForm::_setAnimationDraw() {
-	_tabMgr->Update();
-	_vizWinMgr->Update(false);
+    _tabMgr->Update();
+    _vizWinMgr->Update(false);
 
-	AnimationParams* aParams = GetAnimationParams();
-	size_t timestep = aParams->GetCurrentTimestep();
+    AnimationParams *aParams = GetAnimationParams();
+    size_t timestep = aParams->GetCurrentTimestep();
 
-	_timeStepEdit->setText(QString::number((int) timestep));
+    _timeStepEdit->setText(QString::number((int)timestep));
 }
 
-
-void MainForm::enableKeyframing(bool ison){
-	QPalette pal(_timeStepEdit->palette());
-	_timeStepEdit->setEnabled(!ison);
+void MainForm::enableKeyframing(bool ison) {
+    QPalette pal(_timeStepEdit->palette());
+    _timeStepEdit->setEnabled(!ison);
 }
 
-void MainForm::modeChange(int newmode){
-	string modeName = _modeCombo->itemText(newmode).toStdString();
+void MainForm::modeChange(int newmode) {
+    string modeName = _modeCombo->itemText(newmode).toStdString();
 
-	// Get the current mode setting from MouseModeParams
-	//
-	MouseModeParams *p = GetStateParams()->GetMouseModeParams();
-	p->SetCurrentMouseMode(modeName);
+    // Get the current mode setting from MouseModeParams
+    //
+    MouseModeParams *p = GetStateParams()->GetMouseModeParams();
+    p->SetCurrentMouseMode(modeName);
 
-	if (modeName == MouseModeParams::GetNavigateModeName()) {
-		_navigationAction->setChecked(true);
-		return;
-	}
-	
-	_navigationAction->setChecked(false);
-	
-	if(_modeStatusWidget) {
-		statusBar()->removeWidget(_modeStatusWidget);
-		delete _modeStatusWidget;
-	}
+    if (modeName == MouseModeParams::GetNavigateModeName()) {
+        _navigationAction->setChecked(true);
+        return;
+    }
 
-	_modeStatusWidget = new QLabel(
-		QString::fromStdString(modeName)+" Mode: To modify box in scene, grab handle with left mouse to translate, right mouse to stretch",this); 
+    _navigationAction->setChecked(false);
 
-	statusBar()->addWidget(_modeStatusWidget,2);
+    if (_modeStatusWidget) {
+        statusBar()->removeWidget(_modeStatusWidget);
+        delete _modeStatusWidget;
+    }
+
+    _modeStatusWidget = new QLabel(QString::fromStdString(modeName) +
+                                       " Mode: To modify box in scene, grab handle with left mouse "
+                                       "to translate, right mouse to stretch",
+                                   this);
+
+    statusBar()->addWidget(_modeStatusWidget, 2);
 }
 
-void MainForm::showCitationReminder(){
+void MainForm::showCitationReminder() {
     // Disable citation reminder in Debug build
 #ifndef NDEBUG
     return;
 #endif
-	if (!_begForCitation) return;
+    if (!_begForCitation)
+        return;
 
-	_begForCitation = false;
-	//Provide a customized message box
-	QMessageBox msgBox;
-	QString reminder("VAPOR is developed as an Open Source application by NCAR, ");
-	reminder.append("under the sponsorship of the National Science Foundation.\n\n");
-	reminder.append("We depend on evidence of the software's value to the scientific community.  ");
-	reminder.append("You are free to use VAPOR as permitted under the terms and conditions of the licence.\n\n ");
-	reminder.append("Please cite VAPOR in your publications and presentations. ");
-	reminder.append("Citation details:\n    http://www.vapor.ucar.edu/citation");
-	msgBox.setText(reminder);
-		
-	msgBox.setStandardButtons(QMessageBox::Ok);
-	msgBox.setDefaultButton(QMessageBox::Ok);
-		
-	msgBox.exec();
+    _begForCitation = false;
+    // Provide a customized message box
+    QMessageBox msgBox;
+    QString reminder("VAPOR is developed as an Open Source application by NCAR, ");
+    reminder.append("under the sponsorship of the National Science Foundation.\n\n");
+    reminder.append("We depend on evidence of the software's value to the scientific community.  ");
+    reminder.append("You are free to use VAPOR as permitted under the terms and conditions of the "
+                    "licence.\n\n ");
+    reminder.append("Please cite VAPOR in your publications and presentations. ");
+    reminder.append("Citation details:\n    http://www.vapor.ucar.edu/citation");
+    msgBox.setText(reminder);
+
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.setDefaultButton(QMessageBox::Ok);
+
+    msgBox.exec();
 }
-void MainForm::addMouseModes(){
-	MouseModeParams *p = GetStateParams()->GetMouseModeParams();
-	vector <string> mouseModes = p->GetAllMouseModes();
+void MainForm::addMouseModes() {
+    MouseModeParams *p = GetStateParams()->GetMouseModeParams();
+    vector<string> mouseModes = p->GetAllMouseModes();
 
-	for (int i = 0; i<mouseModes.size(); i++){
-		QString text = QString::fromStdString(mouseModes[i]);
-		const char* const * xpmIcon = p->GetIcon(mouseModes[i]);
-		QPixmap qp = QPixmap(xpmIcon);
-		QIcon icon = QIcon(qp);
-		addMode(text,icon);
-	}
+    for (int i = 0; i < mouseModes.size(); i++) {
+        QString text = QString::fromStdString(mouseModes[i]);
+        const char *const *xpmIcon = p->GetIcon(mouseModes[i]);
+        QPixmap qp = QPixmap(xpmIcon);
+        QIcon icon = QIcon(qp);
+        addMode(text, icon);
+    }
 }
 
 void MainForm::launchWebDocs() const {
-	bool success = QDesktopServices::openUrl( QString::fromStdString( _documentationURL ) );
-	if (!success){
-		MSG_ERR("Unable to launch Web browser for URL");
-	}
+    bool success = QDesktopServices::openUrl(QString::fromStdString(_documentationURL));
+    if (!success) {
+        MSG_ERR("Unable to launch Web browser for URL");
+    }
 }
 
-void MainForm::loadStartingPrefs(){
-	string prefPath;
-	string preffile =
+void MainForm::loadStartingPrefs() {
+    string prefPath;
+    string preffile =
 #ifdef WIN32
-		"\\.vapor3_prefs";
+        "\\.vapor3_prefs";
 #else
-		"/.vapor3_prefs";
+        "/.vapor3_prefs";
 #endif
-	char* pPath = getenv("VAPOR3_PREFS_DIR");
-	if (!pPath)
-		pPath = getenv("HOME");
-	if (!pPath){
-		vector<string> tpath;
-		tpath.push_back("examples");
-		tpath.push_back(preffile);
-		prefPath = GetSharePath("examples/" + preffile);
-	} else {
-		prefPath = string(pPath) + preffile;
-	}
+    char *pPath = getenv("VAPOR3_PREFS_DIR");
+    if (!pPath)
+        pPath = getenv("HOME");
+    if (!pPath) {
+        vector<string> tpath;
+        tpath.push_back("examples");
+        tpath.push_back(preffile);
+        prefPath = GetSharePath("examples/" + preffile);
+    } else {
+        prefPath = string(pPath) + preffile;
+    }
 
-	//Make this path the default at startup:
-	//
-	SettingsParams *sP = GetSettingsParams();
-	sP->SetCurrentPrefsPath(prefPath);
+    // Make this path the default at startup:
+    //
+    SettingsParams *sP = GetSettingsParams();
+    sP->SetCurrentPrefsPath(prefPath);
 
-#ifdef	VAPOR3_0_0_ALPHA
-	_controlExec->RestorePreferences(prefPath);
+#ifdef VAPOR3_0_0_ALPHA
+    _controlExec->RestorePreferences(prefPath);
 #endif
-		
 }
 
 void MainForm::setActiveEventRouter(string type) {
 
-	// Set up help for active tab
-	//
-	vector <pair <string, string> >help;
-	_tabMgr->GetWebHelp(type, help);
+    // Set up help for active tab
+    //
+    vector<pair<string, string>> help;
+    _tabMgr->GetWebHelp(type, help);
 }
 
 void MainForm::_setProj4String(string proj4String) {
 
-	GUIStateParams *p = GetStateParams();
+    GUIStateParams *p = GetStateParams();
 
-	DataStatus* ds = _controlExec->GetDataStatus();
-	string currentString = ds->GetMapProjection();
+    DataStatus *ds = _controlExec->GetDataStatus();
+    string currentString = ds->GetMapProjection();
 
-	if (proj4String == currentString) return;
-    
+    if (proj4String == currentString)
+        return;
+
     Proj4API proj;
     int err = proj.Initialize("", proj4String);
     if (err < 0) {
@@ -1866,138 +1588,123 @@ void MainForm::_setProj4String(string proj4String) {
         return;
     }
 
-	_App->removeEventFilter(this);
+    _App->removeEventFilter(this);
 
-	vector <string> dataSets =  p->GetOpenDataSetNames();
+    vector<string> dataSets = p->GetOpenDataSetNames();
 
+    // Close and re-open all data with new
+    // proj4 string
+    //
+    map<int, vector<string>> filesMap;
+    map<int, string> formatsMap;
+    for (int i = 0; i < dataSets.size(); i++) {
 
-	// Close and re-open all data with new
-	// proj4 string
-	//
-	map <int, vector <string> > filesMap;
-	map <int, string> formatsMap;
-	for (int i=0; i<dataSets.size(); i++ ) {
+        // Save list of files and format before close so we can re-open
+        //
+        filesMap[i] = p->GetOpenDataSetPaths(dataSets[i]);
+        formatsMap[i] = p->GetOpenDataSetFormat(dataSets[i]);
 
-		// Save list of files and format before close so we can re-open
-		//
-		filesMap[i] = p->GetOpenDataSetPaths(dataSets[i]);
-		formatsMap[i] = p->GetOpenDataSetFormat(dataSets[i]);
+        closeDataHelper(dataSets[i]);
+    }
 
-		closeDataHelper(dataSets[i]);
-	}
+    vector<string> options = {"-project_to_pcs", "-vertical_xform"};
+    if (!proj4String.empty()) {
+        options.push_back("-proj4");
+        options.push_back(proj4String);
+    };
 
-	vector <string> options = {"-project_to_pcs", "-vertical_xform"};
-	if (! proj4String.empty()) {
-		options.push_back("-proj4");
-		options.push_back(proj4String);
-	};
+    for (int i = 0; i < dataSets.size(); i++) {
 
-	for (int i=0; i<dataSets.size(); i++ ) {
+        (void)openDataHelper(dataSets[i], formatsMap[i], filesMap[i], options);
+    }
 
-		(void) openDataHelper(
-			dataSets[i], formatsMap[i], filesMap[i], options
-		);
-
-	}
-
-	_App->installEventFilter(this);
+    _App->installEventFilter(this);
 }
 
 bool MainForm::eventFilter(QObject *obj, QEvent *event) {
 
-	VAssert(_controlExec && _vizWinMgr);
+    VAssert(_controlExec && _vizWinMgr);
 
-	// Only update the GUI if the Params state has changed
-	//
-	if (event->type() == ParamsChangeEvent)
-    {
-		QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-		
-		if (_stats) 
-        {
-			_stats->Update();
-		}
-		if (_plot) {
-			_plot->Update();
-		}
+    // Only update the GUI if the Params state has changed
+    //
+    if (event->type() == ParamsChangeEvent) {
+        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+        if (_stats) {
+            _stats->Update();
+        }
+        if (_plot) {
+            _plot->Update();
+        }
         if (_pythonVariables) {
             _pythonVariables->Update();
         }
 
-		setUpdatesEnabled(false);
-		_tabMgr->Update();
-        
+        setUpdatesEnabled(false);
+        _tabMgr->Update();
+
 #ifndef NDEBUG
         _paramsWidgetDemo->Update(GetStateParams(), _paramsMgr);
 #endif
-		setUpdatesEnabled(true); 
+        setUpdatesEnabled(true);
 
-		// force visualizer redraw
-		//
-		_vizWinMgr->Update(false);
+        // force visualizer redraw
+        //
+        _vizWinMgr->Update(false);
 
-		update();
+        update();
 
-		QApplication::restoreOverrideCursor();
-		return(false);
+        QApplication::restoreOverrideCursor();
+        return (false);
+    }
 
-	}
-    
-    if (event->type() == ParamsIntermediateChangeEvent)
-    {
+    if (event->type() == ParamsIntermediateChangeEvent) {
         // Rendering the GUI becomes a bottleneck
-//        _tabMgr->Update();
-        
+        //        _tabMgr->Update();
+
         // force visualizer redraw
         //
         _vizWinMgr->Update(true);
-        
+
 #ifndef NDEBUG
         _paramsWidgetDemo->Update(GetStateParams(), _paramsMgr);
 #endif
-        
-//        update();
-        
-        return(false);
-        
+
+        //        update();
+
+        return (false);
     }
 
-
-	// Pass event on to target
-	return(false);
+    // Pass event on to target
+    return (false);
 }
 
 void MainForm::updateMenus() {
-	GUIStateParams *p = GetStateParams();
+    GUIStateParams *p = GetStateParams();
 
-	// Close menu
-	//
-	_closeVDCMenu->clear();
-	vector <string> dataSetNames = p->GetOpenDataSetNames();
-	int size = dataSetNames.size();
-	if (size < 1)
-		_closeVDCMenu->setEnabled(false);
-	else {
-		_closeVDCMenu->setEnabled(true);
-		for (int i=0; i<dataSetNames.size(); i++) {
+    // Close menu
+    //
+    _closeVDCMenu->clear();
+    vector<string> dataSetNames = p->GetOpenDataSetNames();
+    int size = dataSetNames.size();
+    if (size < 1)
+        _closeVDCMenu->setEnabled(false);
+    else {
+        _closeVDCMenu->setEnabled(true);
+        for (int i = 0; i < dataSetNames.size(); i++) {
 
-			// Add menu option to close the dataset in the File menu
-			//
-			QAction* closeAction = new QAction(
-				QString::fromStdString(dataSetNames[i]),
-				_closeVDCMenu
-			);
-			_closeVDCMenu->addAction(closeAction);
+            // Add menu option to close the dataset in the File menu
+            //
+            QAction *closeAction =
+                new QAction(QString::fromStdString(dataSetNames[i]), _closeVDCMenu);
+            _closeVDCMenu->addAction(closeAction);
 
-			connect( 
-				closeAction, SIGNAL( triggered() ),
-				this, SLOT( closeData() ) 
-			);
-		}
-	}
+            connect(closeAction, SIGNAL(triggered()), this, SLOT(closeData()));
+        }
+    }
 
-	_editUndoAction->setEnabled((bool) _controlExec->UndoSize());
-	_editRedoAction->setEnabled((bool) _controlExec->RedoSize());
+    _editUndoAction->setEnabled((bool)_controlExec->UndoSize());
+    _editRedoAction->setEnabled((bool)_controlExec->RedoSize());
 
     // Turn off jpeg and png capture if we're in MapOrthographic mode
     ViewpointParams *VPP;
@@ -2011,171 +1718,167 @@ void MainForm::updateMenus() {
             _captureJpegSequenceAction->setEnabled(false);
         if (_capturePngSequenceAction->isEnabled())
             _capturePngSequenceAction->setEnabled(false);
-    }
-    else {
-        if ( !_captureSingleJpegAction->isEnabled() )
+    } else {
+        if (!_captureSingleJpegAction->isEnabled())
             _captureSingleJpegAction->setEnabled(true);
-        if ( !_captureSinglePngAction->isEnabled() )
+        if (!_captureSinglePngAction->isEnabled())
             _captureSinglePngAction->setEnabled(true);
-        if ( !_captureJpegSequenceAction->isEnabled() )
+        if (!_captureJpegSequenceAction->isEnabled())
             _captureJpegSequenceAction->setEnabled(true);
-        if ( !_capturePngSequenceAction->isEnabled() )
+        if (!_capturePngSequenceAction->isEnabled())
             _capturePngSequenceAction->setEnabled(true);
     }
 }
 
 void MainForm::_performSessionAutoSave() {
-	if (_paramsMgr== NULL) return;
+    if (_paramsMgr == NULL)
+        return;
 
-	SettingsParams* sParams = GetSettingsParams();
-	if (sParams==NULL) return;
+    SettingsParams *sParams = GetSettingsParams();
+    if (sParams == NULL)
+        return;
 
-	int eventCountForAutoSave = sParams->GetChangesPerAutoSave();
+    int eventCountForAutoSave = sParams->GetChangesPerAutoSave();
 
-	if (eventCountForAutoSave == 0) return;
-	if (!sParams->GetSessionAutoSaveEnabled()) return;
+    if (eventCountForAutoSave == 0)
+        return;
+    if (!sParams->GetSessionAutoSaveEnabled())
+        return;
 
-	if (_eventsSinceLastSave >= eventCountForAutoSave) {
-		string autoSaveFile = sParams->GetAutoSaveSessionFile();
-		_paramsMgr->SaveToFile(autoSaveFile);
-		_eventsSinceLastSave = 0;
-	}
+    if (_eventsSinceLastSave >= eventCountForAutoSave) {
+        string autoSaveFile = sParams->GetAutoSaveSessionFile();
+        _paramsMgr->SaveToFile(autoSaveFile);
+        _eventsSinceLastSave = 0;
+    }
 }
 
 void MainForm::update() {
 
-	VAssert(_controlExec);
+    VAssert(_controlExec);
 
-	AnimationParams* aParams = GetAnimationParams();
-	size_t timestep = aParams->GetCurrentTimestep();
+    AnimationParams *aParams = GetAnimationParams();
+    size_t timestep = aParams->GetCurrentTimestep();
 
-	_timeStepEdit->setText(QString::number((int) timestep));
+    _timeStepEdit->setText(QString::number((int)timestep));
     _modeCombo->blockSignals(true);
-    _modeCombo->setCurrentIndex(_modeCombo->findText(QString::fromStdString(GetStateParams()->GetMouseModeParams()->GetCurrentMouseMode())));
+    _modeCombo->setCurrentIndex(_modeCombo->findText(
+        QString::fromStdString(GetStateParams()->GetMouseModeParams()->GetCurrentMouseMode())));
     _modeCombo->blockSignals(false);
 
-	updateMenus();
+    updateMenus();
 
-	_performSessionAutoSave();
-
+    _performSessionAutoSave();
 }
 
 void MainForm::enableWidgets(bool onOff) {
-	_modeCombo->setEnabled(onOff);
-	_captureMenu->setEnabled(onOff);
-	_timeStepEdit->setEnabled(onOff);
-	_animationToolBar->setEnabled(onOff);
-	_tileAction->setEnabled(onOff);
-	_cascadeAction->setEnabled(onOff);
-	_homeAction->setEnabled(onOff);
-	_sethomeAction->setEnabled(onOff);
-	_viewAllAction->setEnabled(onOff);
-	_viewRegionAction->setEnabled(onOff);
-//	_stepForwardAction->setEnabled(onOff);
-//	_stepBackAction->setEnabled(onOff);
-	_interactiveRefinementSpin->setEnabled(onOff);
-	_alignViewCombo->setEnabled(onOff);
-	_navigationAction->setEnabled(onOff);
-	_Edit->setEnabled(onOff);
-	_windowSelector->setEnabled(onOff);
-	_tabMgr->setEnabled(onOff);
-	_statsAction->setEnabled(onOff);
-	_plotAction->setEnabled(onOff);
+    _modeCombo->setEnabled(onOff);
+    _captureMenu->setEnabled(onOff);
+    _timeStepEdit->setEnabled(onOff);
+    _animationToolBar->setEnabled(onOff);
+    _tileAction->setEnabled(onOff);
+    _cascadeAction->setEnabled(onOff);
+    _homeAction->setEnabled(onOff);
+    _sethomeAction->setEnabled(onOff);
+    _viewAllAction->setEnabled(onOff);
+    _viewRegionAction->setEnabled(onOff);
+    //	_stepForwardAction->setEnabled(onOff);
+    //	_stepBackAction->setEnabled(onOff);
+    _interactiveRefinementSpin->setEnabled(onOff);
+    _alignViewCombo->setEnabled(onOff);
+    _navigationAction->setEnabled(onOff);
+    _Edit->setEnabled(onOff);
+    _windowSelector->setEnabled(onOff);
+    _tabMgr->setEnabled(onOff);
+    _statsAction->setEnabled(onOff);
+    _plotAction->setEnabled(onOff);
     _pythonAction->setEnabled(onOff);
 
-	_tabMgr->EnableRouters(onOff);
-
+    _tabMgr->EnableRouters(onOff);
 }
 
 void MainForm::enableAnimationWidgets(bool on) {
 
-	enableWidgets(on);
-	if (on) { 
-		_playBackwardAction->setEnabled(true);
-		_stepBackAction->setEnabled(true);
-		_stepForwardAction->setEnabled(true);
-		_playForwardAction->setEnabled(true);
-	}
-	else {
-		_animationToolBar->setEnabled(true);
-		_playBackwardAction->setEnabled(false);
-		_stepBackAction->setEnabled(false);
-		_stepForwardAction->setEnabled(false);
-		_playForwardAction->setEnabled(false);
-	}
+    enableWidgets(on);
+    if (on) {
+        _playBackwardAction->setEnabled(true);
+        _stepBackAction->setEnabled(true);
+        _stepForwardAction->setEnabled(true);
+        _playForwardAction->setEnabled(true);
+    } else {
+        _animationToolBar->setEnabled(true);
+        _playBackwardAction->setEnabled(false);
+        _stepBackAction->setEnabled(false);
+        _stepForwardAction->setEnabled(false);
+        _playForwardAction->setEnabled(false);
+    }
 }
 
 void MainForm::captureSingleJpeg() {
     string filter = "JPG (*.jpg *.jpeg)";
     string defaultSuffix = ".jpg";
-    captureSingleImage( filter, defaultSuffix);
+    captureSingleImage(filter, defaultSuffix);
 }
 
 void MainForm::captureSinglePng() {
     string filter = "PNG (*.png)";
     string defaultSuffix = ".png";
-    captureSingleImage( filter, defaultSuffix);
+    captureSingleImage(filter, defaultSuffix);
 }
 
 void MainForm::captureSingleTiff() {
     string filter = "TIFF (*.tif *.tiff)";
     string defaultSuffix = ".tiff";
-    captureSingleImage( filter, defaultSuffix);
+    captureSingleImage(filter, defaultSuffix);
 }
 
-void MainForm::captureSingleImage(
-    string filter,
-    string defaultSuffix
-) {
-	showCitationReminder();
-	auto imageDir = QDir::homePath();
-    
-	QFileDialog fileDialog(
-        this,
-		"Specify single image capture file name",
-		imageDir,
-        QString::fromStdString(filter)
-    );
-    
-	fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-	fileDialog.move(pos());
-	fileDialog.resize(450,450);
-    QStringList mimeTypeFilters;
-	if (fileDialog.exec() != QDialog::Accepted) return;
-	
-	//Extract the path, and the root name, from the returned string.
-	QStringList files = fileDialog.selectedFiles();
-	if (files.isEmpty()) return;
-	QString fn = files[0];
+void MainForm::captureSingleImage(string filter, string defaultSuffix) {
+    showCitationReminder();
+    auto imageDir = QDir::homePath();
 
-    QFileInfo fileInfo( fn );
-	QString suffix = fileInfo.suffix();
+    QFileDialog fileDialog(this, "Specify single image capture file name", imageDir,
+                           QString::fromStdString(filter));
+
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.move(pos());
+    fileDialog.resize(450, 450);
+    QStringList mimeTypeFilters;
+    if (fileDialog.exec() != QDialog::Accepted)
+        return;
+
+    // Extract the path, and the root name, from the returned string.
+    QStringList files = fileDialog.selectedFiles();
+    if (files.isEmpty())
+        return;
+    QString fn = files[0];
+
+    QFileInfo fileInfo(fn);
+    QString suffix = fileInfo.suffix();
     if (suffix == "") {
         fn += QString::fromStdString(defaultSuffix);
         fileInfo.setFile(fn);
     }
 
-	string file = fileInfo.absoluteFilePath().toStdString();
-	string filepath = fileInfo.path().toStdString();
+    string file = fileInfo.absoluteFilePath().toStdString();
+    string filepath = fileInfo.path().toStdString();
 
-	//Turn on "image capture mode" in the current active visualizer
-	GUIStateParams *p = GetStateParams();
-	string vizName = p->GetActiveVizName();
-	int success = _vizWinMgr->EnableImageCapture(file, vizName);
-    
+    // Turn on "image capture mode" in the current active visualizer
+    GUIStateParams *p = GetStateParams();
+    string vizName = p->GetActiveVizName();
+    int success = _vizWinMgr->EnableImageCapture(file, vizName);
+
     if (success < 0)
         MSG_ERR("Error capturing image");
 }
 
-void MainForm::installCLITools(){
+void MainForm::installCLITools() {
     QMessageBox box;
     box.addButton(QMessageBox::Ok);
-    
+
 #ifdef Darwin
-	string home = GetResourcePath("");
+    string home = GetResourcePath("");
     string binPath = home + "/MacOS";
     home.erase(home.size() - strlen("Contents/"), strlen("Contents/"));
-    
+
     string profilePath = string(getenv("HOME")) + "/.profile";
     FILE *prof = fopen(profilePath.c_str(), "a");
     if (prof) {
@@ -2183,7 +1886,7 @@ void MainForm::installCLITools(){
         fprintf(prof, "export VAPOR_HOME=\"%s\"\n", home.c_str());
         fprintf(prof, "export PATH=\"%s:$PATH\"\n", binPath.c_str());
         fclose(prof);
-        
+
         box.setText("Environmental variables set in ~/.profile");
         box.setInformativeText("Please log out and log back in for changes to take effect.");
         box.setIcon(QMessageBox::Information);
@@ -2192,132 +1895,127 @@ void MainForm::installCLITools(){
         box.setIcon(QMessageBox::Critical);
     }
 #endif
-    
+
 #ifdef WIN32
-	HKEY key;
-	long error;
-	long errorClose;
-	bool pathWasModified = false;
-	string home = GetResourcePath("");
+    HKEY key;
+    long error;
+    long errorClose;
+    bool pathWasModified = false;
+    string home = GetResourcePath("");
 
-	error = Windows_OpenRegistry(WINDOWS_HKEY_CURRENT_USER, "Environment", key);
-	if (error == WINDOWS_SUCCESS) {
-		string path;
-		error = Windows_GetRegistryString(key, "Path", path, "");
-		if (error == WINDOWS_ERROR_FILE_NOT_FOUND) {
-			error = WINDOWS_SUCCESS;
-			path = "";
-		}
-		if (error == WINDOWS_SUCCESS) {
-			bool alreadyExists = false;
-			size_t index;
-			if      (path.find(";" + home + ";") != std::string::npos) alreadyExists = true;
-			else if ((index = path.find(";" + home)) != std::string::npos && index + home.length() + 1 == path.length()) alreadyExists = true;
-			else if ((index = path.find(home + ";")) != std::string::npos && index == 0) alreadyExists = true;
-			else if (path == home) alreadyExists = true;
+    error = Windows_OpenRegistry(WINDOWS_HKEY_CURRENT_USER, "Environment", key);
+    if (error == WINDOWS_SUCCESS) {
+        string path;
+        error = Windows_GetRegistryString(key, "Path", path, "");
+        if (error == WINDOWS_ERROR_FILE_NOT_FOUND) {
+            error = WINDOWS_SUCCESS;
+            path = "";
+        }
+        if (error == WINDOWS_SUCCESS) {
+            bool alreadyExists = false;
+            size_t index;
+            if (path.find(";" + home + ";") != std::string::npos)
+                alreadyExists = true;
+            else if ((index = path.find(";" + home)) != std::string::npos &&
+                     index + home.length() + 1 == path.length())
+                alreadyExists = true;
+            else if ((index = path.find(home + ";")) != std::string::npos && index == 0)
+                alreadyExists = true;
+            else if (path == home)
+                alreadyExists = true;
 
-			if (!alreadyExists) {
-				if (path.length() > 0)
-					path += ";";
-				path += home;
-				error = Windows_SetRegistryString(key, "Path", path);
-				if (error == WINDOWS_SUCCESS)
-					pathWasModified = true;
-			}
-		}
-		errorClose = Windows_CloseRegistry(key);
-	}
-	
-	if (error == WINDOWS_SUCCESS && errorClose == WINDOWS_SUCCESS) {
+            if (!alreadyExists) {
+                if (path.length() > 0)
+                    path += ";";
+                path += home;
+                error = Windows_SetRegistryString(key, "Path", path);
+                if (error == WINDOWS_SUCCESS)
+                    pathWasModified = true;
+            }
+        }
+        errorClose = Windows_CloseRegistry(key);
+    }
 
-		// This tells windows to re-load the environment variables
-		SendMessage(HWND_BROADCAST, WM_WININICHANGE, NULL, (LPARAM)"Environment");
+    if (error == WINDOWS_SUCCESS && errorClose == WINDOWS_SUCCESS) {
 
-		box.setIcon(QMessageBox::Information);
-		if (pathWasModified)
-			box.setText("Vapor conversion utilities were added to your path");
-		else
-			box.setText("Your path is properly configured");
-	} else {
-		box.setIcon(QMessageBox::Critical);
-		box.setText("Unable to set environmental variables");
-		string errString = "";
-		if (error      != WINDOWS_SUCCESS) errString += Windows_GetErrorString(error) + "\n";
-		if (errorClose != WINDOWS_SUCCESS) errString += "CloseRegistry: " + Windows_GetErrorString(errorClose);
-		box.setInformativeText(QString::fromStdString(errString));
-	}
+        // This tells windows to re-load the environment variables
+        SendMessage(HWND_BROADCAST, WM_WININICHANGE, NULL, (LPARAM) "Environment");
+
+        box.setIcon(QMessageBox::Information);
+        if (pathWasModified)
+            box.setText("Vapor conversion utilities were added to your path");
+        else
+            box.setText("Your path is properly configured");
+    } else {
+        box.setIcon(QMessageBox::Critical);
+        box.setText("Unable to set environmental variables");
+        string errString = "";
+        if (error != WINDOWS_SUCCESS)
+            errString += Windows_GetErrorString(error) + "\n";
+        if (errorClose != WINDOWS_SUCCESS)
+            errString += "CloseRegistry: " + Windows_GetErrorString(errorClose);
+        box.setInformativeText(QString::fromStdString(errString));
+    }
 #endif
 
-	box.exec();
+    box.exec();
 }
 
-void MainForm::launchStats(){
+void MainForm::launchStats() {
     if (!_stats) {
         _stats = new Statistics(this);
-		connect( _stats, 
-			&QDialog::finished, 
-			this, 
-			&MainForm::_statsClosed
-		);
+        connect(_stats, &QDialog::finished, this, &MainForm::_statsClosed);
     }
-	if (_controlExec) 
-    {
-		_stats->initControlExec(_controlExec);
-	}
-	_stats->showMe();
+    if (_controlExec) {
+        _stats->initControlExec(_controlExec);
+    }
+    _stats->showMe();
 }
 
 void MainForm::_statsClosed() {
-	if (_stats != nullptr) {
-		delete _stats;
-		_stats = nullptr;
-	}
+    if (_stats != nullptr) {
+        delete _stats;
+        _stats = nullptr;
+    }
 }
 
-void MainForm::launchPlotUtility(){
-    if (! _plot) 
-    {
-        VAssert( _controlExec->GetDataStatus() );
-        VAssert( _controlExec->GetParamsMgr()  );
-        _plot = new Plot( _controlExec->GetDataStatus(), _controlExec->GetParamsMgr(), this);
-		connect( _plot, &QDialog::finished, this, &MainForm::_plotClosed);
+void MainForm::launchPlotUtility() {
+    if (!_plot) {
+        VAssert(_controlExec->GetDataStatus());
+        VAssert(_controlExec->GetParamsMgr());
+        _plot = new Plot(_controlExec->GetDataStatus(), _controlExec->GetParamsMgr(), this);
+        connect(_plot, &QDialog::finished, this, &MainForm::_plotClosed);
     }
-	_plot->Update();
-	_plot->open();
+    _plot->Update();
+    _plot->open();
 }
 
 void MainForm::_plotClosed() {
-	if (_plot != nullptr) {
-		delete _plot;
-		_plot = nullptr;
-	}
+    if (_plot != nullptr) {
+        delete _plot;
+        _plot = nullptr;
+    }
 }
 
-void MainForm::launchPythonVariables(){
+void MainForm::launchPythonVariables() {
     if (!_pythonVariables) {
         _pythonVariables = new PythonVariables(this);
-		connect( _pythonVariables, 
-			&QDialog::finished, 
-			this, 
-			&MainForm::_pythonClosed
-		);
-	}
-	if (_controlExec) 
-    {
-		_pythonVariables->InitControlExec(_controlExec);
-	} 
-	_pythonVariables->ShowMe();   
+        connect(_pythonVariables, &QDialog::finished, this, &MainForm::_pythonClosed);
+    }
+    if (_controlExec) {
+        _pythonVariables->InitControlExec(_controlExec);
+    }
+    _pythonVariables->ShowMe();
 }
 
 void MainForm::_pythonClosed() {
-	if (_pythonVariables!= nullptr) {
-		delete _pythonVariables;
-		_pythonVariables = nullptr;
-	}
+    if (_pythonVariables != nullptr) {
+        delete _pythonVariables;
+        _pythonVariables = nullptr;
+    }
 }
 
-void MainForm::_setTimeStep()
-{
+void MainForm::_setTimeStep() {
     _paramsMgr->BeginSaveStateGroup("Change Timestep");
     int ts = _timeStepEdit->text().toInt();
     _tabMgr->AnimationSetTimestep(ts);
@@ -2327,200 +2025,182 @@ void MainForm::_setTimeStep()
 void MainForm::captureJpegSequence() {
     string filter = "JPG (*.jpg *.jpeg)";
     string defaultSuffix = "jpg";
-    startAnimCapture( filter, defaultSuffix);
+    startAnimCapture(filter, defaultSuffix);
 }
 
 void MainForm::capturePngSequence() {
     string filter = "PNG (*.png)";
     string defaultSuffix = "png";
-    startAnimCapture( filter, defaultSuffix);
+    startAnimCapture(filter, defaultSuffix);
 }
 
 void MainForm::captureTiffSequence() {
     string filter = "TIFF (*.tif *.tiff)";
     string defaultSuffix = "tiff";
-    startAnimCapture( filter, defaultSuffix);
+    startAnimCapture(filter, defaultSuffix);
 }
 
-//Begin capturing animation images.
-//Launch a file save dialog to specify the names
-//Then start file saving mode.
-void MainForm::startAnimCapture(
-    string filter,
-    string defaultSuffix
-) {
-	showCitationReminder();
-	auto imageDir = QDir::homePath();
+// Begin capturing animation images.
+// Launch a file save dialog to specify the names
+// Then start file saving mode.
+void MainForm::startAnimCapture(string filter, string defaultSuffix) {
+    showCitationReminder();
+    auto imageDir = QDir::homePath();
 
-    QFileDialog fileDialog(
-        this,
-        "Specify image sequence file name",
-        imageDir,
-        QString::fromStdString(filter)
-    );
-	fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-	if (fileDialog.exec() != QDialog::Accepted) 
+    QFileDialog fileDialog(this, "Specify image sequence file name", imageDir,
+                           QString::fromStdString(filter));
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    if (fileDialog.exec() != QDialog::Accepted)
         return;
-	
-	//Extract the path, and the root name, from the returned string.
-	QStringList qsl = fileDialog.selectedFiles();
-	if (qsl.isEmpty()) 
+
+    // Extract the path, and the root name, from the returned string.
+    QStringList qsl = fileDialog.selectedFiles();
+    if (qsl.isEmpty())
         return;
     QString fileName = qsl[0];
-	QFileInfo fileInfo = QFileInfo( fileName );
+    QFileInfo fileInfo = QFileInfo(fileName);
 
-	QString suffix = fileInfo.suffix();
-	if ( suffix != ""     ||
-		 suffix != "jpg"  ||
-		 suffix != "jpeg" ||
-		 suffix != "tif"  ||
-		 suffix != "tiff" ||
-		 suffix != "png"
-	) {
-		
-	}
-    if (suffix == "") {
-		suffix = QString::fromStdString(defaultSuffix);
-        fileName += QString::fromStdString(defaultSuffix);
+    QString suffix = fileInfo.suffix();
+    if (suffix != "" || suffix != "jpg" || suffix != "jpeg" || suffix != "tif" ||
+        suffix != "tiff" || suffix != "png") {
     }
-	else {
-		fileName = fileInfo.absolutePath() + "/" + fileInfo.baseName();
-	}
+    if (suffix == "") {
+        suffix = QString::fromStdString(defaultSuffix);
+        fileName += QString::fromStdString(defaultSuffix);
+    } else {
+        fileName = fileInfo.absolutePath() + "/" + fileInfo.baseName();
+    }
 
-	QString fileBaseName = fileInfo.baseName();
+    QString fileBaseName = fileInfo.baseName();
 
-	int posn;
-	for (posn = fileBaseName.length()-1; posn >=0; posn--)
-    {
-		if (!fileBaseName.at(posn).isDigit()) 
+    int posn;
+    for (posn = fileBaseName.length() - 1; posn >= 0; posn--) {
+        if (!fileBaseName.at(posn).isDigit())
             break;
-	}
-	int startFileNum = 0;
+    }
+    int startFileNum = 0;
 
-	unsigned int lastDigitPos = posn+1;
-	if (lastDigitPos < fileBaseName.length()) {
-		startFileNum = fileBaseName.right(fileBaseName.length()-lastDigitPos).toInt();
-		fileBaseName.truncate(lastDigitPos);
-	}
+    unsigned int lastDigitPos = posn + 1;
+    if (lastDigitPos < fileBaseName.length()) {
+        startFileNum = fileBaseName.right(fileBaseName.length() - lastDigitPos).toInt();
+        fileBaseName.truncate(lastDigitPos);
+    }
 
-	QString filePath = fileInfo.absolutePath() + "/" + fileBaseName;
-	//Insert up to 4 zeros
-	QString zeroes;
-	if (startFileNum == 0) 
+    QString filePath = fileInfo.absolutePath() + "/" + fileBaseName;
+    // Insert up to 4 zeros
+    QString zeroes;
+    if (startFileNum == 0)
         zeroes = "000";
-	else 
-    {
-		switch((int)log10((float)startFileNum)) {
-		case (0):
-			zeroes = "000";
-			break;
-		case (1):
-			zeroes = "00";
-			break;
-		case (2):
-			zeroes = "0";
-			break;
-		default:
-			zeroes = "";
-			break;
-		}
-	}
-	filePath += zeroes;
-	filePath += QString::number(startFileNum);
-	filePath += ".";
-	filePath += suffix;
-	string fpath = filePath.toStdString();
+    else {
+        switch ((int)log10((float)startFileNum)) {
+        case (0):
+            zeroes = "000";
+            break;
+        case (1):
+            zeroes = "00";
+            break;
+        case (2):
+            zeroes = "0";
+            break;
+        default:
+            zeroes = "";
+            break;
+        }
+    }
+    filePath += zeroes;
+    filePath += QString::number(startFileNum);
+    filePath += ".";
+    filePath += suffix;
+    string fpath = filePath.toStdString();
 
     // Check if the numbered file exists.
-    QFileInfo check_file( filePath );
-    if ( check_file.exists() )
-    {
-		QMessageBox msgBox; 
-		msgBox.setWindowTitle("Are you sure?");
+    QFileInfo check_file(filePath);
+    if (check_file.exists()) {
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Are you sure?");
         QString msg = "The following numbered file exists.\n ";
         msg += filePath;
-        msg += "\n"; 
-        msg += "Do you want to continue? You can choose \"No\" to go back and change the file name.";
-		msgBox.setText( msg );
-		msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-		msgBox.setDefaultButton(QMessageBox::No);
-		if(msgBox.exec() == QMessageBox::No)
-        {
-			return;
-		}
+        msg += "\n";
+        msg +=
+            "Do you want to continue? You can choose \"No\" to go back and change the file name.";
+        msgBox.setText(msg);
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        if (msgBox.exec() == QMessageBox::No) {
+            return;
+        }
     }
 
-	//Turn on "image capture mode" in the current active visualizer
-	GUIStateParams *p = GetStateParams();
-	string vizName = p->GetActiveVizName();
-	_controlExec->EnableAnimationCapture(vizName, true, fpath);
-	_capturingAnimationVizName = vizName;
+    // Turn on "image capture mode" in the current active visualizer
+    GUIStateParams *p = GetStateParams();
+    string vizName = p->GetActiveVizName();
+    _controlExec->EnableAnimationCapture(vizName, true, fpath);
+    _capturingAnimationVizName = vizName;
 
-	_captureEndImageAction->setEnabled(true);
+    _captureEndImageAction->setEnabled(true);
     _imageSequenceMenu->setEnabled(false);
-	_captureJpegSequenceAction->setEnabled(false);
-	_capturePngSequenceAction->setEnabled(false);
-	_captureTiffSequenceAction->setEnabled(false);
+    _captureJpegSequenceAction->setEnabled(false);
+    _capturePngSequenceAction->setEnabled(false);
+    _captureTiffSequenceAction->setEnabled(false);
     _singleImageMenu->setEnabled(false);
-	_captureSingleJpegAction->setEnabled(false);
-	_captureSinglePngAction->setEnabled(false);
-	_captureSingleTiffAction->setEnabled(false);
+    _captureSingleJpegAction->setEnabled(false);
+    _captureSinglePngAction->setEnabled(false);
+    _captureSingleTiffAction->setEnabled(false);
 }
 
-void MainForm::endAnimCapture(){
-	//Turn off capture mode for the current active visualizer (if it is on!)
-	if (_capturingAnimationVizName.empty() ) return;
-	GUIStateParams *p = GetStateParams();
-	string vizName = p->GetActiveVizName();
-	if (vizName != _capturingAnimationVizName){
-		MSG_WARN("Terminating capture in non-active visualizer");
-	}
-	if (_controlExec->EnableAnimationCapture(_capturingAnimationVizName, false))
-		MSG_WARN("Image Capture Warning;\nCurrent active visualizer is not capturing images");
-	
-	_capturingAnimationVizName = "";
+void MainForm::endAnimCapture() {
+    // Turn off capture mode for the current active visualizer (if it is on!)
+    if (_capturingAnimationVizName.empty())
+        return;
+    GUIStateParams *p = GetStateParams();
+    string vizName = p->GetActiveVizName();
+    if (vizName != _capturingAnimationVizName) {
+        MSG_WARN("Terminating capture in non-active visualizer");
+    }
+    if (_controlExec->EnableAnimationCapture(_capturingAnimationVizName, false))
+        MSG_WARN("Image Capture Warning;\nCurrent active visualizer is not capturing images");
 
+    _capturingAnimationVizName = "";
 
-	_captureEndImageAction->setEnabled(false);
+    _captureEndImageAction->setEnabled(false);
 
     _imageSequenceMenu->setEnabled(true);
-	_captureJpegSequenceAction->setEnabled(true);
-	_capturePngSequenceAction->setEnabled(true);
-	_captureTiffSequenceAction->setEnabled(true);
+    _captureJpegSequenceAction->setEnabled(true);
+    _capturePngSequenceAction->setEnabled(true);
+    _captureTiffSequenceAction->setEnabled(true);
 
     _singleImageMenu->setEnabled(true);
-	_captureSingleJpegAction->setEnabled(true);
-	_captureSinglePngAction->setEnabled(true);
-	_captureSingleTiffAction->setEnabled(true);
+    _captureSingleJpegAction->setEnabled(true);
+    _captureSinglePngAction->setEnabled(true);
+    _captureSingleTiffAction->setEnabled(true);
 }
 
 string MainForm::_getDataSetName(string file, bool promptToReplaceExistingDataset) {
 
-	vector <string> names = _controlExec->GetDataNames();
-	if (names.empty() || !promptToReplaceExistingDataset) {
-		return(makename(file));
-	}
+    vector<string> names = _controlExec->GetDataNames();
+    if (names.empty() || !promptToReplaceExistingDataset) {
+        return (makename(file));
+    }
 
-	string newSession = "New Dataset";
+    string newSession = "New Dataset";
 
     QStringList items;
-	items << tr(newSession.c_str());
-	for (int i=0; i<names.size(); i++) {
-		items << tr(names[i].c_str());
-	}
+    items << tr(newSession.c_str());
+    for (int i = 0; i < names.size(); i++) {
+        items << tr(names[i].c_str());
+    }
 
     bool ok;
     QString item = QInputDialog::getItem(
-		this, tr("Load Data"), 
-		tr("Load as new dataset or replace existing"), items, 0, false, &ok
-	);
-	if (! ok || item.isEmpty()) return("");
+        this, tr("Load Data"), tr("Load as new dataset or replace existing"), items, 0, false, &ok);
+    if (!ok || item.isEmpty())
+        return ("");
 
-	string dataSetName = item.toStdString();
+    string dataSetName = item.toStdString();
 
-	if (dataSetName == newSession) {
-		dataSetName = makename(file);
-	}
+    if (dataSetName == newSession) {
+        dataSetName = makename(file);
+    }
 
-	return(dataSetName);
+    return (dataSetName);
 }

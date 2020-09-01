@@ -22,19 +22,18 @@
 
 #include <vapor/RenderParams.h>
 
-namespace VAPoR{
+namespace VAPoR {
 
-class StatisticsParams : public RenderParams 
-{
-public:
-    StatisticsParams(DataMgr* dmgr, ParamsBase::StateSave *ssave);
-    StatisticsParams(DataMgr* dmgr, ParamsBase::StateSave *ssave, XmlNode *node);
+class StatisticsParams : public RenderParams {
+  public:
+    StatisticsParams(DataMgr *dmgr, ParamsBase::StateSave *ssave);
+    StatisticsParams(DataMgr *dmgr, ParamsBase::StateSave *ssave, XmlNode *node);
     ~StatisticsParams();
 
     bool GetAutoUpdateEnabled();
     void SetAutoUpdateEnabled(bool state);
 
-    // Note: we'll use the Get/SetCurrentTimestep() from RendererParams to 
+    // Note: we'll use the Get/SetCurrentTimestep() from RendererParams to
     // represent the min timestep, MinTS, so we only need to keep track of MaxTS.
     int GetCurrentMaxTS() const;
     void SetCurrentMaxTS(int ts);
@@ -54,12 +53,9 @@ public:
     bool GetStdDevEnabled();
     void SetStdDevEnabled(bool state);
 
-    static string GetClassType() 
-    {
-        return("StatisticsParams");
-    }
+    static string GetClassType() { return ("StatisticsParams"); }
 
-private:
+  private:
     static const string _maxTSTag;
     static const string _autoUpdateTag;
     static const string _minEnabledTag;
@@ -70,4 +66,4 @@ private:
 };
 
 }; // End namespace VAPoR
-#endif 
+#endif

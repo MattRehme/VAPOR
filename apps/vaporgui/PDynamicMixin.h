@@ -8,16 +8,16 @@ class PWidget;
 //! as the user edits a value through intermediate updates.
 
 class PDynamicMixin {
-public:
+  public:
     //! Turns on dynamic update.
     PWidget *EnableDynamicUpdate();
     virtual ~PDynamicMixin() = default;
-    
-protected:
+
+  protected:
     void dynamicSetParamsDouble(double v);
     void dynamicSetParamsLong(long v);
     void dynamicSetParamsString(const std::string &v);
-    
-private:
+
+  private:
     PWidget *getPWidget();
 };

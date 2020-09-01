@@ -7,7 +7,7 @@ namespace VAPoR {
 
 struct GLManager;
 class Font;
-    
+
 //! \class TextLabel
 //! \ingroup Public_Render
 //!
@@ -20,16 +20,10 @@ class Font;
 
 class TextLabel {
     GLManager *_glManager;
-    
-public:
-    enum Alignment {
-        Left,
-        Center,
-        Right,
-        Top,
-        Bottom
-    };
-    
+
+  public:
+    enum Alignment { Left, Center, Right, Top, Bottom };
+
     std::string FontName;
     unsigned int FontSize;
     glm::vec4 BackgroundColor;
@@ -37,9 +31,9 @@ public:
     Alignment HorizontalAlignment;
     Alignment VerticalAlignment;
     float Padding;
-    
+
     TextLabel(GLManager *glManager, const std::string &fontName, unsigned int fontSize);
-    
+
     //! Draws a floating text label if a 3D perspective is used or simply text
     //! if using a pixel coordinate space matrix. Formatting is determined by the
     //! public variables.
@@ -49,8 +43,8 @@ public:
     //!
     void DrawText(const glm::vec3 &position, const std::string &text);
     void DrawText(const glm::vec2 &position, const std::string &text);
-    
+
     Font *GetFont() const;
 };
 
-}
+} // namespace VAPoR

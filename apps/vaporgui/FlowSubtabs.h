@@ -33,23 +33,23 @@ class VPushButton;
 class PGroup;
 
 namespace VAPoR {
-	class ControlExec;
-	class RenderParams;
-	class ParamsMgr;
-	class DataMgr;
-}
+class ControlExec;
+class RenderParams;
+class ParamsMgr;
+class DataMgr;
+} // namespace VAPoR
 
-using VAPoR::FlowSeedMode;
 using VAPoR::FlowDir;
+using VAPoR::FlowSeedMode;
 
 class QVaporSubtab : public QWidget {
     Q_OBJECT
 
-public:
-    QVaporSubtab(QWidget* parent);
+  public:
+    QVaporSubtab(QWidget *parent);
 
-protected:
-    QVBoxLayout* _layout;
+  protected:
+    QVBoxLayout *_layout;
 };
 
 //
@@ -57,25 +57,21 @@ protected:
 //
 class FlowVariablesSubtab : public QVaporSubtab {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-    VariablesWidget*    _variablesWidget;
-    
-	FlowVariablesSubtab(QWidget* parent);
+  public:
+    VariablesWidget *_variablesWidget;
 
-	void Update(
-		VAPoR::DataMgr *dataMgr,
-		VAPoR::ParamsMgr *paramsMgr,
-		VAPoR::RenderParams *rParams
-	);
+    FlowVariablesSubtab(QWidget *parent);
 
-private:
-    VAPoR::FlowParams*  _params;
-    VAPoR::ParamsMgr*   _paramsMgr;
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
 
-private slots:
-    void _dimensionalityChanged( int nDims ) const;
+  private:
+    VAPoR::FlowParams *_params;
+    VAPoR::ParamsMgr *_paramsMgr;
+
+  private slots:
+    void _dimensionalityChanged(int nDims) const;
 };
 
 //
@@ -83,20 +79,16 @@ private slots:
 //
 class FlowAppearanceSubtab : public QVaporSubtab {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	FlowAppearanceSubtab(QWidget* parent);
+  public:
+    FlowAppearanceSubtab(QWidget *parent);
 
-	void Update(
-		VAPoR::DataMgr *dataMgr,
-		VAPoR::ParamsMgr *paramsMgr,
-		VAPoR::RenderParams *rParams
-	);
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
 
-private:
-    VAPoR::FlowParams* _params;
-    TFEditor*   _TFEditor;
+  private:
+    VAPoR::FlowParams *_params;
+    TFEditor *_TFEditor;
     PGroup *_pw;
 };
 
@@ -105,114 +97,112 @@ private:
 //
 class FlowSeedingSubtab : public QVaporSubtab {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	FlowSeedingSubtab(QWidget* parent);
+  public:
+    FlowSeedingSubtab(QWidget *parent);
 
-	void Update ( VAPoR::DataMgr*         dataMgr,
-		          VAPoR::ParamsMgr*       paramsMgr,
-		          VAPoR::RenderParams*    rParams );
+    void Update(VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr, VAPoR::RenderParams *rParams);
 
-private slots:
-    void _configureFlowType( const std::string& value );
-    void _configureSeedType( const std::string& value );
+  private slots:
+    void _configureFlowType(const std::string &value);
+    void _configureSeedType(const std::string &value);
 
-    void _pathlineLengthChanged( int length );
-    void _pathlineStartTimeChanged( int startTime );
-    void _pathlineEndTimeChanged( int endTime );
-    void _pathlineLifetimeChanged( int lifeTime );
+    void _pathlineLengthChanged(int length);
+    void _pathlineStartTimeChanged(int startTime);
+    void _pathlineEndTimeChanged(int endTime);
+    void _pathlineLifetimeChanged(int lifeTime);
 
-    void _streamlineDirectionChanged( int index );
-    void _streamlineSamplesChanged( int length );
+    void _streamlineDirectionChanged(int index);
+    void _streamlineSamplesChanged(int length);
 
-    void _seedInjIntervalChanged( int interval );
+    void _seedInjIntervalChanged(int interval);
 
     void _periodicClicked();
-    void _velocityMultiplierChanged( const std::string& multiplier );
+    void _velocityMultiplierChanged(const std::string &multiplier);
 
     void _rakeNumOfSeedsChanged();
     void _randomNumOfSeedsChanged();
-    void _seedListFileChanged( const std::string& file );
-    void _biasVariableChanged( const std::string& variable );
-    void _biasStrengthChanged( double bias );
+    void _seedListFileChanged(const std::string &file);
+    void _biasVariableChanged(const std::string &variable);
+    void _biasStrengthChanged(double bias);
 
-    void _rakeGeometryChanged( const std::vector<float>& range );
+    void _rakeGeometryChanged(const std::vector<float> &range);
 
     void _geometryWriterClicked();
 
-    void _selectedTabChanged( int index );
+    void _selectedTabChanged(int index);
 
-private:
+  private:
     int _numDims;
     int _oldZRakeNumSeeds;
     float _oldZRakeMin;
     float _oldZRakeMax;
     bool _oldZPeriodicity;
 
-    void _blockUnblockSignals( bool block );
+    void _blockUnblockSignals(bool block);
     void _resizeFlowParamsVectors();
     void _createIntegrationSection();
-    void _createSeedingSection( QWidget* parent );
-    void _updateStreamlineWidgets( VAPoR::DataMgr* dataMgr);
-    void _updatePathlineWidgets( VAPoR::DataMgr* dataMgr);
-    void _updateRake( VAPoR::DataMgr* dataMgr );
+    void _createSeedingSection(QWidget *parent);
+    void _updateStreamlineWidgets(VAPoR::DataMgr *dataMgr);
+    void _updatePathlineWidgets(VAPoR::DataMgr *dataMgr);
+    void _updateRake(VAPoR::DataMgr *dataMgr);
 
-    VAPoR::FlowParams*      _params;
-    VAPoR::ParamsMgr *      _paramsMgr;
+    VAPoR::FlowParams *_params;
+    VAPoR::ParamsMgr *_paramsMgr;
 
     // Integration options
-    VSection*               _integrationSection;
-    VComboBox*              _flowTypeCombo;
+    VSection *_integrationSection;
+    VComboBox *_flowTypeCombo;
 
     //  Streamline integration options
-    VFrame*                 _streamlineFrame;
-    VSliderEdit*            _streamlineSamplesSliderEdit;
-    VComboBox*              _streamlineDirectionCombo;
+    VFrame *_streamlineFrame;
+    VSliderEdit *_streamlineSamplesSliderEdit;
+    VComboBox *_streamlineDirectionCombo;
 
     //  Pathline integration options
-    VFrame*                 _pathlineFrame;
-    VSliderEdit*            _pathlineLengthSliderEdit;
-    VSliderEdit*            _pathlineInjInterval;
+    VFrame *_pathlineFrame;
+    VSliderEdit *_pathlineLengthSliderEdit;
+    VSliderEdit *_pathlineInjInterval;
     /*VSliderEdit*            _pathlineStartSliderEdit;
     VSliderEdit*            _pathlineEndSliderEdit;
     VSliderEdit*            _pathlineLifetimeSliderEdit;*/
 
     //  Universal integration options
-    VCheckBox*              _periodicXCheckBox;
-    VCheckBox*              _periodicYCheckBox;
-    VCheckBox*              _periodicZCheckBox;
-    VLineItem*              _zPeriodicityLine;
-    VLineEdit*              _velocityMultiplierLineEdit;
-   
+    VCheckBox *_periodicXCheckBox;
+    VCheckBox *_periodicYCheckBox;
+    VCheckBox *_periodicZCheckBox;
+    VLineItem *_zPeriodicityLine;
+    VLineEdit *_velocityMultiplierLineEdit;
+
     // Seed distribution options
-    VSection*               _seedDistributionSection;
-    VComboBox*              _seedTypeCombo;
+    VSection *_seedDistributionSection;
+    VComboBox *_seedTypeCombo;
 
     //  Gridded seed distribution
-    VFrame*                 _griddedSeedsFrame;
-    VSliderEdit*            _xSeedSliderEdit;
-    VSliderEdit*            _ySeedSliderEdit;
-    VSliderEdit*            _zSeedSliderEdit;
-    VLineItem*              _zSeedLine;
+    VFrame *_griddedSeedsFrame;
+    VSliderEdit *_xSeedSliderEdit;
+    VSliderEdit *_ySeedSliderEdit;
+    VSliderEdit *_zSeedSliderEdit;
+    VLineItem *_zSeedLine;
 
     //  Rake region selection
-    VSection*               _rakeRegionSection;
-    VGeometry2*             _rakeWidget;
+    VSection *_rakeRegionSection;
+    VGeometry2 *_rakeWidget;
 
     //  Seeds read from a text file
-    VFrame*                 _listOfSeedsFrame;
-    VFileReader*            _listOfSeedsFileReader;
+    VFrame *_listOfSeedsFrame;
+    VFileReader *_listOfSeedsFileReader;
 
-    //  Random seed distribution 
-    VFrame*                 _randomSeedsFrame;
-    VSliderEdit*            _randomSeedsSliderEdit;
-    VComboBox*              _biasVariableComboBox;
-    VSliderEdit*            _biasWeightSliderEdit;
+    //  Random seed distribution
+    VFrame *_randomSeedsFrame;
+    VSliderEdit *_randomSeedsSliderEdit;
+    VComboBox *_biasVariableComboBox;
+    VSliderEdit *_biasWeightSliderEdit;
 
-    VFileWriter*            _geometryWriterSelector;
-    VPushButton*            _geometryWriterExecutor;
-    VSection*               _geometryWriterSection;
+    VFileWriter *_geometryWriterSelector;
+    VPushButton *_geometryWriterExecutor;
+    VSection *_geometryWriterSection;
 };
 
 //
@@ -220,22 +210,18 @@ private:
 //
 class FlowGeometrySubtab : public QVaporSubtab {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	FlowGeometrySubtab(QWidget* parent);
-	
-	void Update(
-		VAPoR::ParamsMgr *paramsMgr,
-		VAPoR::DataMgr *dataMgr,
-		VAPoR::RenderParams *rParams
-	); 
+  public:
+    FlowGeometrySubtab(QWidget *parent);
 
-private:
-    VAPoR::FlowParams*      _params;
-    GeometryWidget*         _geometryWidget;
-    CopyRegionWidget*       _copyRegionWidget;
-    TransformTable*         _transformTable;
+    void Update(VAPoR::ParamsMgr *paramsMgr, VAPoR::DataMgr *dataMgr, VAPoR::RenderParams *rParams);
+
+  private:
+    VAPoR::FlowParams *_params;
+    GeometryWidget *_geometryWidget;
+    CopyRegionWidget *_copyRegionWidget;
+    TransformTable *_transformTable;
 };
 
 //
@@ -243,19 +229,15 @@ private:
 //
 class FlowAnnotationSubtab : public QVaporSubtab {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public:
-	FlowAnnotationSubtab(QWidget* parent);
-	
-	void Update(
-		VAPoR::ParamsMgr *paramsMgr,
-		VAPoR::DataMgr *dataMgr,
-		VAPoR::RenderParams *rParams
-	);
+  public:
+    FlowAnnotationSubtab(QWidget *parent);
 
-private:
-    ColorbarWidget* _colorbarWidget;
+    void Update(VAPoR::ParamsMgr *paramsMgr, VAPoR::DataMgr *dataMgr, VAPoR::RenderParams *rParams);
+
+  private:
+    ColorbarWidget *_colorbarWidget;
 };
 
-#endif //FLOWSUBTABS_H
+#endif // FLOWSUBTABS_H

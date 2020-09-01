@@ -15,19 +15,19 @@
 class VCheckBox : public VContainer {
     Q_OBJECT
 
-public:
-    VCheckBox( bool value=false );
+  public:
+    VCheckBox(bool value = false);
 
-    void SetValue( bool value );
+    void SetValue(bool value);
 
     bool GetValue() const;
 
-private:
-    QCheckBox* _checkBox;
+  private:
+    QCheckBox *_checkBox;
 
-public slots:
-    void emitCheckBoxChanged( bool checked);
+  public slots:
+    void emitCheckBoxChanged(bool checked);
 
-signals:
-    void ValueChanged( bool checked );
+  signals:
+    void ValueChanged(bool checked);
 };

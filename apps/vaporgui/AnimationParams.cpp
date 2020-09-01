@@ -21,15 +21,13 @@
 //
 
 #ifdef WIN32
-//Annoying unreferenced formal parameter warning
-#pragma warning( disable : 4100 )
+// Annoying unreferenced formal parameter warning
+#pragma warning(disable : 4100)
 #endif
 
 #include <iostream>
 
-
 #include "AnimationParams.h"
-
 
 using namespace VAPoR;
 const string AnimationParams::_repeatTag = "RepeatPlay";
@@ -45,50 +43,42 @@ const string AnimationParams::_playBackwardsTag = "PlayBackwards";
 //
 static ParamsRegistrar<AnimationParams> registrar(AnimationParams::GetClassType());
 
-
-
-
 //----------------------------------------------------------------------------
 // Constructor
 //----------------------------------------------------------------------------
-AnimationParams::AnimationParams(
-    ParamsBase::StateSave *ssave
- ) : ParamsBase(ssave, AnimationParams::GetClassType())
-{
+AnimationParams::AnimationParams(ParamsBase::StateSave *ssave)
+    : ParamsBase(ssave, AnimationParams::GetClassType()) {
     _init();
 }
 
-AnimationParams::AnimationParams(
-    ParamsBase::StateSave *ssave, XmlNode *node
-) : ParamsBase(ssave, node)
-{
-	// If node isn't tagged correctly we correct the tag and reinitialize
-	// from scratch;
-	//
-	if (node->GetTag() != AnimationParams::GetClassType()) {
-		node->SetTag(AnimationParams::GetClassType());
-		_init();
-	} 
+AnimationParams::AnimationParams(ParamsBase::StateSave *ssave, XmlNode *node)
+    : ParamsBase(ssave, node) {
+    // If node isn't tagged correctly we correct the tag and reinitialize
+    // from scratch;
+    //
+    if (node->GetTag() != AnimationParams::GetClassType()) {
+        node->SetTag(AnimationParams::GetClassType());
+        _init();
+    }
 }
 
 //----------------------------------------------------------------------------
 // Destructor
 //----------------------------------------------------------------------------
-AnimationParams::~AnimationParams()
-{
+AnimationParams::~AnimationParams() {
     MyBase::SetDiagMsg("AnimationParams::~AnimationParams() this=%p", this);
 }
 
-//Reset to initial state
+// Reset to initial state
 //
-void AnimationParams::_init(){
+void AnimationParams::_init() {
 
-	// set everything to default state:
-	SetPlayBackwards (false);
-	SetRepeating (false);
-	SetFrameStepSize(1);
-	SetStartTimestep(0);
-	SetEndTimestep (10000000);
-	SetCurrentTimestep (0);
-	SetMaxFrameRate(10);
+    // set everything to default state:
+    SetPlayBackwards(false);
+    SetRepeating(false);
+    SetFrameStepSize(1);
+    SetStartTimestep(0);
+    SetEndTimestep(10000000);
+    SetCurrentTimestep(0);
+    SetMaxFrameRate(10);
 }

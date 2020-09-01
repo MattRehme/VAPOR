@@ -34,73 +34,73 @@
 using namespace std;
 using namespace VAPoR;
 using namespace Wasp;
-void myMessageOutput( QtMsgType type, const char *msg )
-{
-    switch ( type ) {
-        case QtDebugMsg:
-	    
-            break;
-        case QtWarningMsg:
-            
-            break;
-        case QtFatalMsg:
-            
-			break;
-		default://ignore QtCriticalMsg and QtSystemMsg
-			break;
+void myMessageOutput(QtMsgType type, const char *msg) {
+    switch (type) {
+    case QtDebugMsg:
+
+        break;
+    case QtWarningMsg:
+
+        break;
+    case QtFatalMsg:
+
+        break;
+    default: // ignore QtCriticalMsg and QtSystemMsg
+        break;
     }
 }
-
 
 //
 // Open a file named by the environment variable, path_var. Exit on failure
 //
 FILE *OpenLog(string path_var) {
-	FILE *fp = NULL;
-	const char *cstr = getenv(path_var.c_str());
-	if (! cstr) return(NULL);
-	string s = cstr;
-	if (! s.empty()) {
-		fp = fopen(s.c_str(), "w");
-		if (! fp) {
-			cerr << "Failed to open " << s << " : " << strerror(errno) << endl;
-			exit(1);
-		}
-		MyBase::SetDiagMsgFilePtr(fp);
-	}
-	return(fp);
+    FILE *fp = NULL;
+    const char *cstr = getenv(path_var.c_str());
+    if (!cstr)
+        return (NULL);
+    string s = cstr;
+    if (!s.empty()) {
+        fp = fopen(s.c_str(), "w");
+        if (!fp) {
+            cerr << "Failed to open " << s << " : " << strerror(errno) << endl;
+            exit(1);
+        }
+        MyBase::SetDiagMsgFilePtr(fp);
+    }
+    return (fp);
 }
 
-QApplication* app;
-int main( int argc, char ** argv ) {
+QApplication *app;
+int main(int argc, char **argv) {
 
-	//Install our own message handler.
-	//Needed for SGI to avoid dithering:
+    // Install our own message handler.
+    // Needed for SGI to avoid dithering:
 
-//FILE *diagfp = OpenLog("VAPOR_DIAG_LOG");
-//FILE *errfp = OpenLog("VAPOR_ERR_LOG");
-FILE *diagfp = NULL;
-FILE *errfp = NULL;
-if (getenv("VAPOR_DEBUG"))
-	MyBase::SetDiagMsgFilePtr(stderr);
+    // FILE *diagfp = OpenLog("VAPOR_DIAG_LOG");
+    // FILE *errfp = OpenLog("VAPOR_ERR_LOG");
+    FILE *diagfp = NULL;
+    FILE *errfp = NULL;
+    if (getenv("VAPOR_DEBUG"))
+        MyBase::SetDiagMsgFilePtr(stderr);
 
-#ifdef	Darwin
-	if (! getenv("DISPLAY")) setenv("DISPLAY", ":0.0",0);
+#ifdef Darwin
+    if (!getenv("DISPLAY"))
+        setenv("DISPLAY", ":0.0", 0);
 #endif
 #ifdef Q_WS_X11
-	if (!getenv("DISPLAY")){
-		fprintf(stderr,"Error:  X11 DISPLAY variable is not defined. %s \n",
-		"Vapor user interface requires X server to be available.");
-		exit(-1);
-	}
+    if (!getenv("DISPLAY")) {
+        fprintf(stderr, "Error:  X11 DISPLAY variable is not defined. %s \n",
+                "Vapor user interface requires X server to be available.");
+        exit(-1);
+    }
 #endif
 
-#ifdef IRIX    
-	    QApplication::setColorSpec( QApplication::ManyColor );
+#ifdef IRIX
+    QApplication::setColorSpec(QApplication::ManyColor);
 #endif
-    
-    	QApplication a( argc, argv,true );
-    
+
+    QApplication a(argc, argv, true);
+
     // All C programs are run with the locale set to "C"
     // Initalizing QApplication changes the locale to the system configuration
     // which can cause problems if it is not supported.
@@ -110,72 +110,75 @@ if (getenv("VAPOR_DEBUG"))
     // https://doc.qt.io/qt-5/qcoreapplication.html#locale-settings
     //
     setlocale(LC_ALL, "C");
-	
-//For Mac and Linux, set the PYTHONHOME in this app
+
+// For Mac and Linux, set the PYTHONHOME in this app
 #ifndef WIN32
 
-	const char *s = getenv("PYTHONHOME");
-	string phome = s ? s : "";
-	if (! phome.empty()) {
-		string msg("The PYTHONHOME variable is already specified as: \n");
-		msg += phome;
-		msg += "\n";
-		msg += "The VAPOR ";
-		msg += "python" + PYTHON_VERSION;
-		msg += " environment will operate in this path\n";
-		msg += " This path must be the location of a Python ";
-		msg += "python" + PYTHON_VERSION;
-		msg += " installation\n";
-		msg += "Unset the PYTHONHOME environment to revert to the installed ";
-		msg += "VAPOR python" + PYTHON_VERSION + " environment.";
-		QMessageBox::warning(0,"PYTHONHOME warning", msg.c_str());
-	} else {
-        phome =  GetPythonDir();
-		setenv("PYTHONHOME",phome.c_str(),1);
-	}
-	MyBase::SetDiagMsg("PYTHONHOME = %s", phome.c_str());
-							   
+    const char *s = getenv("PYTHONHOME");
+    string phome = s ? s : "";
+    if (!phome.empty()) {
+        string msg("The PYTHONHOME variable is already specified as: \n");
+        msg += phome;
+        msg += "\n";
+        msg += "The VAPOR ";
+        msg += "python" + PYTHON_VERSION;
+        msg += " environment will operate in this path\n";
+        msg += " This path must be the location of a Python ";
+        msg += "python" + PYTHON_VERSION;
+        msg += " installation\n";
+        msg += "Unset the PYTHONHOME environment to revert to the installed ";
+        msg += "VAPOR python" + PYTHON_VERSION + " environment.";
+        QMessageBox::warning(0, "PYTHONHOME warning", msg.c_str());
+    } else {
+        phome = GetPythonDir();
+        setenv("PYTHONHOME", phome.c_str(), 1);
+    }
+    MyBase::SetDiagMsg("PYTHONHOME = %s", phome.c_str());
+
 #endif
-    
+
     // Show help
     if (argc >= 2 && string(argv[1]) == "-h") {
-        fprintf(stderr, "Usage: %s [session.vs3] [data.vdc | data.nc ... | data.wrf ...]\n", argv[0]);
+        fprintf(stderr, "Usage: %s [session.vs3] [data.vdc | data.nc ... | data.wrf ...]\n",
+                argv[0]);
         return 0;
     }
 
-	app = &a;
+    app = &a;
 
-	vector<QString> files;
-	for (int i=1; i<argc; i++) {
-		files.push_back(argv[i]);
-	}
-	MainForm* mw = new MainForm(files,app);
+    vector<QString> files;
+    for (int i = 1; i < argc; i++) {
+        files.push_back(argv[i]);
+    }
+    MainForm *mw = new MainForm(files, app);
 
-	//StartupParams* sParams = new StartupParams(0);
-	
+    // StartupParams* sParams = new StartupParams(0);
+
     string fontFile = GetSharePath("fonts/arimo.ttf");
 
-	QFontDatabase fdb; 
-	fdb.addApplicationFont(QString::fromStdString(fontFile));
-	QStringList fonts = fdb.families();
-	QFont f = fdb.font("Arimo", "normal", 12);  
-	
-	const char* useFont = std::getenv("USE_SYSTEM_FONT");
-	if (!useFont) {
-		mw->setFont(f);
-	}
+    QFontDatabase fdb;
+    fdb.addApplicationFont(QString::fromStdString(fontFile));
+    QStringList fonts = fdb.families();
+    QFont f = fdb.font("Arimo", "normal", 12);
 
-    mw->setWindowTitle( "VAPOR User Interface" );
+    const char *useFont = std::getenv("USE_SYSTEM_FONT");
+    if (!useFont) {
+        mw->setFont(f);
+    }
+
+    mw->setWindowTitle("VAPOR User Interface");
     mw->show();
     // Disable banner in debug build
 #ifdef NDEBUG
     std::string banner_file_name = "vapor_banner.png";
     BannerGUI banner(mw, banner_file_name, 3000);
 #endif
-    a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );
-	int estatus = a.exec();
+    a.connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    int estatus = a.exec();
 
-	if (diagfp) fclose(diagfp);
-	if (errfp) fclose(errfp);
-	exit(estatus);
+    if (diagfp)
+        fclose(diagfp);
+    if (errfp)
+        fclose(errfp);
+    exit(estatus);
 }

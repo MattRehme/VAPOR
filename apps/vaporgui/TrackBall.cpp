@@ -14,7 +14,7 @@
 //
 //	Date:		July 2004
 //
-//	Description:	Implements the Trackball class:   
+//	Description:	Implements the Trackball class:
 //		This was implemented from Ken Purcell's TrackBall
 //		methods.  Additional methods provided to set the TrackBall
 //		based on a viewing frame
@@ -42,7 +42,6 @@
  *	Univeristy of Minnesota
  *
  * This class was extracted from glutil.c  See glutil.cpp for the revision history */
-
 
 /* Trackball interface for 3D rotation:
  *
@@ -75,7 +74,6 @@
  *			  (default = 0.65)
  */
 
-
 #include <cmath>
 #include <iostream>
 #include <vapor/glutil.h>
@@ -89,46 +87,42 @@
 #include "TrackBall.h"
 
 using namespace VAPoR;
-void Trackball::TrackballReset()
-{
+void Trackball::TrackballReset() {
     /* Bring trackball to home position, no translation, zero rotation.
      */
     qzero(_qrot);
     qzero(_qinc);
     vzero(_trans);
     vset(_scale, 1000000.0, 1000000.0, 1000000.0);
-	//Default center of rotation:
+    // Default center of rotation:
     _center[0] = 0.5f;
     _center[1] = 0.5f;
     _center[2] = 0.5f;
 }
 
-
-Trackball::Trackball(void)
-{
+Trackball::Trackball(void) {
     _ballsize = 0.65f;
     vset(_scale, 1.0, 1.0, 1.0);
     TrackballReset();
 }
 
-Trackball::Trackball(float scale[3])
-{
+Trackball::Trackball(float scale[3]) {
     _ballsize = 0.65f;
     vset(_scale, scale[0], scale[1], scale[2]);
     TrackballReset();
 }
 
 void Trackball::TrackballSetMatrix()
-//Note perspective must be set previously in setFromFrame.
+// Note perspective must be set previously in setFromFrame.
 {
-    /* Modify the modelview matrix by the trackball 
+    /* Modify the modelview matrix by the trackball
      * rotation and translation.
      */
 
     if (_perspective) {
         glm::mat4 m(1.0);
         m = glm::translate(m, glm::vec3(_center[0], _center[1], _center[2]));
-		m = glm::translate(m, glm::vec3(_trans[0], _trans[1], _trans[2]));
+        m = glm::translate(m, glm::vec3(_trans[0], _trans[1], _trans[2]));
 
         // Copying over because qmatrix is row major (it should be column major).
         // I have no idea why this works because the surrounding functions that
@@ -138,7 +132,7 @@ void Trackball::TrackballSetMatrix()
         //
         // Also for future reference since qmatrix has no documentation:
         // qmatrix parameters are x,y,z,w while glm parameters are w,x,y,z
-        double     m3[16];
+        double m3[16];
         qmatrix(_qrot, m3);
         glm::mat4 mrot_row_major;
         for (int i = 0; i < 16; i++)
@@ -149,92 +143,79 @@ void Trackball::TrackballSetMatrix()
 
         for (int i = 0; i < 16; i++)
             _modelViewMatrix[i] = glm::value_ptr(m)[i];
-    }
-    else {
+    } else {
         glm::mat4 m(1.0);
-        
+
         m = glm::translate(m, glm::vec3(_center[0], _center[1], _center[2]));
         m = glm::translate(m, glm::vec3(_trans[0], _trans[1], _trans[2]));
 
-		double m3[16];
-	    qmatrix(_qrot, m3);
+        double m3[16];
+        qmatrix(_qrot, m3);
         glm::mat4 mrot_row_major;
         for (int i = 0; i < 16; i++)
             glm::value_ptr(mrot_row_major)[i] = m3[i];
         m *= mrot_row_major;
-        
+
         // Cannot scale due to how camera params are extracted from final matrix
         // m = glm::scale(m, glm::vec3(scale_factor, scale_factor, scale_factor));
         // SetFloat("Scale", scale_factor);
-        
+
         m = glm::translate(m, -glm::vec3(_center[0], _center[1], _center[2]));
 
         for (int i = 0; i < 16; i++)
             _modelViewMatrix[i] = glm::value_ptr(m)[i];
     }
-
 }
 
-double Trackball::GetOrthoSize() const
-{
+double Trackball::GetOrthoSize() const {
     double scale_factor = 1.0;
-    
+
     if (_trans[2] < 0.0) {
         scale_factor = 5.0 / (1 - _trans[2]);
-    }
-    else {
+    } else {
         scale_factor = 5.0 + _trans[2];
     }
-    return 1/scale_factor * 2.9;
+    return 1 / scale_factor * 2.9;
 }
 
-#ifndef	M_SQRT1_2
-#define M_SQRT1_2  0.707106781186547524401f
+#ifndef M_SQRT1_2
+#define M_SQRT1_2 0.707106781186547524401f
 #endif
 static double q90[3][4] = {
-    { M_SQRT1_2, 0.0, 0.0, M_SQRT1_2 },
-    { 0.0, M_SQRT1_2, 0.0, M_SQRT1_2 },
-    { 0.0, 0.0,-M_SQRT1_2, M_SQRT1_2 },
+    {M_SQRT1_2, 0.0, 0.0, M_SQRT1_2},
+    {0.0, M_SQRT1_2, 0.0, M_SQRT1_2},
+    {0.0, 0.0, -M_SQRT1_2, M_SQRT1_2},
 };
 
-void Trackball::TrackballFlip( int axis)
-{
+void Trackball::TrackballFlip(int axis) {
     /* Rotate by 90 deg about the given axis.
      */
-    if (axis >= 0  &&  axis < 3)
-	qmult(q90[axis], _qrot, _qrot);
+    if (axis >= 0 && axis < 3)
+        qmult(q90[axis], _qrot, _qrot);
 }
 
-
-void Trackball::TrackballSpin()
-{
+void Trackball::TrackballSpin() {
     /* Rotationaly spin the trackball by the current increment.
      * Use this to implement rotational glide.
      */
     qmult(_qinc, _qrot, _qrot);
 }
 
-
-void Trackball::TrackballStopSpinning()
-{
+void Trackball::TrackballStopSpinning() {
     /* Cease any rotational glide by zeroing the increment.
      */
     qzero(_qinc);
 }
 
-
-int Trackball::TrackballSpinning()
-{
+int Trackball::TrackballSpinning() {
     /* If the trackball is gliding then the increment's angle
      * will be non-zero, and cos(theta) != 1, hence q[3] != 1.
      */
     return (_qinc[3] != 1);
 }
 
-
-void Trackball::TrackballSetPosition(double newx, double newy)
-{
-    /* Call this when the user does a mouse down.  
+void Trackball::TrackballSetPosition(double newx, double newy) {
+    /* Call this when the user does a mouse down.
      * Stop the trackball glide, then remember the mouse
      * down point (for a future rotate, pan or zoom).
      */
@@ -243,40 +224,30 @@ void Trackball::TrackballSetPosition(double newx, double newy)
     _lasty = newy;
 }
 
-
-void Trackball::TrackballRotate(double newx, double newy)
-{
-    CalcRotation(_qinc, newx, newy, _lastx, _lasty, 
-		 _ballsize);
+void Trackball::TrackballRotate(double newx, double newy) {
+    CalcRotation(_qinc, newx, newy, _lastx, _lasty, _ballsize);
     TrackballSpin();
 
-    _lastx = newx;	/* remember for next time */
+    _lastx = newx; /* remember for next time */
     _lasty = newy;
 }
 
-
-void Trackball::TrackballPan( double newx, double newy)
-{
+void Trackball::TrackballPan(double newx, double newy) {
     _trans[0] += (newx - _lastx) * _scale[0];
     _trans[1] += (newy - _lasty) * _scale[1];
 
-    _lastx = newx;	/* remember for next time */
+    _lastx = newx; /* remember for next time */
     _lasty = newy;
 }
 
-
-void Trackball::TrackballZoom(double newx, double newy)
-{
+void Trackball::TrackballZoom(double newx, double newy) {
     _trans[2] += (newy - _lasty) * _scale[2];
 
-    _lastx = newx;	/* remember for next time */
+    _lastx = newx; /* remember for next time */
     _lasty = newy;
-
 }
 
-
-void Trackball::TrackballCopyTo(Trackball *dst)
-{
+void Trackball::TrackballCopyTo(Trackball *dst) {
     /* Copy the current roation of the trackball
      */
     qcopy(_qrot, dst->_qrot);
@@ -287,8 +258,8 @@ void Trackball::TrackballCopyTo(Trackball *dst)
  * thisButton is Qt:LeftButton, RightButton, or MidButton
  */
 
-void Trackball::MouseOnTrackball(int eventNum, int thisButton, int xcrd, int ycrd, unsigned width, unsigned height)
-{
+void Trackball::MouseOnTrackball(int eventNum, int thisButton, int xcrd, int ycrd, unsigned width,
+                                 unsigned height) {
     /* Alter a Trackball structure given  mouse event.
      *   This routine *assumes* button 1 rotates, button 2 pans,
      *   and button 3 zooms!
@@ -297,106 +268,101 @@ void Trackball::MouseOnTrackball(int eventNum, int thisButton, int xcrd, int ycr
      * width, height	: of event window
      * tball		: trackball to modify
      */
-    double	x, y;
-	static int	button;
-	//Ignore time: Qt doesn't provide time with events (may need to revisit this later????)
-    //static Time	downTime;
+    double x, y;
+    static int button;
+    // Ignore time: Qt doesn't provide time with events (may need to revisit this later????)
+    // static Time	downTime;
 
-    
     switch (eventNum) {
 
-	  case 0: //ButtonPress:
-		x = ScalePoint(xcrd, 0, width);
-		y = ScalePoint(ycrd, height, -((long) height));
-		TrackballSetPosition(x, y);
-		//Remember the last button pressed:
-		button = thisButton;
-		//downTime = event->xbutton.time;
-		break;
-	
-	  case 1://MotionNotify:
-		x = ScalePoint(xcrd, 0, width);
-		y = ScalePoint(ycrd, height, -((long) height));
-		switch (button) {
-			case 1 ://left button
-				TrackballRotate( x, y);
-				break;
-			case 2 : //middle button
-				TrackballPan( x, y);
-				break;
-			case 3 : //right button
-				TrackballZoom( x, y);
-				break;
-			default:
-				break;
-		}
-		//downTime = event->xmotion.time;
-		break;
-	
-	  case 2: //ButtonRelease:
-		button = 1;//left
-	//	if (event->xbutton.time - downTime > 250)
-		//??? if (event->xbutton.time - downTime > 100)
-		//???	TrackballStopSpinning(tball);
-		break;
+    case 0: // ButtonPress:
+        x = ScalePoint(xcrd, 0, width);
+        y = ScalePoint(ycrd, height, -((long)height));
+        TrackballSetPosition(x, y);
+        // Remember the last button pressed:
+        button = thisButton;
+        // downTime = event->xbutton.time;
+        break;
+
+    case 1: // MotionNotify:
+        x = ScalePoint(xcrd, 0, width);
+        y = ScalePoint(ycrd, height, -((long)height));
+        switch (button) {
+        case 1: // left button
+            TrackballRotate(x, y);
+            break;
+        case 2: // middle button
+            TrackballPan(x, y);
+            break;
+        case 3: // right button
+            TrackballZoom(x, y);
+            break;
+        default:
+            break;
+        }
+        // downTime = event->xmotion.time;
+        break;
+
+    case 2:         // ButtonRelease:
+        button = 1; // left
+        //	if (event->xbutton.time - downTime > 250)
+        //??? if (event->xbutton.time - downTime > 100)
+        //???	TrackballStopSpinning(tball);
+        break;
     }
 }
 
-
-bool Trackball::ReconstructCamera( 
-	double position[3], double upVec[3], double viewDir[3]
-) const {
+bool Trackball::ReconstructCamera(double position[3], double upVec[3], double viewDir[3]) const {
 
     double minv[16];
 
     int rc = minvert(_modelViewMatrix, minv);
-    if (rc<0) return(false);
+    if (rc < 0)
+        return (false);
 
-    vscale(minv+8, -1.0);
+    vscale(minv + 8, -1.0);
 
-    for (int i = 0; i<3; i++) {
-        position[i] = minv[12+i]; //position vector is minv[12..14]
-        upVec[i] = minv[4+i]; //up vector is minv[4..6]
-        viewDir[i] = minv[8+i]; //view direction is minv[8..10]
+    for (int i = 0; i < 3; i++) {
+        position[i] = minv[12 + i]; // position vector is minv[12..14]
+        upVec[i] = minv[4 + i];     // up vector is minv[4..6]
+        viewDir[i] = minv[8 + i];   // view direction is minv[8..10]
     }
     vnormal(upVec);
     vnormal(viewDir);
 
-	return(true);
-
+    return (true);
 }
 
 // Set the quaternion and translation from a viewer frame
 // Also happens to construct modelview matrix, but we don't use its translation
-void Trackball::setFromFrame(
-	const std::vector<double>& posvec, const std::vector<double>& dirvec, 
-	const std::vector<double>& upvec, const std::vector<double>& centerRot,
-	bool persp
-) {
-	//First construct the rotation matrix:
-	double mtrx1[16];
-	double trnsMtrx[16];
-	double mtrx[16];
-	setCenter(centerRot);
-	makeTransMatrix(centerRot, trnsMtrx);
-	makeModelviewMatrixD(posvec, dirvec, upvec, mtrx);
-	
-	//Translate on both sides by translation
-	//first on left,
-	mmult(trnsMtrx, mtrx, mtrx1);
-	//then on right by negative:
-	trnsMtrx[12] = -trnsMtrx[12];
-	trnsMtrx[13] = -trnsMtrx[13];
-	trnsMtrx[14] = -trnsMtrx[14];
-	mmult(mtrx1,trnsMtrx, mtrx);
-	double qrotd[4];
-	//convert rotation part to quaternion:
-	rotmatrix2q(mtrx, qrotd);
-	for (int i = 0; i<4; i++) _qrot[i] = (double)qrotd[i];
-	//set the translation?
-	//If parallel (ortho) transform, z used for translation
-	_perspective = persp;
-	//vcopy(posvec, trans);
-	for (int i = 0; i<3; i++) _trans[i] = (double)mtrx[i+12];
-	
+void Trackball::setFromFrame(const std::vector<double> &posvec, const std::vector<double> &dirvec,
+                             const std::vector<double> &upvec, const std::vector<double> &centerRot,
+                             bool persp) {
+    // First construct the rotation matrix:
+    double mtrx1[16];
+    double trnsMtrx[16];
+    double mtrx[16];
+    setCenter(centerRot);
+    makeTransMatrix(centerRot, trnsMtrx);
+    makeModelviewMatrixD(posvec, dirvec, upvec, mtrx);
+
+    // Translate on both sides by translation
+    // first on left,
+    mmult(trnsMtrx, mtrx, mtrx1);
+    // then on right by negative:
+    trnsMtrx[12] = -trnsMtrx[12];
+    trnsMtrx[13] = -trnsMtrx[13];
+    trnsMtrx[14] = -trnsMtrx[14];
+    mmult(mtrx1, trnsMtrx, mtrx);
+    double qrotd[4];
+    // convert rotation part to quaternion:
+    rotmatrix2q(mtrx, qrotd);
+    for (int i = 0; i < 4; i++)
+        _qrot[i] = (double)qrotd[i];
+    // set the translation?
+    // If parallel (ortho) transform, z used for translation
+    _perspective = persp;
+    // vcopy(posvec, trans);
+    for (int i = 0; i < 3; i++)
+        _trans[i] = (double)mtrx[i + 12];
 }

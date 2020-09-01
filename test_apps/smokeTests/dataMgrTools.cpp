@@ -3,11 +3,11 @@
 #include "gridTools.h"
 #include "dataMgrTools.h"
 
-void PrintDimensions( const VAPoR::DataMgr &dataMgr ) {
-    vector <string> dimnames;
+void PrintDimensions(const VAPoR::DataMgr &dataMgr) {
+    vector<string> dimnames;
     dimnames = dataMgr.GetDimensionNames();
     cout << endl << "Dimensions:" << endl;
-    for (int i=0; i<dimnames.size(); i++) {
+    for (int i = 0; i < dimnames.size(); i++) {
         VAPoR::DC::Dimension dimension;
         dataMgr.GetDimension(dimnames[i], dimension);
         cout << "    " << dimension.GetName() << " = " << dimension.GetLength() << endl;
@@ -16,11 +16,11 @@ void PrintDimensions( const VAPoR::DataMgr &dataMgr ) {
     cout << endl;
 }
 
-void PrintMeshes( const VAPoR::DataMgr &dataMgr, bool verbose ) {
-    vector <string> meshnames;
+void PrintMeshes(const VAPoR::DataMgr &dataMgr, bool verbose) {
+    vector<string> meshnames;
     cout << "Meshes:" << endl;
     meshnames = dataMgr.GetMeshNames();
-    for (int i=0; i<meshnames.size(); i++) {
+    for (int i = 0; i < meshnames.size(); i++) {
         cout << "    " << meshnames[i] << endl;
         if (verbose) {
             VAPoR::DC::Mesh mesh;
@@ -31,24 +31,24 @@ void PrintMeshes( const VAPoR::DataMgr &dataMgr, bool verbose ) {
     cout << endl;
 }
 
-void PrintCoordVariables( const VAPoR::DataMgr &dataMgr ) {
+void PrintCoordVariables(const VAPoR::DataMgr &dataMgr) {
     cout << "Projection String:  " << dataMgr.GetMapProjection() << endl << endl;
     cout << "Coordinate Variables:" << endl;
     std::vector<std::string> coordVars = dataMgr.GetCoordVarNames();
-    for (int i=0; i<coordVars.size(); i++) {
+    for (int i = 0; i < coordVars.size(); i++) {
         cout << "    " << coordVars[i] << endl;
     }
     cout << endl;
 }
 
-void PrintTimeCoordinates( const VAPoR::DataMgr &dataMgr ) {
+void PrintTimeCoordinates(const VAPoR::DataMgr &dataMgr) {
     std::vector<double> timeCoords = dataMgr.GetTimeCoordinates();
     cout << "Time Coordinates:" << endl;
     auto oldPrecision = std::cout.precision(10);
-    for (int i=0; i<timeCoords.size(); i++) {
+    for (int i = 0; i < timeCoords.size(); i++) {
         cout << "    " << timeCoords[i] << endl;
     }
-    std::cout.precision( oldPrecision );
+    std::cout.precision(oldPrecision);
     cout << endl;
     cout << "Time coordinate variable name: ";
     cout << dataMgr.GetTimeCoordVarName() << endl;
@@ -56,17 +56,14 @@ void PrintTimeCoordinates( const VAPoR::DataMgr &dataMgr ) {
     cout << dataMgr.GetNumTimeSteps() << endl;
 }
 
-void PrintCompressionInfo( 
-    const VAPoR::DataMgr& dataMgr, 
-    const std::string& varname 
-) {
+void PrintCompressionInfo(const VAPoR::DataMgr &dataMgr, const std::string &varname) {
     cout << "Compression Info for variable " << varname << ":" << endl;
 
-    cout << "    Refinement Levels:  " << dataMgr.GetNumRefLevels( varname ) << endl;
-   
+    cout << "    Refinement Levels:  " << dataMgr.GetNumRefLevels(varname) << endl;
+
     std::stringstream ss;
-    std::vector<size_t> cRatios = dataMgr.GetCRatios( varname );
-    for( size_t i=0; i<cRatios.size(); i++) {
+    std::vector<size_t> cRatios = dataMgr.GetCRatios(varname);
+    for (size_t i = 0; i < cRatios.size(); i++) {
         if (i != 0)
             ss << " ";
         ss << cRatios[i];
@@ -75,19 +72,16 @@ void PrintCompressionInfo(
     cout << "    Compression Ratios: " << s << endl << endl;
 }
 
-void PrintVariables(
-    const VAPoR::DataMgr& dataMgr,
-    bool verbose,
-    bool testVars
- ) {
-    vector <string> vars;
+void PrintVariables(const VAPoR::DataMgr &dataMgr, bool verbose, bool testVars) {
+    vector<string> vars;
 
-    for (int d=1; d<4; d++) {
+    for (int d = 1; d < 4; d++) {
         vars = dataMgr.GetDataVarNames(d);
-        if ( !vars.size() )
+        if (!vars.size())
             continue;
-        cout << d << "D variables: " << endl;;
-        for (int i=0; i<vars.size(); i++) {
+        cout << d << "D variables: " << endl;
+        ;
+        for (int i = 0; i < vars.size(); i++) {
             cout << "    " << vars[i] << endl;
             if (verbose) {
                 VAPoR::DC::DataVar datavar;
@@ -99,69 +93,62 @@ void PrintVariables(
     }
 }
 
-void TestVariables(
-    VAPoR::DataMgr& dataMgr
-) {
-    vector <string> vars;
-    for (int d=1; d<4; d++) {
+void TestVariables(VAPoR::DataMgr &dataMgr) {
+    vector<string> vars;
+    for (int d = 1; d < 4; d++) {
         vars = dataMgr.GetDataVarNames(d);
-        if ( vars.size() ) {
+        if (vars.size()) {
             std::string varName = vars[0];
-            PrintCompressionInfo( dataMgr, varName );
-            std::vector< double > minExt, maxExt;
-            dataMgr.GetVariableExtents( 0, varName, -1, -1, minExt, maxExt );
-            
+            PrintCompressionInfo(dataMgr, varName);
+            std::vector<double> minExt, maxExt;
+            dataMgr.GetVariableExtents(0, varName, -1, -1, minExt, maxExt);
+
             // Reduce extents to test
-            for (int i=0; i<minExt.size(); i++) {
+            for (int i = 0; i < minExt.size(); i++) {
                 minExt[i] /= 32.0;
                 maxExt[i] /= 32.0;
             }
 
-            VAPoR::Grid* grid = dataMgr.GetVariable( 0, varName, -1, -1, minExt, maxExt );
+            VAPoR::Grid *grid = dataMgr.GetVariable(0, varName, -1, -1, minExt, maxExt);
             double rms;
             size_t numMissingValues;
             size_t disagreements;
-            CompareIndexToCoords( grid, rms, numMissingValues, disagreements );
+            CompareIndexToCoords(grid, rms, numMissingValues, disagreements);
             cout << "Grid test for " << d << "D variable " << varName << ":" << endl;
-            cout << "    # Dimensions:       " << dataMgr.GetNumDimensions( varName ) << endl;
+            cout << "    # Dimensions:       " << dataMgr.GetNumDimensions(varName) << endl;
 
-            std::vector< size_t > dimLens;
-            dataMgr.GetDimLens( varName, dimLens );
+            std::vector<size_t> dimLens;
+            dataMgr.GetDimLens(varName, dimLens);
             std::stringstream ss;
-            for( size_t i=0; i<dimLens.size(); i++) {
+            for (size_t i = 0; i < dimLens.size(); i++) {
                 if (i != 0)
                     ss << " ";
                 ss << dimLens[i];
             }
             std::string s = ss.str();
             cout << "    Dimension Lengths:  " << s << endl;
-            cout << "    Topology Dimension: " << dataMgr.GetVarTopologyDim( varName ) << endl;
+            cout << "    Topology Dimension: " << dataMgr.GetVarTopologyDim(varName) << endl;
             cout << endl;
-            PrintStats( rms, numMissingValues, disagreements );
+            PrintStats(rms, numMissingValues, disagreements);
         }
     }
 }
 
-int TestDataMgr(
-    const std::string& fileType,
-    size_t memsize,
-    size_t nthreads,
-    const std::vector< std::string > &files,
-    const std::vector< std::string > &options
-) {
+int TestDataMgr(const std::string &fileType, size_t memsize, size_t nthreads,
+                const std::vector<std::string> &files, const std::vector<std::string> &options) {
     VAPoR::DataMgr dataMgr(fileType, memsize, nthreads);
     int rc = dataMgr.Initialize(files, options);
-    if (rc<0) {
+    if (rc < 0) {
         cerr << "Failed to intialize WRF DataMGR" << endl;
         return -1;
     }
 
-    PrintDimensions( dataMgr );
-    PrintMeshes( dataMgr );
-    PrintVariables( dataMgr);
-    TestVariables( dataMgr );
-    PrintCoordVariables( dataMgr );
-    PrintTimeCoordinates( dataMgr );
+    PrintDimensions(dataMgr);
+    PrintMeshes(dataMgr);
+    PrintVariables(dataMgr);
+    TestVariables(dataMgr);
+    PrintCoordVariables(dataMgr);
+    PrintTimeCoordinates(dataMgr);
 
     return 0;
 }

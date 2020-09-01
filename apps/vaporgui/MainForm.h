@@ -65,313 +65,283 @@ class ErrorReporter;
 class ParamsWidgetDemo;
 
 class MainForm : public QMainWindow {
-Q_OBJECT
+    Q_OBJECT
 
-public:
- MainForm(
-	vector<QString> files, QApplication* app, QWidget* parent = 0
- );
- ~MainForm();
+  public:
+    MainForm(vector<QString> files, QApplication *app, QWidget *parent = 0);
+    ~MainForm();
 
-protected:
- bool eventFilter(QObject *obj, QEvent *event);
+  protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 
-private:
+  private:
     static const QEvent::Type ParamsChangeEvent;
     static const QEvent::Type ParamsIntermediateChangeEvent;
     static const std::string _documentationURL;
 
- QMdiArea* _mdiArea;
- QApplication* _App;
+    QMdiArea *_mdiArea;
+    QApplication *_App;
 
- // Animation actions
- //
- QAction* _playForwardAction;
- QAction* _playBackwardAction;
- QAction* _pauseAction;
+    // Animation actions
+    //
+    QAction *_playForwardAction;
+    QAction *_playBackwardAction;
+    QAction *_pauseAction;
 
+    // Undo/redo actions
+    //
+    QAction *_navigationAction;
+    QAction *_editUndoAction;
+    QAction *_editRedoAction;
+    QLineEdit *_timeStepEdit;
+    QIntValidator *_timeStepEditValidator;
 
+    QComboBox *_alignViewCombo;
+    QComboBox *_modeCombo;
+    QMenuBar *_main_Menubar;
+    QMenu *_File;
+    QMenu *_Edit;
+    QMenu *_Tools;
+    QMenu *_captureMenu;
+    QMenu *_helpMenu;
+    QMenu *_developerMenu;
 
- // Undo/redo actions
- //
- QAction* _navigationAction;
- QAction* _editUndoAction;
- QAction* _editRedoAction;
- QLineEdit* _timeStepEdit;
- QIntValidator *_timeStepEditValidator;
+    QToolBar *_modeToolBar;
+    QToolBar *_vizToolBar;
+    QToolBar *_animationToolBar;
 
- QComboBox* _alignViewCombo;
- QComboBox* _modeCombo;
- QMenuBar *_main_Menubar;
- QMenu *_File;
- QMenu *_Edit;
- QMenu *_Tools;
- QMenu *_captureMenu;
- QMenu *_helpMenu;
- QMenu *_developerMenu;
+    // Submenus under the File menu:
+    //
+    QMenu *_dataMenu;
+    QMenu *_closeVDCMenu;
+    QMenu *_importMenu;
+    QMenu *_sessionMenu;
 
- QToolBar *_modeToolBar;
- QToolBar *_vizToolBar;
- QToolBar *_animationToolBar;
+    // File menu:
+    //
+    QAction *_fileOpenAction;
+    QAction *_fileSaveAction;
+    QAction *_fileSaveAsAction;
+    QAction *_fileExitAction;
 
- // Submenus under the File menu:
- //
- QMenu* _dataMenu;
- QMenu* _closeVDCMenu;
- QMenu* _importMenu;
- QMenu* _sessionMenu;
+    // Help menu
+    //
+    QAction *_helpAboutAction;
+    QAction *_whatsThisAction;
+    QAction *_installCLIToolsAction;
+    QAction *_webDocumentationAction;
 
- // File menu:
- //
- QAction* _fileOpenAction;
- QAction* _fileSaveAction;
- QAction* _fileSaveAsAction;
- QAction* _fileExitAction;
+    // Data menu
+    //
+    QAction *_dataImportWRF_Action;
+    QAction *_dataImportCF_Action;
+    QAction *_dataImportMPAS_Action;
+    QAction *_dataLoad_MetafileAction;
+    QAction *_dataClose_MetafileAction;
+    QAction *_fileNew_SessionAction;
+    QAction *_plotAction;
+    QAction *_statsAction;
+    QAction *_pythonAction;
 
- // Help menu
- //
- QAction* _helpAboutAction;
- QAction* _whatsThisAction;
- QAction* _installCLIToolsAction;
- QAction* _webDocumentationAction;
+    // Capture menu
+    //
+    QMenu *_singleImageMenu;
+    QAction *_captureSingleJpegAction;
+    QAction *_captureSinglePngAction;
+    QAction *_captureSingleTiffAction;
 
- // Data menu
- //
- QAction* _dataImportWRF_Action;
- QAction* _dataImportCF_Action;
- QAction* _dataImportMPAS_Action;
- QAction* _dataLoad_MetafileAction;
- QAction* _dataClose_MetafileAction;
- QAction* _fileNew_SessionAction;
- QAction* _plotAction;
- QAction* _statsAction;
- QAction* _pythonAction;
+    QMenu *_imageSequenceMenu;
+    QAction *_captureJpegSequenceAction;
+    QAction *_capturePngSequenceAction;
+    QAction *_captureTiffSequenceAction;
 
- // Capture menu
- //
- QMenu*   _singleImageMenu;
- QAction* _captureSingleJpegAction;
- QAction* _captureSinglePngAction;
- QAction* _captureSingleTiffAction;
+    QAction *_captureEndImageAction;
 
- QMenu*   _imageSequenceMenu;
- QAction* _captureJpegSequenceAction;
- QAction* _capturePngSequenceAction;
- QAction* _captureTiffSequenceAction;
+    // Toolbars:
+    //
+    QActionGroup *_mouseModeActions;
+    QAction *_tileAction;
+    QAction *_cascadeAction;
+    QAction *_homeAction;
+    QAction *_sethomeAction;
+    QAction *_viewAllAction;
+    QAction *_viewRegionAction;
+    QAction *_stepForwardAction;
+    QAction *_stepBackAction;
+    QSpinBox *_interactiveRefinementSpin;
+    QDockWidget *_tabDockWindow;
 
- QAction* _captureEndImageAction;
+    Statistics *_stats;
+    Plot *_plot;
+    PythonVariables *_pythonVariables;
+    BannerGUI *_banner;
+    VizSelectCombo *_windowSelector;
+    QLabel *_modeStatusWidget;
+    VAPoR::ControlExec *_controlExec;
+    VAPoR::ParamsMgr *_paramsMgr;
+    TabManager *_tabMgr;
+    VizWinMgr *_vizWinMgr;
+    string _capturingAnimationVizName;
 
- // Toolbars:
- //
- QActionGroup* _mouseModeActions;
- QAction* _tileAction;
- QAction* _cascadeAction;
- QAction* _homeAction;
- QAction* _sethomeAction;
- QAction* _viewAllAction;
- QAction* _viewRegionAction;
- QAction* _stepForwardAction;
- QAction* _stepBackAction;
- QSpinBox* _interactiveRefinementSpin;
- QDockWidget* _tabDockWindow;
+    bool _stateChangeFlag;
+    bool _sessionNewFlag;
+    bool _begForCitation;
+    int _eventsSinceLastSave;
+    bool _buttonPressed;
 
- Statistics *_stats;
- Plot *_plot;
- PythonVariables *_pythonVariables;
- BannerGUI* _banner;
- VizSelectCombo* _windowSelector;
- QLabel* _modeStatusWidget;
- VAPoR::ControlExec* _controlExec;
- VAPoR::ParamsMgr *_paramsMgr;
- TabManager *_tabMgr;
- VizWinMgr* _vizWinMgr;
- string _capturingAnimationVizName;
+    ErrorReporter *_errRep;
 
- bool _stateChangeFlag;
- bool _sessionNewFlag;
- bool _begForCitation;
- int _eventsSinceLastSave;
- bool _buttonPressed;
-
- ErrorReporter *_errRep;
-    
     ParamsWidgetDemo *_paramsWidgetDemo = nullptr;
 
+    // Zero out all member variables
+    //
+    void _initMembers();
 
- // Zero out all member variables
- //
- void _initMembers();
+    void _performSessionAutoSave();
+    void _stateChangeCB();
 
- void _performSessionAutoSave();
- void _stateChangeCB();
+    QMdiArea *getMDIArea() { return _mdiArea; }
 
- QMdiArea* getMDIArea() {return _mdiArea;}
+    QApplication *getApp() { return _App; }
 
- QApplication* getApp() {return _App;}
+    void setInteractiveRefinementSpin(int);
+    void enableKeyframing(bool onoff);
+    VizSelectCombo *getWindowSelector() { return _windowSelector; }
 
- void setInteractiveRefinementSpin(int);
- void enableKeyframing(bool onoff);
- VizSelectCombo* getWindowSelector(){return _windowSelector;}
+    // Set the animation buttons in pause state,
+    // don't trigger an event:
+    //
+    void setPause() {
+        _playForwardAction->setChecked(false);
+        _playBackwardAction->setChecked(false);
+        _pauseAction->setChecked(true);
+    }
 
+    int addMode(QString &text, QIcon &icon) {
+        _modeCombo->addItem(icon, text);
+        return (_modeCombo->count() - 1);
+    }
 
- // Set the animation buttons in pause state,
- // don't trigger an event:
- //
- void setPause(){
-	_playForwardAction->setChecked(false);
-	_playBackwardAction->setChecked(false);
-	_pauseAction->setChecked(true);
- }
+    //! Insert all the mouse modes into the modeCombo.
+    void addMouseModes();
+    void setMouseMode(int newMode) { _modeCombo->setCurrentIndex(newMode); }
+    void showCitationReminder();
 
- int addMode(QString& text, QIcon& icon){
-	_modeCombo->addItem(icon, text);
-	return (_modeCombo->count()-1);
- }
+    void stopAnimCapture(string vizName) {
+        if (vizName == _capturingAnimationVizName)
+            endAnimCapture();
+    }
 
- //! Insert all the mouse modes into the modeCombo.
- void addMouseModes();
- void setMouseMode(int newMode) {_modeCombo->setCurrentIndex(newMode);}
- void showCitationReminder();
+    GUIStateParams *GetStateParams() const {
+        VAssert(_paramsMgr != NULL);
+        return ((GUIStateParams *)_paramsMgr->GetParams(GUIStateParams::GetClassType()));
+    }
 
- void stopAnimCapture(string vizName){
-	if (vizName == _capturingAnimationVizName) endAnimCapture();
- }
+    SettingsParams *GetSettingsParams() const {
+        VAssert(_paramsMgr != NULL);
+        return ((SettingsParams *)_paramsMgr->GetParams(SettingsParams::GetClassType()));
+    }
 
- GUIStateParams *GetStateParams() const {
-	VAssert(_paramsMgr != NULL);
-	return ((GUIStateParams *)
-		_paramsMgr->GetParams(GUIStateParams::GetClassType())
-	);
- }
+    AnimationParams *GetAnimationParams() const {
+        VAssert(_paramsMgr != NULL);
+        return ((AnimationParams *)_paramsMgr->GetParams(AnimationParams::GetClassType()));
+    }
 
- SettingsParams *GetSettingsParams() const {
-	VAssert(_paramsMgr != NULL);
-	return ((SettingsParams *)
-		_paramsMgr->GetParams(SettingsParams::GetClassType())
-	);
- }
+    /*MiscParams *GetMiscParams() const {
+       VAssert(_paramsMgr != NULL);
+       return ((MiscParams *)
+           _paramsMgr->GetParams(MiscParams::GetClassType())
+       );
+    }*/
 
- AnimationParams *GetAnimationParams() const {
-	VAssert(_paramsMgr != NULL);
-	return ((AnimationParams *)
-		_paramsMgr->GetParams(AnimationParams::GetClassType())
-	);
- }
+    // Set the various widgets in the main window consistent with latest
+    // params settings:
+    //
+    void updateMenus();
+    void update();
+    virtual void undoRedoHelper(bool undo);
+    static bool doesQStringContainNonASCIICharacter(const QString &s);
+    static int checkQStringContainsNonASCIICharacter(const QString &s);
+    std::vector<string> myGetOpenFileNames(string prompt, string dir, string filter, bool multi);
 
- /*MiscParams *GetMiscParams() const {
-	VAssert(_paramsMgr != NULL);
-	return ((MiscParams *)
-		_paramsMgr->GetParams(MiscParams::GetClassType())
-	);
- }*/
+    void closeDataHelper(string dataSetName);
 
- 
- // Set the various widgets in the main window consistent with latest
- // params settings:
- //
- void updateMenus();
- void update();
- virtual void undoRedoHelper(bool undo);
- static bool doesQStringContainNonASCIICharacter(const QString &s);
- static int checkQStringContainsNonASCIICharacter(const QString &s);
- std::vector <string> myGetOpenFileNames(
-	string prompt, string dir, string filter, bool multi
- ) ;
+    bool openDataHelper(string dataSetName, string format, const vector<string> &files,
+                        const vector<string> &options = vector<string>());
 
- void closeDataHelper(string dataSetName);
+    void loadDataHelper(const std::vector<string> &files, string prompt, string filter,
+                        string format, bool multi, bool promptToReplaceExistingDataset = true);
+    void _createCaptureMenu();
+    void _createToolsMenu();
+    void _createEditMenu();
+    void _createFileMenu();
+    void _createHelpMenu();
+    void _createDeveloperMenu();
+    void createMenus();
+    void hookupSignals();
+    void _createModeToolBar();
+    void _createAnimationToolBar();
+    void _createVizToolBar();
+    void createToolBars();
+    virtual void sessionOpenHelper(string fileName);
 
- bool openDataHelper(
-	string dataSetName,
-	string format,
-	const vector <string> &files,
-	const vector <string> &options = vector <string> ()
- );
+    template <class T> bool isDatasetValidFormat(const std::vector<std::string> &paths) const;
+    bool determineDatasetFormat(const std::vector<std::string> &paths, std::string *fmt) const;
 
- void loadDataHelper(
-	const std::vector <string> &files, string prompt, 
-                     string filter, string format, bool multi,
-                     bool promptToReplaceExistingDataset = true
- );
- void _createCaptureMenu();
- void _createToolsMenu();
- void _createEditMenu();
- void _createFileMenu();
- void _createHelpMenu();
- void _createDeveloperMenu();
- void createMenus();
- void hookupSignals();
- void _createModeToolBar();
- void _createAnimationToolBar();
- void _createVizToolBar();
- void createToolBars();
- virtual void sessionOpenHelper(string fileName);
-    
- template<class T> bool isDatasetValidFormat(const std::vector<std::string> &paths) const;
- bool determineDatasetFormat(const std::vector<std::string> &paths, std::string *fmt) const;
+    // Enable/Disable all the widgets that require data to be present
+    //
+    void enableWidgets(bool onOff);
 
+    void enableAnimationWidgets(bool onOff);
 
- // Enable/Disable all the widgets that require data to be present
- //
- void enableWidgets(bool onOff);
+    void _fileSaveHelper(string path);
 
- void enableAnimationWidgets(bool onOff);
+    string _getDataSetName(string file, bool promptToReplaceExistingDataset = true);
 
- void _fileSaveHelper(string path);
+  private slots:
+    void _plotClosed();
+    void _statsClosed();
+    void _pythonClosed();
+    void sessionOpen(QString qfileName = "");
+    void fileSave();
+    void fileSaveAs();
+    void fileExit();
+    void undo();
+    void redo();
+    void helpAbout();
+    void loadData(string fileName = "");
+    void closeData(string fileName = "");
+    void importWRFData();
+    void importCFData();
+    void importMPASData();
+    void sessionNew();
+    void captureJpegSequence();
+    void captureTiffSequence();
+    void capturePngSequence();
+    void startAnimCapture(string filter, string defaultSuffix);
+    void endAnimCapture();
+    void captureSingleImage(string filter, string defaultSuffix);
+    void captureSingleJpeg();
+    void captureSinglePng();
+    void captureSingleTiff();
+    void installCLITools();
+    void launchStats();
+    void launchPlotUtility();
+    void launchPythonVariables();
 
- string _getDataSetName(string file, bool promptToReplaceExistingDataset = true);
+    // animation toolbar:
+    void _setTimeStep();
 
-private slots:   
- void _plotClosed();
- void _statsClosed();
- void _pythonClosed();
- void sessionOpen(QString qfileName="");
- void fileSave();
- void fileSaveAs();
- void fileExit();
- void undo();
- void redo();
- void helpAbout();
- void loadData(string fileName="");
- void closeData(string fileName="");
- void importWRFData();
- void importCFData();
- void importMPASData();
- void sessionNew();
- void captureJpegSequence();
- void captureTiffSequence();
- void capturePngSequence();
- void startAnimCapture(
-    string filter,
-    string defaultSuffix
- );
- void endAnimCapture();
- void captureSingleImage( 
-    string filter,
-    string defaultSuffix
- );
- void captureSingleJpeg();
- void captureSinglePng();
- void captureSingleTiff();
- void installCLITools();
- void launchStats();
- void launchPlotUtility();
- void launchPythonVariables();
+    void launchWebDocs() const;
+    void modeChange(int);
+    void setInteractiveRefLevel(int);
+    void loadStartingPrefs();
 
- //animation toolbar:
- void _setTimeStep();
+    void setActiveEventRouter(string type);
 
- void launchWebDocs() const; 
- void modeChange(int);
- void setInteractiveRefLevel(int);
- void loadStartingPrefs();
- 
- void setActiveEventRouter(string type); 
+    void _setProj4String(string proj4String);
 
- void _setProj4String(string proj4String);
-
- void _setAnimationOnOff(bool onOff);
- void _setAnimationDraw();
-
+    void _setAnimationOnOff(bool onOff);
+    void _setAnimationDraw();
 };
 #endif // MAINFORM_H
-

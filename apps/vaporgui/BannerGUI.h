@@ -6,33 +6,29 @@
 #include <qboxlayout.h>
 #include <qpushbutton.h>
 
-class BannerGUI : QMainWindow
-{
-	Q_OBJECT
-public:
-	BannerGUI(
-		QWidget *parent,
-		std::string imagefile, int maxwait = 0, bool center = false, 
-		QString text = "", QString url = ""
-	);
-	
-	void request_close();
+class BannerGUI : QMainWindow {
+    Q_OBJECT
+  public:
+    BannerGUI(QWidget *parent, std::string imagefile, int maxwait = 0, bool center = false,
+              QString text = "", QString url = "");
 
-private:
-    QWidget* central;
-    QVBoxLayout* mainLayout;
-    QLabel* textLabel;
-    QLabel* imageLabel;
-    QHBoxLayout* buttonLayout;
-    QPushButton* closeButton;
-    QPushButton* infoButton;
+    void request_close();
+
+  private:
+    QWidget *central;
+    QVBoxLayout *mainLayout;
+    QLabel *textLabel;
+    QLabel *imageLabel;
+    QHBoxLayout *buttonLayout;
+    QPushButton *closeButton;
+    QPushButton *infoButton;
     QString url;
-	QWidget *_parent;
+    QWidget *_parent;
 
-private slots:
+  private slots:
     void on_timer_end();
     void infoButton_action();
     void closeButton_action();
 };
 
-#endif //BANNERGUI_H
+#endif // BANNERGUI_H

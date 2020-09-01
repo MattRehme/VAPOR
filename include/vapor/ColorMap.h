@@ -3,7 +3,7 @@
 // Copyright (C) 2006 Kenny Gruchalla.  All rights reserved.
 //
 // A map from data value to/from color.
-// 
+//
 //----------------------------------------------------------------------------
 
 #ifndef ColorMap_H
@@ -14,138 +14,117 @@
 
 namespace VAPoR {
 
+class PARAMS_API ColorMap : public ParamsBase {
 
-class PARAMS_API ColorMap : public ParamsBase
-{
+  public:
+    class PARAMS_API Color {
+      public:
+        Color();
+        Color(float h, float s, float v);
+        Color(double h, double s, double v);
+        Color(const Color &color);
 
-public:
+        void toRGB(float *rgb) const;
 
- class PARAMS_API Color {
- public:
+        void hue(float h) { _hue = h; }
+        float hue() const { return _hue; }
 
-  Color();
-  Color(float h, float s, float v);
-  Color(double h, double s, double v);
-  Color(const Color &color);
+        void sat(float s) { _sat = s; }
+        float sat() const { return _sat; }
 
-  void toRGB(float *rgb) const;
+        void val(float v) { _val = v; }
+        float val() const { return _val; }
 
-  void  hue(float h) { _hue = h; }
-  float hue() const  { return _hue; }
+      private:
+        float _hue;
+        float _sat;
+        float _val;
+    };
 
-  void  sat(float s) { _sat = s; }
-  float sat() const  { return _sat; }
+    //! Create a ColorMap object from scratch
+    //
+    ColorMap(ParamsBase::StateSave *ssave);
 
-  void  val(float v) { _val = v; }
-  float val() const  { return _val; }
+    //! Create a ColorMap object from an existing XmlNode tree
+    //
+    ColorMap(ParamsBase::StateSave *ssave, XmlNode *node);
 
- private:
+    virtual ~ColorMap();
 
-  float _hue;
-  float _sat;
-  float _val;
- };
+    void clear();
 
- 
- //! Create a ColorMap object from scratch
- //
- ColorMap(ParamsBase::StateSave *ssave);
+    TFInterpolator::type GetInterpType() const {
+        long defaultv = TFInterpolator::diverging;
+        return (TFInterpolator::type)GetValueLong(_interpTypeTag, defaultv);
+    }
+    void SetInterpType(TFInterpolator::type t);
+    void SetUseWhitespace(bool enabled);
+    bool GetUseWhitespace() const;
 
- //! Create a ColorMap object from an existing XmlNode tree
- //
- ColorMap(
-    ParamsBase::StateSave *ssave, XmlNode *node
- );
+    int numControlPoints() const { return (int)(GetControlPoints().size() / 4); }
 
- virtual ~ColorMap();
+    Color controlPointColor(int index) const;
+    void controlPointColor(int index, Color color);
 
- void  clear();
+    float controlPointValue(int index) const; // Data Coordinates
+    float controlPointValueNormalized(int index) const;
+    void controlPointValue(int index, float value); // Data Coordinates
+    void controlPointValueNormalized(int index, float value);
 
- TFInterpolator::type GetInterpType() const {
-	long defaultv = TFInterpolator::diverging;
-	return (TFInterpolator::type) GetValueLong(_interpTypeTag, defaultv);
- }
- void SetInterpType(TFInterpolator::type t);
- void SetUseWhitespace(bool enabled);
- bool GetUseWhitespace() const;
+    void addControlPointAt(float value);
+    int addNormControlPointAt(float value);
+    void addControlPointAt(float value, Color color);
+    int addNormControlPoint(float normValue, Color color);
+    void deleteControlPoint(int index);
 
- int numControlPoints() const {
-	return (int)(GetControlPoints().size()/4); 
- }
+    void move(int index, float delta);
 
- Color controlPointColor(int index) const;
- void  controlPointColor(int index, Color color);
+    Color color(float value) const;
+    Color colorNormalized(float nv) const;
+    Color getDivergingColor(float ratio, float index) const;
+    Color getCorrectiveDivergingColor(float ratio, float index) const;
 
- float controlPointValue(int index) const;               // Data Coordinates
- float controlPointValueNormalized(int index) const;
- void  controlPointValue(int index, float value);  // Data Coordinates
- void  controlPointValueNormalized(int index, float value);
+    // Method to obtain the control points as a double vector, with
+    // 4 entries for each control point
+    // in the order hue,sat,value, datavalue
+    vector<double> GetControlPoints() const;
 
- void addControlPointAt(float value);
- int addNormControlPointAt(float value);
- void addControlPointAt(float value, Color color);
- int addNormControlPoint(float normValue, Color color);
- void deleteControlPoint(int index);
+    void SetControlPoints(const vector<double> &controlPoints);
 
- void move(int index, float delta);
- 
- Color color(float value) const;
- Color colorNormalized(float nv) const;
- Color getDivergingColor(float ratio, float index) const;
- Color getCorrectiveDivergingColor(float ratio, float index) const;
+    //!
+    //! The minimum value is stored as normalized coordinates in the parameter
+    //! space. Therefore, the color map will change relative to any changes in
+    //! the parameter space. True???
+    //
+    void SetDataBounds(const vector<double> &bounds);
+    vector<double> GetDataBounds() const;
 
- // Method to obtain the control points as a double vector, with 
- // 4 entries for each control point
- // in the order hue,sat,value, datavalue
- vector<double> GetControlPoints() const;
+    float minValue() const { return (GetDataBounds()[0]); }
+    float maxValue() const { return (GetDataBounds()[1]); }
 
- void SetControlPoints(const vector<double> &controlPoints);
-
-
- //!
- //! The minimum value is stored as normalized coordinates in the parameter
- //! space. Therefore, the color map will change relative to any changes in
- //! the parameter space. True???
- //
- void SetDataBounds(const vector <double> &bounds); 
- vector <double> GetDataBounds() const;
-
- float minValue() const {
-	return(GetDataBounds()[0]);
- }
- float maxValue() const {
-	return(GetDataBounds()[1]);
- }
-    
     void Reverse();
 
+    // Get static string identifier for this params class
+    //
+    static string GetClassType() { return ("ColorMapParams"); }
 
- // Get static string identifier for this params class
- //
- static string GetClassType() {
-	return("ColorMapParams");
- }
+  public:
+    static const string _controlPointsTag;
+    static const string _interpTypeTag;
+    static const string _useWhitespaceTag;
+    static const string _dataBoundsTag;
 
-public:
- static const string _controlPointsTag; 
- static const string _interpTypeTag;
- static const string _useWhitespaceTag;
- static const string _dataBoundsTag;
-private:
-
- int leftIndex(float val) const;
- 
+  private:
+    int leftIndex(float val) const;
 };
 
-class PARAMS_API ARGB{
-public:
-	ARGB(int r, int g, int b){
-		_argbvalue = ((r&255)<<16) | ((g&255)<<8) | (b&255);
-	}
-private:
-	unsigned int _argbvalue;
+class PARAMS_API ARGB {
+  public:
+    ARGB(int r, int g, int b) { _argbvalue = ((r & 255) << 16) | ((g & 255) << 8) | (b & 255); }
 
+  private:
+    unsigned int _argbvalue;
 };
-};
+}; // namespace VAPoR
 
 #endif // ColorMap_H

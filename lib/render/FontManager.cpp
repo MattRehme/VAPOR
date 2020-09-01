@@ -5,19 +5,16 @@
 using namespace VAPoR;
 using namespace Wasp;
 
-using std::string;
 using std::map;
 using std::pair;
+using std::string;
 
-FontManager::FontManager(GLManager *glManager)
-: _glManager(glManager), _library(nullptr)
-{
+FontManager::FontManager(GLManager *glManager) : _glManager(glManager), _library(nullptr) {
     VAssert(glManager);
     VAssert(!FT_Init_FreeType(&_library));
 }
 
-FontManager::~FontManager()
-{
+FontManager::~FontManager() {
     for (auto it = _map.begin(); it != _map.end(); ++it)
         delete it->second;
     _map.clear();
@@ -25,13 +22,11 @@ FontManager::~FontManager()
         FT_Done_FreeType(_library);
 }
 
-Font *FontManager::GetFont(const std::string &name, unsigned int size)
-{
+Font *FontManager::GetFont(const std::string &name, unsigned int size) {
     return GetResource(pair<string, unsigned int>(name, size));
 }
 
-int FontManager::LoadResourceByKey(const std::pair<std::string, unsigned int> &key)
-{
+int FontManager::LoadResourceByKey(const std::pair<std::string, unsigned int> &key) {
     if (HasResource(key)) {
         VAssert(!"Font already loaded");
         return -1;

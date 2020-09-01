@@ -1,6 +1,6 @@
 
-#ifndef	_WaveFiltHaar_h_
-#define	_WaveFiltHaar_h_
+#ifndef _WaveFiltHaar_h_
+#define _WaveFiltHaar_h_
 
 namespace VAPoR {
 
@@ -15,18 +15,17 @@ namespace VAPoR {
 //!
 class WASP_API WaveFiltHaar : public WaveFiltBase {
 
-public:
- //! Create a set of Haar wavelet filters
- //!
- WaveFiltHaar();
- virtual ~WaveFiltHaar();
-	
+  public:
+    //! Create a set of Haar wavelet filters
+    //!
+    WaveFiltHaar();
+    virtual ~WaveFiltHaar();
 
-private:
- void _analysis_initialize();
- void _synthesis_initialize();
+  private:
+    void _analysis_initialize();
+    void _synthesis_initialize();
 };
 
-}
+} // namespace VAPoR
 
 #endif

@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 #include "udunits2.h"
-typedef union cv_converter	cv_converter;
+typedef union cv_converter cv_converter;
 
 /*
  * Returns the trivial converter (i.e., y = x).
@@ -28,8 +28,7 @@ typedef union cv_converter	cv_converter;
  * RETURNS:
  *	The trivial converter.
  */
-UDUNITS2_API cv_converter*
-cv_get_trivial(void);
+UDUNITS2_API cv_converter *cv_get_trivial(void);
 
 /*
  * Returns the reciprocal converter (i.e., y = 1/x).
@@ -38,8 +37,7 @@ cv_get_trivial(void);
  * RETURNS:
  *	The reciprocal converter.
  */
-UDUNITS2_API cv_converter*
-cv_get_inverse(void);
+UDUNITS2_API cv_converter *cv_get_inverse(void);
 
 /*
  * Returns a scaling converter (i.e., y = ax).
@@ -48,9 +46,7 @@ cv_get_inverse(void);
  * RETURNS:
  *	The scaling converter.
  */
-UDUNITS2_API cv_converter*
-cv_get_scale(
-    const double	slope);
+UDUNITS2_API cv_converter *cv_get_scale(const double slope);
 
 /*
  * Returns a converter that adds a number to values (i.e., y = x + b).
@@ -62,9 +58,7 @@ cv_get_scale(
  *	NULL	Necessary memory couldn't be allocated.
  *	else	A converter that adds the given number to values.
  */
-UDUNITS2_API cv_converter*
-cv_get_offset(
-    const double	intercept);
+UDUNITS2_API cv_converter *cv_get_offset(const double intercept);
 
 /*
  * Returns a Galilean converter (i.e., y = ax + b).
@@ -77,10 +71,7 @@ cv_get_offset(
  *	NULL	Necessary memory couldn't be allocated.
  *	else	A Galilean converter corresponding to the inputs.
  */
-UDUNITS2_API cv_converter*
-cv_get_galilean(
-    const double	slope,
-    const double	intercept);
+UDUNITS2_API cv_converter *cv_get_galilean(const double slope, const double intercept);
 
 /*
  * Returns a logarithmic converter (i.e., y = log(x) in some base).
@@ -94,9 +85,7 @@ cv_get_galilean(
  *			memory couldn't be allocated.
  *	else		A logarithmic converter corresponding to the inputs.
  */
-UDUNITS2_API cv_converter*
-cv_get_log(
-    const double	base);
+UDUNITS2_API cv_converter *cv_get_log(const double base);
 
 /*
  * Returns an exponential converter (i.e., y = pow(b, x) in some base "b").
@@ -110,9 +99,7 @@ cv_get_log(
  *			allocated.
  *	else		An exponential converter corresponding to the inputs.
  */
-UDUNITS2_API cv_converter*
-cv_get_pow(
-    const double	base);
+UDUNITS2_API cv_converter *cv_get_pow(const double base);
 
 /*
  * Returns a converter corresponding to the sequential application of two
@@ -128,19 +115,14 @@ cv_get_pow(
  *              converter, then the returned converter will be the other input
  *              converter.
  */
-UDUNITS2_API cv_converter*
-cv_combine(
-    cv_converter* const	first,
-    cv_converter* const	second);
+UDUNITS2_API cv_converter *cv_combine(cv_converter *const first, cv_converter *const second);
 
 /*
  * Frees resources associated with a converter.
  * ARGUMENTS:
  *	conv	The converter to have its resources freed or NULL.
  */
-UDUNITS2_API void
-cv_free(
-    cv_converter* const	conv);
+UDUNITS2_API void cv_free(cv_converter *const conv);
 
 /*
  * Converts a float.
@@ -150,10 +132,7 @@ cv_free(
  * RETURNS:
  *	The converted value.
  */
-UDUNITS2_API float
-cv_convert_float(
-    const cv_converter*	converter,
-    const float		value);
+UDUNITS2_API float cv_convert_float(const cv_converter *converter, const float value);
 
 /*
  * Converts a double.
@@ -163,10 +142,7 @@ cv_convert_float(
  * RETURNS:
  *	The converted value.
  */
-UDUNITS2_API double
-cv_convert_double(
-    const cv_converter*	converter,
-    const double	value);
+UDUNITS2_API double cv_convert_double(const cv_converter *converter, const double value);
 
 /*
  * Converts an array of floats.
@@ -180,12 +156,8 @@ cv_convert_double(
  *	NULL	"out" is NULL.
  *	else	A pointer to the output array.
  */
-UDUNITS2_API float*
-cv_convert_floats(
-    const cv_converter*	converter,
-    const float* const	in,
-    const size_t	count,
-    float*		out);
+UDUNITS2_API float *cv_convert_floats(const cv_converter *converter, const float *const in,
+                                      const size_t count, float *out);
 
 /*
  * Converts an array of doubles.
@@ -199,12 +171,8 @@ cv_convert_floats(
  *	NULL	"out" is NULL.
  *	else	A pointer to the output array.
  */
-UDUNITS2_API double*
-cv_convert_doubles(
-    const cv_converter*	converter,
-    const double* const	in,
-    const size_t	count,
-    double*		out);
+UDUNITS2_API double *cv_convert_doubles(const cv_converter *converter, const double *const in,
+                                        const size_t count, double *out);
 
 /*
  * Returns a string representation of a converter.
@@ -218,12 +186,8 @@ cv_convert_doubles(
  *	<0	An error was encountered.
  *	else	The number of bytes formatted excluding the terminating null.
  */
-UDUNITS2_API int 
-cv_get_expression(
-    const cv_converter* const	conv,
-    char* const			buf,
-    size_t			max,
-    const char* const		variable);
+UDUNITS2_API int cv_get_expression(const cv_converter *const conv, char *const buf, size_t max,
+                                   const char *const variable);
 
 #ifdef __cplusplus
 }

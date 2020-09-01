@@ -13,26 +13,26 @@
 
 #include "converter.h"
 
-typedef struct ut_system	ut_system;
-typedef union ut_unit		ut_unit;
+typedef struct ut_system ut_system;
+typedef union ut_unit ut_unit;
 
 typedef enum {
-    UT_SUCCESS = 0,	/* Success */
-    UT_BAD_ARG,	        /* An argument violates the function's contract */
-    UT_EXISTS,		/* Unit, prefix, or identifier already exists */
-    UT_NO_UNIT,		/* No such unit exists */
-    UT_OS,		/* Operating-system error.  See "errno". */
-    UT_NOT_SAME_SYSTEM,	/* The units belong to different unit-systems */
-    UT_MEANINGLESS,	/* The operation on the unit(s) is meaningless */
-    UT_NO_SECOND,	/* The unit-system doesn't have a unit named "second" */
-    UT_VISIT_ERROR,	/* An error occurred while visiting a unit */
-    UT_CANT_FORMAT,	/* A unit can't be formatted in the desired manner */
-    UT_SYNTAX,		/* string unit representation contains syntax error */
-    UT_UNKNOWN,		/* string unit representation contains unknown word */
-    UT_OPEN_ARG,	/* Can't open argument-specified unit database */
-    UT_OPEN_ENV,	/* Can't open environment-specified unit database */
-    UT_OPEN_DEFAULT,	/* Can't open installed, default, unit database */
-    UT_PARSE		/* Error parsing unit specification */
+    UT_SUCCESS = 0,     /* Success */
+    UT_BAD_ARG,         /* An argument violates the function's contract */
+    UT_EXISTS,          /* Unit, prefix, or identifier already exists */
+    UT_NO_UNIT,         /* No such unit exists */
+    UT_OS,              /* Operating-system error.  See "errno". */
+    UT_NOT_SAME_SYSTEM, /* The units belong to different unit-systems */
+    UT_MEANINGLESS,     /* The operation on the unit(s) is meaningless */
+    UT_NO_SECOND,       /* The unit-system doesn't have a unit named "second" */
+    UT_VISIT_ERROR,     /* An error occurred while visiting a unit */
+    UT_CANT_FORMAT,     /* A unit can't be formatted in the desired manner */
+    UT_SYNTAX,          /* string unit representation contains syntax error */
+    UT_UNKNOWN,         /* string unit representation contains unknown word */
+    UT_OPEN_ARG,        /* Can't open argument-specified unit database */
+    UT_OPEN_ENV,        /* Can't open environment-specified unit database */
+    UT_OPEN_DEFAULT,    /* Can't open installed, default, unit database */
+    UT_PARSE            /* Error parsing unit specification */
 } ut_status;
 
 typedef enum {
@@ -42,9 +42,8 @@ typedef enum {
     UT_UTF8 = 2
 } ut_encoding;
 
-#define UT_NAMES	4
-#define UT_DEFINITION	8
-
+#define UT_NAMES 4
+#define UT_DEFINITION 8
 
 /*
  * Data-structure for a visitor to a unit:
@@ -61,7 +60,7 @@ typedef struct {
      *	UT_SUCCESS	Success.
      *	else		Failure.
      */
-    ut_status	(*visit_basic)(const ut_unit* unit, void* arg); 
+    ut_status (*visit_basic)(const ut_unit *unit, void *arg);
 
     /*
      * Visits a product-unit.  A product-unit is a product of zero or more
@@ -78,8 +77,8 @@ typedef struct {
      *	UT_SUCCESS	Success.
      *	else		Failure.
      */
-    ut_status	(*visit_product)(const ut_unit* unit, int count,
-	const ut_unit* const* basicUnits, const int* powers, void* arg); 
+    ut_status (*visit_product)(const ut_unit *unit, int count, const ut_unit *const *basicUnits,
+                               const int *powers, void *arg);
 
     /*
      * Visits a Galilean-unit.  A Galilean-unit has an underlying unit and a
@@ -96,8 +95,8 @@ typedef struct {
      *	UT_SUCCESS	Success.
      *	else		Failure.
      */
-    ut_status	(*visit_galilean)(const ut_unit* unit, double scale,
-	const ut_unit* underlyingUnit, double offset, void* arg); 
+    ut_status (*visit_galilean)(const ut_unit *unit, double scale, const ut_unit *underlyingUnit,
+                                double offset, void *arg);
 
     /*
      * Visits a timestamp-unit.  A timestamp-unit has an underlying unit of time
@@ -112,8 +111,8 @@ typedef struct {
      *	UT_SUCCESS	Success.
      *	else		Failure.
      */
-    ut_status	(*visit_timestamp)(const ut_unit* unit,
-	const ut_unit* timeUnit, double origin, void* arg); 
+    ut_status (*visit_timestamp)(const ut_unit *unit, const ut_unit *timeUnit, double origin,
+                                 void *arg);
 
     /*
      * Visits a logarithmic-unit.  A logarithmic-unit has a logarithmic base and
@@ -128,23 +127,19 @@ typedef struct {
      *	UT_SUCCESS	Success.
      *	else		Failure.
      */
-    ut_status	(*visit_logarithmic)(const ut_unit* unit, double base,
-	const ut_unit* reference, void* arg); 
+    ut_status (*visit_logarithmic)(const ut_unit *unit, double base, const ut_unit *reference,
+                                   void *arg);
 } ut_visitor;
 
-
-typedef int (*ut_error_message_handler)(const char* fmt, va_list args);
-
+typedef int (*ut_error_message_handler)(const char *fmt, va_list args);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 /******************************************************************************
  * Unit System:
  ******************************************************************************/
-
 
 /*
  * Returns the unit-system corresponding to an XML file.  This is the usual way
@@ -172,10 +167,7 @@ extern "C" {
  *		    UT_OS		Operating-system error.  See "errno".
  *	else	Pointer to the unit-system defined by "path".
  */
-UDUNITS2_API ut_system*
-ut_read_xml(
-    const char*	path);
-
+UDUNITS2_API ut_system *ut_read_xml(const char *path);
 
 /*
  * Returns a new unit-system.  On success, the unit-system will only contain
@@ -186,9 +178,7 @@ ut_read_xml(
  *		    UT_OS	Operating-system error.  See "errno".
  *	else	Pointer to a new unit system.
  */
-UDUNITS2_API ut_system*
-ut_new_system(void);
-
+UDUNITS2_API ut_system *ut_new_system(void);
 
 /*
  * Frees a unit-system.  All unit-to-identifier and identifier-to-unit mappings
@@ -198,10 +188,7 @@ ut_new_system(void);
  *	system		Pointer to the unit-system to be freed.  Use of "system"
  *			upon return results in undefined behavior.
  */
-UDUNITS2_API void
-ut_free_system(
-    ut_system*	system);
-
+UDUNITS2_API void ut_free_system(ut_system *system);
 
 /*
  * Returns the unit-system to which a unit belongs.
@@ -213,10 +200,7 @@ ut_free_system(
  *		    UT_BAD_ARG	"unit" is NULL.
  *	else	Pointer to the unit-system to which "unit" belongs.
  */
-UDUNITS2_API ut_system*
-ut_get_system(
-    const ut_unit* const	unit);
-
+UDUNITS2_API ut_system *ut_get_system(const ut_unit *const unit);
 
 /*
  * Returns the dimensionless-unit one of a unit-system.
@@ -231,10 +215,7 @@ ut_get_system(
  *		While not necessary, the pointer may be passed to ut_free()
  *		when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_get_dimensionless_unit_one(
-    const ut_system* const	system);
-
+UDUNITS2_API ut_unit *ut_get_dimensionless_unit_one(const ut_system *const system);
 
 /*
  * Returns the unit with a given name from a unit-system.  Name comparisons
@@ -252,14 +233,10 @@ ut_get_dimensionless_unit_one(
  *		The pointer should be passed to ut_free() when the unit is
  *		no longer needed.
  */
-UDUNITS2_API ut_unit*
-ut_get_unit_by_name(
-    const ut_system* const	system,
-    const char* const		name);
-
+UDUNITS2_API ut_unit *ut_get_unit_by_name(const ut_system *const system, const char *const name);
 
 /*
- * Returns the unit with a given symbol from a unit-system.  Symbol 
+ * Returns the unit with a given symbol from a unit-system.  Symbol
  * comparisons are case-sensitive.
  *
  * Arguments:
@@ -275,11 +252,8 @@ ut_get_unit_by_name(
  *		The pointer should be passed to ut_free() when the unit is no
  *		longer needed.
  */
-UDUNITS2_API ut_unit*
-ut_get_unit_by_symbol(
-    const ut_system* const	system,
-    const char* const		symbol);
-
+UDUNITS2_API ut_unit *ut_get_unit_by_symbol(const ut_system *const system,
+                                            const char *const symbol);
 
 /*
  * Sets the "second" unit of a unit-system.  This function must be called before
@@ -294,15 +268,11 @@ ut_get_unit_by_symbol(
  *			belongs is set to a different unit.
  *	UT_SUCCESS	Success.
  */
-UDUNITS2_API ut_status
-ut_set_second(
-    const ut_unit* const	second);
-
+UDUNITS2_API ut_status ut_set_second(const ut_unit *const second);
 
 /******************************************************************************
  * Defining Unit Prefixes:
  ******************************************************************************/
-
 
 /*
  * Adds a name-prefix to a unit-system.  A name-prefix is something like "mega"
@@ -319,12 +289,8 @@ ut_set_second(
  *	UT_EXISTS	"name" already maps to a different value.
  *	UT_OS		Operating-system failure.  See "errno".
  */
-UDUNITS2_API ut_status
-ut_add_name_prefix(
-    ut_system* const	system,
-    const char* const	name,
-    const double	value);
-
+UDUNITS2_API ut_status ut_add_name_prefix(ut_system *const system, const char *const name,
+                                          const double value);
 
 /*
  * Adds a symbol-prefix to a unit-system.  A symbol-prefix is something like
@@ -342,17 +308,12 @@ ut_add_name_prefix(
  *	UT_EXISTS	"symbol" already maps to a different value.
  *	UT_OS		Operating-system failure.  See "errno".
  */
-UDUNITS2_API ut_status
-ut_add_symbol_prefix(
-    ut_system* const	system,
-    const char* const	symbol,
-    const double	value);
-
+UDUNITS2_API ut_status ut_add_symbol_prefix(ut_system *const system, const char *const symbol,
+                                            const double value);
 
 /******************************************************************************
  * Defining and Deleting Units:
  ******************************************************************************/
-
 
 /*
  * Adds a base-unit to a unit-system.  Clients that use ut_read_xml() should not
@@ -368,10 +329,7 @@ ut_add_symbol_prefix(
  *		ut_free() when the unit is no longer needed by the client (the
  *		unit will remain in the unit-system).
  */
-UDUNITS2_API ut_unit*
-ut_new_base_unit(
-    ut_system* const	system);
-
+UDUNITS2_API ut_unit *ut_new_base_unit(ut_system *const system);
 
 /*
  * Adds a dimensionless-unit to a unit-system.  In the SI system of units, the
@@ -389,10 +347,7 @@ ut_new_base_unit(
  *		passed to ut_free() when the unit is no longer needed by the
  *		client (the unit will remain in the unit-system).
  */
-UDUNITS2_API ut_unit*
-ut_new_dimensionless_unit(
-    ut_system* const	system);
-
+UDUNITS2_API ut_unit *ut_new_dimensionless_unit(ut_system *const system);
 
 /*
  * Returns a clone of a unit.
@@ -407,10 +362,7 @@ ut_new_dimensionless_unit(
  *		passed to ut_free() when the unit is no longer needed by the
  *		client.
  */
-UDUNITS2_API ut_unit*
-ut_clone(
-    const ut_unit*	unit);
-
+UDUNITS2_API ut_unit *ut_clone(const ut_unit *unit);
 
 /*
  * Frees resources associated with a unit.  This function should be invoked on
@@ -420,15 +372,11 @@ ut_clone(
  * Arguments:
  *	unit	Pointer to the unit to have its resources freed or NULL.
  */
-UDUNITS2_API void
-ut_free(
-    ut_unit* const	unit);
-
+UDUNITS2_API void ut_free(ut_unit *const unit);
 
 /******************************************************************************
  * Mapping between Units and Names:
  ******************************************************************************/
-
 
 /*
  * Returns the name in a given encoding to which a unit maps.
@@ -444,11 +392,7 @@ ut_free(
  *	else		Pointer to the name in the given encoding to which
  *			"unit" maps.
  */
-UDUNITS2_API const char*
-ut_get_name(
-    const ut_unit* const	unit,
-    const ut_encoding		encoding);
-
+UDUNITS2_API const char *ut_get_name(const ut_unit *const unit, const ut_encoding encoding);
 
 /*
  * Adds a mapping from a name to a unit.
@@ -465,12 +409,8 @@ ut_get_name(
  *	UT_EXISTS	"name" already maps to a different unit.
  *	UT_SUCCESS	Success.
  */
-ut_status
-ut_map_name_to_unit(
-    const char* const		name,
-    const ut_encoding		encoding,
-    const ut_unit* const	unit);
-
+ut_status ut_map_name_to_unit(const char *const name, const ut_encoding encoding,
+                              const ut_unit *const unit);
 
 /*
  * Removes a mapping from a name to a unit.  After this function,
@@ -484,12 +424,8 @@ ut_map_name_to_unit(
  *	UT_SUCCESS	Success.
  *	UT_BAD_ARG	"system" or "name" is NULL.
  */
-UDUNITS2_API ut_status
-ut_unmap_name_to_unit(
-    ut_system*		system,
-    const char* const	name,
-    const ut_encoding   encoding);
-
+UDUNITS2_API ut_status ut_unmap_name_to_unit(ut_system *system, const char *const name,
+                                             const ut_encoding encoding);
 
 /*
  * Adds a mapping from a unit to a name.
@@ -507,12 +443,8 @@ ut_unmap_name_to_unit(
  *	UT_OS		Operating-system error.  See "errno".
  *	UT_EXISTS	"unit" already maps to a name.
  */
-UDUNITS2_API ut_status
-ut_map_unit_to_name(
-    const ut_unit* const	unit,
-    const char* const		name,
-    ut_encoding			encoding);
-
+UDUNITS2_API ut_status ut_map_unit_to_name(const ut_unit *const unit, const char *const name,
+                                           ut_encoding encoding);
 
 /*
  * Removes a mapping from a unit to a name.
@@ -525,16 +457,11 @@ ut_map_unit_to_name(
  *	UT_BAD_ARG	"unit" is NULL.
  *	UT_SUCCESS	Success.
  */
-UDUNITS2_API ut_status
-ut_unmap_unit_to_name(
-    const ut_unit* const	unit,
-    ut_encoding			encoding);
-
+UDUNITS2_API ut_status ut_unmap_unit_to_name(const ut_unit *const unit, ut_encoding encoding);
 
 /******************************************************************************
  * Mapping between Units and Symbols:
  ******************************************************************************/
-
 
 /*
  * Returns the symbol in a given encoding to which a unit maps.
@@ -550,11 +477,7 @@ ut_unmap_unit_to_name(
  *	else		Pointer to the symbol in the given encoding to which
  *			"unit" maps.
  */
-UDUNITS2_API const char*
-ut_get_symbol(
-    const ut_unit* const	unit,
-    const ut_encoding	encoding);
-
+UDUNITS2_API const char *ut_get_symbol(const ut_unit *const unit, const ut_encoding encoding);
 
 /*
  * Adds a mapping from a symbol to a unit.
@@ -571,12 +494,8 @@ ut_get_symbol(
  *	UT_EXISTS	"symbol" already maps to a different unit.
  *	UT_SUCCESS	Success.
  */
-UDUNITS2_API ut_status
-ut_map_symbol_to_unit(
-    const char* const		symbol,
-    const ut_encoding		encoding,
-    const ut_unit* const	unit);
-
+UDUNITS2_API ut_status ut_map_symbol_to_unit(const char *const symbol, const ut_encoding encoding,
+                                             const ut_unit *const unit);
 
 /*
  * Removes a mapping from a symbol to a unit.  After this function,
@@ -590,12 +509,8 @@ ut_map_symbol_to_unit(
  *	UT_SUCCESS	Success.
  *	UT_BAD_ARG	"system" or "symbol" is NULL.
  */
-UDUNITS2_API ut_status
-ut_unmap_symbol_to_unit(
-    ut_system*		system,
-    const char* const	symbol,
-    const ut_encoding   encoding);
-
+UDUNITS2_API ut_status ut_unmap_symbol_to_unit(ut_system *system, const char *const symbol,
+                                               const ut_encoding encoding);
 
 /*
  * Adds a mapping from a unit to a symbol.
@@ -612,12 +527,8 @@ ut_unmap_symbol_to_unit(
  *	UT_OS		Operating-system error.  See "errno".
  *	UT_EXISTS	"unit" already maps to a symbol.
  */
-UDUNITS2_API ut_status
-ut_map_unit_to_symbol(
-    const ut_unit*		unit,
-    const char* const		symbol,
-    ut_encoding			encoding);
-
+UDUNITS2_API ut_status ut_map_unit_to_symbol(const ut_unit *unit, const char *const symbol,
+                                             ut_encoding encoding);
 
 /*
  * Removes a mapping from a unit to a symbol.
@@ -631,16 +542,11 @@ ut_map_unit_to_symbol(
  *	UT_SUCCESS	Success.
  *	UT_BAD_ARG	"unit" is NULL.
  */
-UDUNITS2_API ut_status
-ut_unmap_unit_to_symbol(
-    const ut_unit* const	unit,
-    ut_encoding			encoding);
-
+UDUNITS2_API ut_status ut_unmap_unit_to_symbol(const ut_unit *const unit, ut_encoding encoding);
 
 /******************************************************************************
  * Getting Information about a Unit:
  ******************************************************************************/
-
 
 /*
  * Indicates if a given unit is dimensionless or not.  Note that logarithmic
@@ -655,10 +561,7 @@ ut_unmap_unit_to_symbol(
  *		    UT_SUCCESS		"unit" is dimensionfull.
  *	else	"unit" is dimensionless.
  */
-UDUNITS2_API int
-ut_is_dimensionless(
-    const ut_unit* const	unit);
-
+UDUNITS2_API int ut_is_dimensionless(const ut_unit *const unit);
 
 /*
  * Indicates if two units belong to the same unit-system.
@@ -674,11 +577,7 @@ ut_is_dimensionless(
  *						unit-systems.
  *	else		The units belong to the same unit-system.
  */
-UDUNITS2_API int
-ut_same_system(
-    const ut_unit* const	unit1,
-    const ut_unit* const	unit2);
-
+UDUNITS2_API int ut_same_system(const ut_unit *const unit1, const ut_unit *const unit2);
 
 /*
  * Compares two units.  Returns a value less than, equal to, or greater than
@@ -694,15 +593,11 @@ ut_same_system(
  *	 0	The first and second units are equal or both units are NULL.
  *	>0	The first unit is greater than the second unit.
  */
-UDUNITS2_API int
-ut_compare(
-    const ut_unit* const	unit1,
-    const ut_unit* const	unit2);
-
+UDUNITS2_API int ut_compare(const ut_unit *const unit1, const ut_unit *const unit2);
 
 /*
  * Indicates if numeric values in one unit are convertible to numeric values in
- * another unit via "ut_get_converter()".  In making this determination, 
+ * another unit via "ut_get_converter()".  In making this determination,
  * dimensionless units are ignored.
  *
  * Arguments:
@@ -719,11 +614,7 @@ ut_compare(
  *						"kilogram").
  *	else	Numeric values can be converted between the units.
  */
-UDUNITS2_API int
-ut_are_convertible(
-    const ut_unit* const	unit1,
-    const ut_unit* const	unit2);
-
+UDUNITS2_API int ut_are_convertible(const ut_unit *const unit1, const ut_unit *const unit2);
 
 /*
  * Returns a converter of numeric values in one unit to numeric values in
@@ -748,16 +639,11 @@ ut_are_convertible(
  *			should be passed to cv_free() when no longer needed by
  *			the client.
  */
-UDUNITS2_API cv_converter*
-ut_get_converter(
-    ut_unit* const	from,
-    ut_unit* const	to);
-
+UDUNITS2_API cv_converter *ut_get_converter(ut_unit *const from, ut_unit *const to);
 
 /******************************************************************************
  * Arithmetic Unit Manipulation:
  ******************************************************************************/
-
 
 /*
  * Returns a unit equivalent to another unit scaled by a numeric factor,
@@ -777,11 +663,7 @@ ut_get_converter(
  *			passed to ut_free() when the unit is no longer needed by
  *			the client.
  */
-UDUNITS2_API ut_unit*
-ut_scale(
-    const double		factor,
-    const ut_unit* const	unit);
-
+UDUNITS2_API ut_unit *ut_scale(const double factor, const ut_unit *const unit);
 
 /*
  * Returns a unit equivalent to another unit offset by a numeric amount,
@@ -801,11 +683,7 @@ ut_scale(
  *			passed to ut_free() when the unit is no longer needed by
  *			the client.
  */
-UDUNITS2_API ut_unit*
-ut_offset(
-    const ut_unit* const	unit,
-    const double	offset);
-
+UDUNITS2_API ut_unit *ut_offset(const ut_unit *const unit, const double offset);
 
 /*
  * Returns a unit equivalent to another unit relative to a particular time.
@@ -829,11 +707,7 @@ ut_offset(
  *	else	Pointer to the resulting unit.  The pointer should be passed
  *		to ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_offset_by_time(
-    const ut_unit* const	unit,
-    const double	origin);
-
+UDUNITS2_API ut_unit *ut_offset_by_time(const ut_unit *const unit, const double origin);
 
 /*
  * Returns the result of multiplying one unit by another unit.
@@ -850,11 +724,7 @@ ut_offset_by_time(
  *	else	Pointer to the resulting unit.  The pointer should be passed
  *		to ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_multiply(
-    const ut_unit* const	unit1,
-    const ut_unit* const	unit2);
-
+UDUNITS2_API ut_unit *ut_multiply(const ut_unit *const unit1, const ut_unit *const unit2);
 
 /*
  * Returns the inverse (i.e., reciprocal) of a unit.  This convenience function
@@ -869,10 +739,7 @@ ut_multiply(
  *	else	Pointer to the resulting unit.  The pointer should be passed to
  *		ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_invert(
-    const ut_unit* const	unit);
-
+UDUNITS2_API ut_unit *ut_invert(const ut_unit *const unit);
 
 /*
  * Returns the result of dividing one unit by another unit.  This convenience
@@ -895,18 +762,14 @@ ut_invert(
  *	else	Pointer to the resulting unit.  The pointer should be passed to
  *		ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_divide(
-    const ut_unit* const	numer,
-    const ut_unit* const	denom);
-
+UDUNITS2_API ut_unit *ut_divide(const ut_unit *const numer, const ut_unit *const denom);
 
 /*
  * Returns the result of raising a unit to a power.
  *
  * Arguments:
  *	unit	Pointer to the unit.
- *	power	The power by which to raise "unit".  Must be greater than or 
+ *	power	The power by which to raise "unit".  Must be greater than or
  *		equal to -255 and less than or equal to 255.
  * Returns:
  *	NULL	Failure.  "ut_get_status()" will be:
@@ -915,18 +778,14 @@ ut_divide(
  *	else	Pointer to the resulting unit.  The pointer should be passed to
  *		ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_raise(
-    const ut_unit* const	unit,
-    const int			power);
-
+UDUNITS2_API ut_unit *ut_raise(const ut_unit *const unit, const int power);
 
 /*
  * Returns the result of taking the root of a unit.
  *
  * Arguments:
  *	unit	Pointer to the unit.
- *	root	The root to take of "unit".  Must be greater than or 
+ *	root	The root to take of "unit".  Must be greater than or
  *		equal to 1 and less than or equal to 255.
  * Returns:
  *	NULL	Failure.  "ut_get_status()" will be:
@@ -938,11 +797,7 @@ ut_raise(
  *	else	Pointer to the resulting unit.  The pointer should be passed to
  *		ut_free() when the unit is no longer needed by the client.
  */
-UDUNITS2_API ut_unit*
-ut_root(
-    const ut_unit* const	unit,
-    const int			root);
-
+UDUNITS2_API ut_unit *ut_root(const ut_unit *const unit, const int root);
 
 /*
  * Returns the logarithmic unit corresponding to a logarithmic base and a
@@ -983,16 +838,11 @@ ut_root(
  *			passed to ut_free() when the unit is no longer needed by
  *			the client.
  */
-UDUNITS2_API ut_unit*
-ut_log(
-    const double		base,
-    const ut_unit* const	reference);
-
+UDUNITS2_API ut_unit *ut_log(const double base, const ut_unit *const reference);
 
 /******************************************************************************
  * Parsing and Formatting Units:
  ******************************************************************************/
-
 
 /*
  * Returns the binary representation of a unit corresponding to a string
@@ -1016,12 +866,8 @@ ut_log(
  *						"errno".
  *	else		Pointer to the unit corresponding to "string".
  */
-UDUNITS2_API ut_unit*
-ut_parse(
-    const ut_system* const	system,
-    const char* const		string,
-    const ut_encoding		encoding);
-
+UDUNITS2_API ut_unit *ut_parse(const ut_system *const system, const char *const string,
+                               const ut_encoding encoding);
 
 /*
  * Removes leading and trailing whitespace from a string.
@@ -1033,11 +879,7 @@ ut_parse(
  * Returns:
  *      "string", with all leading and trailing whitespace removed.
  */
-UDUNITS2_API char*
-ut_trim(
-    char* const	        string,
-    const ut_encoding	encoding);
-
+UDUNITS2_API char *ut_trim(char *const string, const ut_encoding encoding);
 
 /*
  * Formats a unit.
@@ -1075,13 +917,7 @@ ut_trim(
  *			the number is equal to the size of the buffer, then the
  *			buffer is too small to have a terminating NUL character.
  */
-UDUNITS2_API int
-ut_format(
-    const ut_unit* const	unit,
-    char*		buf,
-    size_t		size,
-    unsigned		opts);
-
+UDUNITS2_API int ut_format(const ut_unit *const unit, char *buf, size_t size, unsigned opts);
 
 /*
  * Accepts a visitor to a unit.
@@ -1095,17 +931,12 @@ ut_format(
  *	UT_VISIT_ERROR	A error occurred in "visitor" while visiting "unit".
  *	UT_SUCCESS	Success.
  */
-UDUNITS2_API ut_status
-ut_accept_visitor(
-    const ut_unit* const		unit,
-    const ut_visitor* const	visitor,
-    void* const			arg);
-
+UDUNITS2_API ut_status ut_accept_visitor(const ut_unit *const unit, const ut_visitor *const visitor,
+                                         void *const arg);
 
 /******************************************************************************
  * Time Handling:
  ******************************************************************************/
-
 
 /*
  * Encodes a date as a double-precision value.
@@ -1117,12 +948,7 @@ ut_accept_visitor(
  * Returns:
  *	The date encoded as a scalar value.
  */
-UDUNITS2_API double
-ut_encode_date(
-    int		year,
-    int		month,
-    int		day);
-
+UDUNITS2_API double ut_encode_date(int year, int month, int day);
 
 /*
  * Encodes a time as a double-precision value.
@@ -1134,16 +960,11 @@ ut_encode_date(
  * Returns:
  *	The clock-time encoded as a scalar value.
  */
-UDUNITS2_API double
-ut_encode_clock(
-    int		hours,
-    int		minutes,
-    double	seconds);
-
+UDUNITS2_API double ut_encode_clock(int hours, int minutes, double seconds);
 
 /*
  * Encodes a time as a double-precision value.  The convenience function is
- * equivalent to "ut_encode_date(year,month,day) + 
+ * equivalent to "ut_encode_date(year,month,day) +
  * ut_encode_clock(hour,minute,second)"
  *
  * Arguments:
@@ -1156,15 +977,8 @@ ut_encode_clock(
  * Returns:
  *	The time encoded as a scalar value.
  */
-UDUNITS2_API double
-ut_encode_time(
-    const int		year,
-    const int		month,
-    const int		day,
-    const int		hour,
-    const int		minute,
-    const double	second);
-
+UDUNITS2_API double ut_encode_time(const int year, const int month, const int day, const int hour,
+                                   const int minute, const double second);
 
 /*
  * Decodes a time from a double-precision value.
@@ -1180,30 +994,18 @@ ut_encode_time(
  *      resolution      Pointer to the variable to be set to the resolution
  *                      of the decoded time in seconds.
  */
-UDUNITS2_API void
-ut_decode_time(
-    double	value,
-    int		*year,
-    int		*month,
-    int		*day,
-    int		*hour,
-    int		*minute,
-    double	*second,
-    double	*resolution);
-
+UDUNITS2_API void ut_decode_time(double value, int *year, int *month, int *day, int *hour,
+                                 int *minute, double *second, double *resolution);
 
 /******************************************************************************
  * Error Handling:
  ******************************************************************************/
 
-
 /*
  * Returns the status of the last operation by the units module.  This function
  * will not change the status.
  */
-UDUNITS2_API ut_status
-ut_get_status(void);
-
+UDUNITS2_API ut_status ut_get_status(void);
 
 /*
  * Sets the status of the units module.  This function would not normally be
@@ -1212,10 +1014,7 @@ ut_get_status(void);
  * Arguments:
  *	status	The status of the units module.
  */
-UDUNITS2_API void
-ut_set_status(
-    ut_status	status);
-
+UDUNITS2_API void ut_set_status(ut_status status);
 
 /*
  * Handles an error-message.
@@ -1228,11 +1027,7 @@ ut_set_status(
  *	else	The number of bytes of "fmt" and "arg" written excluding any
  *		terminating NUL.
  */
-UDUNITS2_API int
-ut_handle_error_message(
-    const char* const	fmt,
-    ...);
-
+UDUNITS2_API int ut_handle_error_message(const char *const fmt, ...);
 
 /*
  * Returns the previously-installed error-message handler and optionally
@@ -1240,15 +1035,13 @@ ut_handle_error_message(
  *
  * Arguments:
  *      handler		NULL or pointer to the error-message handler.  If NULL,
- *			then the handler is not changed.  The 
+ *			then the handler is not changed.  The
  *			currently-installed handler can be obtained this way.
  * Returns:
  *	Pointer to the previously-installed error-message handler.
  */
 UDUNITS2_API ut_error_message_handler
-ut_set_error_message_handler(
-    ut_error_message_handler	handler);
-
+ut_set_error_message_handler(ut_error_message_handler handler);
 
 /*
  * Writes an error-message to the standard-error stream when received and
@@ -1262,11 +1055,7 @@ ut_set_error_message_handler(
  *	else	The number of bytes of "fmt" and "arg" written excluding any
  *		terminating NUL.
  */
-UDUNITS2_API int
-ut_write_to_stderr(
-    const char* const	fmt,
-    va_list		args);
-
+UDUNITS2_API int ut_write_to_stderr(const char *const fmt, va_list args);
 
 /*
  * Does nothing with an error-message.
@@ -1277,11 +1066,7 @@ ut_write_to_stderr(
  * Returns:
  *	0	Always.
  */
-UDUNITS2_API int
-ut_ignore(
-    const char* const	fmt,
-    va_list		args);
-
+UDUNITS2_API int ut_ignore(const char *const fmt, va_list args);
 
 #ifdef __cplusplus
 }

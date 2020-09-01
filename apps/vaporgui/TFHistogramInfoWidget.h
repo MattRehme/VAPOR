@@ -4,18 +4,18 @@
 #include <QLineEdit>
 
 namespace VAPoR {
-    class RenderParams;
+class RenderParams;
 }
 
 class TFHistogramInfoWidget : public TFInfoWidget {
     Q_OBJECT
-    
+
     using TFInfoWidget::TFInfoWidget;
-    
-public:
+
+  public:
     TFHistogramInfoWidget(const std::string &variableNameTag);
-    
-public slots:
+
+  public slots:
     void SetControlPoint(float value);
     void Deselect();
 };

@@ -7,11 +7,10 @@
 
 static int _savedSTDERR;
 
-void HideSTDERR()
-{
+void HideSTDERR() {
 #ifndef WIN32
     _savedSTDERR = -1;
-    if ( fflush( stderr ) != 0 )
+    if (fflush(stderr) != 0)
         return;
 
     int rc = dup(STDERR_FILENO);
@@ -20,21 +19,20 @@ void HideSTDERR()
     else
         _savedSTDERR = rc;
 
-    auto* tmp = freopen( "/dev/null", "w", stderr );
-    (void) tmp;
+    auto *tmp = freopen("/dev/null", "w", stderr);
+    (void)tmp;
 #endif
 }
-void RestoreSTDERR()
-{
+void RestoreSTDERR() {
 #ifndef WIN32
-    if ( _savedSTDERR == -1 )
+    if (_savedSTDERR == -1)
         return;
 
-    fflush( stderr );
+    fflush(stderr);
 
-    dup2(  _savedSTDERR, STDERR_FILENO );
-    close( _savedSTDERR );
+    dup2(_savedSTDERR, STDERR_FILENO);
+    close(_savedSTDERR);
 
-    clearerr( stderr );
+    clearerr(stderr);
 #endif
 }

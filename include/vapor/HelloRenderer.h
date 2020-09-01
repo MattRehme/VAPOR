@@ -1,5 +1,5 @@
 //-- HelloRenderer.h ----------------------------------------------------------
-//   
+//
 //                   Copyright (C)  2011
 //     University Corporation for Atmospheric Research
 //                   All Rights Reserved
@@ -17,8 +17,8 @@
 //
 //----------------------------------------------------------------------------
 
-#ifndef	HELLORENDERER_H
-#define	HELLORENDERER_H
+#ifndef HELLORENDERER_H
+#define HELLORENDERER_H
 
 #include <vapor/Grid.h>
 #include <vapor/Renderer.h>
@@ -33,38 +33,27 @@ namespace VAPoR {
 //! \date June 2015
 
 class RENDER_API HelloRenderer : public Renderer {
-	
-      
-public:
 
- HelloRenderer(
-    const ParamsMgr *pm, string winName, string dataSetName,
-    string instName, DataMgr *dataMgr
- );
+  public:
+    HelloRenderer(const ParamsMgr *pm, string winName, string dataSetName, string instName,
+                  DataMgr *dataMgr);
 
- ~HelloRenderer();
+    ~HelloRenderer();
 
- // Get static string identifier for this Render class
- //
- static string GetClassType() {
-	return("Hello");
- }
+    // Get static string identifier for this Render class
+    //
+    static string GetClassType() { return ("Hello"); }
 
+  protected:
+    //! \copydoc Renderer::_initializeGL()
+    virtual int _initializeGL();
 
-protected:
+    //! \copydoc Renderer::_paintGL()
+    virtual int _paintGL(bool fast);
 
- //! \copydoc Renderer::_initializeGL()
- virtual int _initializeGL();
-
- //! \copydoc Renderer::_paintGL()
- virtual int _paintGL(bool fast);
-
-
-private:
-
-  void _clearCache() {}
-
+  private:
+    void _clearCache() {}
 };
-};
+}; // namespace VAPoR
 
-#endif //HELLORENDERER_H
+#endif // HELLORENDERER_H

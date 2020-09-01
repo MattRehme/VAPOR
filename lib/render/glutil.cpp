@@ -58,162 +58,156 @@
 
 //#include "util.h"
 
-
 /* Most of the 'v' routines are in the form vsomething(src1, src2, dst),
  * dst can be one of the source vectors.
  */
 namespace VAPoR {
 
-    void ViewMatrix(float *m)
-    {
-        /* Return the total view matrix, including any
-         * projection transformation.
-         */
-        
-        float mp[16], mv[16];
-        glGetFloatv(GL_PROJECTION_MATRIX, mp);
-        glGetFloatv(GL_MODELVIEW_MATRIX, mv);
-        mmult(mv, mp, m);
-    }
-    
-    void StereoPerspective(int fovy, float aspect, float neardist, float fardist,
-                           float converge, float eye)
-    {
-        /* The first four arguements act like the perspective command
-         * of the gl.  converge is the plane of the screen, and eye
-         * is the eye distance from the centerline.
-         *
-         * Sample values: 320, ???, 0.1, 10.0, 3.0, 0.12
-         */
-        float    left, right, top, bottom;
-        float    gltan;
-        GLint    mm;
-        glGetIntegerv(GL_MATRIX_MODE, &mm);
-        
-        glMatrixMode(GL_PROJECTION);
-        
-        gltan = tan((double) (fovy/2.0/10.0* (M_PI /180.0)) ) ;
-        top = gltan * neardist;
-        bottom = -top;
-        
-        gltan = tan((double) (fovy*aspect/2.0/10.0*M_PI/180.0));
-        left = -gltan*neardist - eye/converge*neardist;
-        right = gltan*neardist - eye/converge*neardist;
-        
-        glLoadIdentity();
-        glFrustum(left,  right,  bottom,  top,  neardist,  fardist);
-        glTranslatef(-eye,  0.0,  0.0);
-        
-        glMatrixMode(mm);
-    }
-    
-    
-    int ViewAxis(int *direction)
-    {
-        /* Return the major axis the viewer is looking down.
-         * 'direction' indicates which direction down the axis.
-         */
-        float    view[16];
-        int        axis;
-        
-        ViewMatrix(view);
-        
-        /* The trick is to look down the z column for the largest value.
-         * The total view matrix seems to be left hand coordinate
-         */
-        
-        /*if (fabs((double) view[9]) > fabs((double) view[8]))*/
-        if (fabs((double) view[6]) > fabs((double) view[2]))
-            axis = 1;
-        else
-            axis = 0;
-        /*if (fabs((double) view[10]) > fabs((double) view[axis+8]))*/
-        if (fabs((double) view[10]) > fabs((double) view[2+axis*4]))
-            axis = 2;
-        
-        if (direction)
-            *direction = view[2+axis*4] > 0 ? -1 : 1;
-        /**direction = view[axis+8] > 0 ? -1 : 1;*/
-        
-        return axis;
-    }
-    
-    
+void ViewMatrix(float *m) {
+    /* Return the total view matrix, including any
+     * projection transformation.
+     */
 
-bool oglStatusOK(vector <int> &status) {
-
-	GLenum glErr;
-
-	while ((glErr = glGetError()) != GL_NO_ERROR) {
-		status.push_back((int) glErr);
-	}
-	if (status.size()) return(false);
-
-	return(true);
+    float mp[16], mv[16];
+    glGetFloatv(GL_PROJECTION_MATRIX, mp);
+    glGetFloatv(GL_MODELVIEW_MATRIX, mv);
+    mmult(mv, mp, m);
 }
 
-string oglGetErrMsg(vector <int> status) {
+void StereoPerspective(int fovy, float aspect, float neardist, float fardist, float converge,
+                       float eye) {
+    /* The first four arguements act like the perspective command
+     * of the gl.  converge is the plane of the screen, and eye
+     * is the eye distance from the centerline.
+     *
+     * Sample values: 320, ???, 0.1, 10.0, 3.0, 0.12
+     */
+    float left, right, top, bottom;
+    float gltan;
+    GLint mm;
+    glGetIntegerv(GL_MATRIX_MODE, &mm);
 
-	string msg;
-	for (int i=0; i<status.size(); i++)
+    glMatrixMode(GL_PROJECTION);
+
+    gltan = tan((double)(fovy / 2.0 / 10.0 * (M_PI / 180.0)));
+    top = gltan * neardist;
+    bottom = -top;
+
+    gltan = tan((double)(fovy * aspect / 2.0 / 10.0 * M_PI / 180.0));
+    left = -gltan * neardist - eye / converge * neardist;
+    right = gltan * neardist - eye / converge * neardist;
+
+    glLoadIdentity();
+    glFrustum(left, right, bottom, top, neardist, fardist);
+    glTranslatef(-eye, 0.0, 0.0);
+
+    glMatrixMode(mm);
+}
+
+int ViewAxis(int *direction) {
+    /* Return the major axis the viewer is looking down.
+     * 'direction' indicates which direction down the axis.
+     */
+    float view[16];
+    int axis;
+
+    ViewMatrix(view);
+
+    /* The trick is to look down the z column for the largest value.
+     * The total view matrix seems to be left hand coordinate
+     */
+
+    /*if (fabs((double) view[9]) > fabs((double) view[8]))*/
+    if (fabs((double)view[6]) > fabs((double)view[2]))
+        axis = 1;
+    else
+        axis = 0;
+    /*if (fabs((double) view[10]) > fabs((double) view[axis+8]))*/
+    if (fabs((double)view[10]) > fabs((double)view[2 + axis * 4]))
+        axis = 2;
+
+    if (direction)
+        *direction = view[2 + axis * 4] > 0 ? -1 : 1;
+    /**direction = view[axis+8] > 0 ? -1 : 1;*/
+
+    return axis;
+}
+
+bool oglStatusOK(vector<int> &status) {
+
+    GLenum glErr;
+
+    while ((glErr = glGetError()) != GL_NO_ERROR) {
+        status.push_back((int)glErr);
+    }
+    if (status.size())
+        return (false);
+
+    return (true);
+}
+
+string oglGetErrMsg(vector<int> status) {
+
+    string msg;
+    for (int i = 0; i < status.size(); i++)
         msg += "Error #" + std::to_string(status[i]) + "\n";
-	return msg;
+    return msg;
 }
 
-int __CheckGLError(const char *file, int line, const char *msg)
-{
-  //
-  // Returns -1 if an OpenGL error occurred, 0 otherwise.
-  //
-  GLenum glErr;
-  int    retCode = 0;
+int __CheckGLError(const char *file, int line, const char *msg) {
+    //
+    // Returns -1 if an OpenGL error occurred, 0 otherwise.
+    //
+    GLenum glErr;
+    int retCode = 0;
 
-  glErr = glGetError();
+    glErr = glGetError();
 
-  while (glErr != GL_NO_ERROR)
-  {
+    while (glErr != GL_NO_ERROR) {
 #ifndef NDEBUG
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    std::cout << "glError: " << gluErrorString(glErr) << std::endl
-              << "         " << file << " : " << line << std::endl;
+        std::cout << "glError: " << gluErrorString(glErr) << std::endl
+                  << "         " << file << " : " << line << std::endl;
 #pragma GCC diagnostic pop
 #endif
-    if (msg) {
-		Wasp::MyBase::SetErrMsg("glError: %s\n",msg);
-		msg = NULL;
-	}
-    Wasp::MyBase::SetErrMsg("glError: %i\n\t%s : %d", glErr, file, line);
+        if (msg) {
+            Wasp::MyBase::SetErrMsg("glError: %s\n", msg);
+            msg = NULL;
+        }
+        Wasp::MyBase::SetErrMsg("glError: %i\n\t%s : %d", glErr, file, line);
 
-    retCode = -1;
+        retCode = -1;
 
-    glErr = glGetError();
-  }
+        glErr = glGetError();
+    }
 
-  return retCode;
+    return retCode;
 }
 
 bool FrameBufferReady() {
 
-	GLuint fbstatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (fbstatus != GL_FRAMEBUFFER_COMPLETE) {
-		return(false);
-	}
+    GLuint fbstatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (fbstatus != GL_FRAMEBUFFER_COMPLETE) {
+        return (false);
+    }
 
-	// Not sure if this is necessary
-	//
-	vector <int> errcodes;
-	bool status = oglStatusOK(errcodes);
+    // Not sure if this is necessary
+    //
+    vector<int> errcodes;
+    bool status = oglStatusOK(errcodes);
 
-	if (status) return true;
+    if (status)
+        return true;
 
-	// If error, check for invalid frame buffer
-	//
-	for (int i=0; i<errcodes.size(); i++) {
-		if (errcodes[i] == GL_INVALID_FRAMEBUFFER_OPERATION) return false;
-	}
+    // If error, check for invalid frame buffer
+    //
+    for (int i = 0; i < errcodes.size(); i++) {
+        if (errcodes[i] == GL_INVALID_FRAMEBUFFER_OPERATION)
+            return false;
+    }
 
-	return(true);
+    return (true);
 }
 
-};
+}; // namespace VAPoR

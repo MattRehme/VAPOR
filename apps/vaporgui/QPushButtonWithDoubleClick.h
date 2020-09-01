@@ -3,10 +3,8 @@
 class QPushButtonWithDoubleClick : public QPushButton {
     Q_OBJECT
     using QPushButton::QPushButton;
-    void mouseDoubleClickEvent(QMouseEvent * e) {
-        emit doubleClicked();
-    }
+    void mouseDoubleClickEvent(QMouseEvent *e) { emit doubleClicked(); }
 
-signals:
+  signals:
     void doubleClicked();
 };

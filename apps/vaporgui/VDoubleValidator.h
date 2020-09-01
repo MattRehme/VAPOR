@@ -13,7 +13,7 @@
 //! omitting the above problem.
 
 class VDoubleValidator : public QDoubleValidator {
-public:
+  public:
     using QDoubleValidator::QDoubleValidator;
     virtual void fixup(QString &input) const override;
     virtual QValidator::State validate(QString &input, int &pos) const override;

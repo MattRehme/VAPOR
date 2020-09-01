@@ -15,7 +15,7 @@
 //
 //	Date:			July 2017
 //
-//	Description:	Implements the ErrorReporter class 
+//	Description:	Implements the ErrorReporter class
 
 #include <stdio.h>
 #include <signal.h>
@@ -50,81 +50,70 @@
 using std::string;
 using std::vector;
 
-
 ErrorReporter *ErrorReporter::_instance = NULL;
 
-void _segFaultHandler(int sig)
-{
-	string details;
+void _segFaultHandler(int sig) {
+    string details;
 #if !defined(WIN32)
-	void *array[128];
-	size_t size;
-	size = backtrace(array, 128);
+    void *array[128];
+    size_t size;
+    size = backtrace(array, 128);
 
-	backtrace_symbols_fd(array, size, STDERR_FILENO);
-	char **backtrace_str = backtrace_symbols(array, 128);
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    char **backtrace_str = backtrace_symbols(array, 128);
 
-	for (int i = 0; i < size; i++)
-	{
-		if (strlen(backtrace_str[i]) == 0)
-			break;
-		details += string(backtrace_str[i]) + "\n";
-	}
+    for (int i = 0; i < size; i++) {
+        if (strlen(backtrace_str[i]) == 0)
+            break;
+        details += string(backtrace_str[i]) + "\n";
+    }
 #endif
 
-	ErrorReporter::Report("A memory error occured", ErrorReporter::Error, details);
-	exit(1);
+    ErrorReporter::Report("A memory error occured", ErrorReporter::Error, details);
+    exit(1);
 }
 
-void _myBaseErrorCallback(const char *msg, int err_code)
-{
-	ErrorReporter *e = ErrorReporter::GetInstance();
-	e->    _log.push_back(ErrorReporter::Message(ErrorReporter::Error, string(msg), err_code));
-	e->_fullLog.push_back(ErrorReporter::Message(ErrorReporter::Error, string(msg), err_code));
+void _myBaseErrorCallback(const char *msg, int err_code) {
+    ErrorReporter *e = ErrorReporter::GetInstance();
+    e->_log.push_back(ErrorReporter::Message(ErrorReporter::Error, string(msg), err_code));
+    e->_fullLog.push_back(ErrorReporter::Message(ErrorReporter::Error, string(msg), err_code));
 
-	if (e->_logFile)
-	{
-		fprintf(e->_logFile, "Error[%i]: %s\n", err_code, msg);
-	}
+    if (e->_logFile) {
+        fprintf(e->_logFile, "Error[%i]: %s\n", err_code, msg);
+    }
 }
 
-void _myBaseDiagCallback(const char *msg)
-{
-	ErrorReporter *e = ErrorReporter::GetInstance();
-	e->_fullLog.push_back(ErrorReporter::Message(ErrorReporter::Diagnostic, string(msg)));
-	
-	if (e->_logFile)
-	{
-		fprintf(e->_logFile, "Diagnostic: %s\n", msg);
-	}
-}
+void _myBaseDiagCallback(const char *msg) {
+    ErrorReporter *e = ErrorReporter::GetInstance();
+    e->_fullLog.push_back(ErrorReporter::Message(ErrorReporter::Diagnostic, string(msg)));
 
+    if (e->_logFile) {
+        fprintf(e->_logFile, "Diagnostic: %s\n", msg);
+    }
+}
 
 #define ErrorReporterPopup_OK_BUTTON_TEXT "Ok"
 #define ErrorReporterPopup_SAVE_BUTTON_TEXT "Save Log"
 
 ErrorReporterPopup::ErrorReporterPopup(QWidget *parent, int id, bool fatal)
-: QMessageBox(parent), dead(false), fatal(fatal)
-{
+    : QMessageBox(parent), dead(false), fatal(fatal) {
     addButton(ErrorReporterPopup_OK_BUTTON_TEXT, QMessageBox::AcceptRole);
     addButton(ErrorReporterPopup_SAVE_BUTTON_TEXT, QMessageBox::ApplyRole);
     setText("An error has occured");
-    connect(this, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(doAction(QAbstractButton *)));
+    connect(this, SIGNAL(buttonClicked(QAbstractButton *)), this,
+            SLOT(doAction(QAbstractButton *)));
 }
 
-void ErrorReporterPopup::doAction(QAbstractButton *button)
-{
+void ErrorReporterPopup::doAction(QAbstractButton *button) {
     dead = true;
-    if (ErrorReporterPopup_SAVE_BUTTON_TEXT == button->text().toStdString())
-	{
-        QString fileName = QFileDialog::getSaveFileName(NULL, "Save Error Log", QString(), "Text (*.txt);;All Files (*)");
-        if (fileName.isEmpty())
-		{
+    if (ErrorReporterPopup_SAVE_BUTTON_TEXT == button->text().toStdString()) {
+        QString fileName = QFileDialog::getSaveFileName(NULL, "Save Error Log", QString(),
+                                                        "Text (*.txt);;All Files (*)");
+        if (fileName.isEmpty()) {
             return;
         } else {
             QFile file(fileName);
-            if (!file.open(QIODevice::WriteOnly))
-            {
+            if (!file.open(QIODevice::WriteOnly)) {
                 QMessageBox::information(NULL, "Unable to open file", file.errorString());
                 return;
             }
@@ -133,31 +122,23 @@ void ErrorReporterPopup::doAction(QAbstractButton *button)
         }
     } else if (ErrorReporterPopup_OK_BUTTON_TEXT == button->text().toStdString()) {
     } else {
-        printf("Unknown ErrorReporterPopup button pressed: [%s]\n", button->text().toStdString().c_str());
+        printf("Unknown ErrorReporterPopup button pressed: [%s]\n",
+               button->text().toStdString().c_str());
     }
     if (fatal)
         exit(1);
 }
 
-void ErrorReporterPopup::setLogText(std::string text)
-{
-    _logText = text;
-}
+void ErrorReporterPopup::setLogText(std::string text) { _logText = text; }
 
+void ErrorReporter::ShowErrors() { Report(ERRORREPORTER_DEFAULT_MESSAGE); }
 
-void ErrorReporter::ShowErrors()
-{
-	Report(ERRORREPORTER_DEFAULT_MESSAGE);
-}
+void ErrorReporter::Report(string msg, Type severity, string details) {
+    ErrorReporter *e = GetInstance();
+    if (e->_logFile) {
+        fprintf(e->_logFile, "Report[%i]: %s\n%s\n", (int)severity, msg.c_str(), details.c_str());
+    }
 
-void ErrorReporter::Report(string msg, Type severity, string details)
-{
-	ErrorReporter *e = GetInstance();
-	if (e->_logFile)
-	{
-		fprintf(e->_logFile, "Report[%i]: %s\n%s\n", (int)severity, msg.c_str(), details.c_str());
-	}
-    
     for (int i = 0; i < e->_boxes.size(); i++) {
         if (e->_boxes[i]->isDead()) {
             delete e->_boxes[i];
@@ -169,131 +150,133 @@ void ErrorReporter::Report(string msg, Type severity, string details)
     static int i = 0;
     ErrorReporterPopup *box = new ErrorReporterPopup(e->_parent, i++, severity == Fatal);
     e->_boxes.push_back(box);
-	box->setInformativeText(msg.c_str());
+    box->setInformativeText(msg.c_str());
 
-	if (details == "")
-	{
-		while (e->_log.size())
-		{
-			details += e->_log.back().value + "\n";
-			if (e->_log.back().type > severity)
-				severity = e->_log.back().type;
-			e->_log.pop_back();
-		}
-	}
-    
+    if (details == "") {
+        while (e->_log.size()) {
+            details += e->_log.back().value + "\n";
+            if (e->_log.back().type > severity)
+                severity = e->_log.back().type;
+            e->_log.pop_back();
+        }
+    }
+
     const string sysInfo = GetSystemInformation();
     details += "------------------\n";
     details += sysInfo + "\n";
-    
-	box->setDetailedText(details.c_str());
-    
-	switch (severity)
-	{
-		case Diagnostic:
-		case       Info: box->setIcon(QMessageBox::Information); break;
-		case    Warning: box->setIcon(QMessageBox::Warning);     break;
-        case      Fatal:
-		case	  Error: box->setIcon(QMessageBox::Critical);    break;
-	}
-    
+
+    box->setDetailedText(details.c_str());
+
+    switch (severity) {
+    case Diagnostic:
+    case Info:
+        box->setIcon(QMessageBox::Information);
+        break;
+    case Warning:
+        box->setIcon(QMessageBox::Warning);
+        break;
+    case Fatal:
+    case Error:
+        box->setIcon(QMessageBox::Critical);
+        break;
+    }
+
     string logText;
-    logText  = sysInfo + "\n";
+    logText = sysInfo + "\n";
     logText += "-------------------\n";
     logText += msg + "\n";
     logText += "-------------------\n";
     logText += details;
     box->setLogText(logText);
-    
-	box->show(); // This will immediately return
+
+    box->show(); // This will immediately return
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-string ErrorReporter::GetSystemInformation()
-{
-	string ret = "Vapor " + Wasp::Version::GetFullVersionString() + "\n";
+string ErrorReporter::GetSystemInformation() {
+    string ret = "Vapor " + Wasp::Version::GetFullVersionString() + "\n";
 #if defined(Darwin)
-	SInt32 major, minor, rev;
-	Gestalt(gestaltSystemVersionMajor,  &major);
-	Gestalt(gestaltSystemVersionMinor,  &minor);
-	Gestalt(gestaltSystemVersionBugFix, &rev);
-	ret += "OS: Mac OS X " + to_string(major) + "." + to_string(minor) + "." + to_string(rev) + "\n";    
+    SInt32 major, minor, rev;
+    Gestalt(gestaltSystemVersionMajor, &major);
+    Gestalt(gestaltSystemVersionMinor, &minor);
+    Gestalt(gestaltSystemVersionBugFix, &rev);
+    ret +=
+        "OS: Mac OS X " + to_string(major) + "." + to_string(minor) + "." + to_string(rev) + "\n";
 #elif defined(linux)
-	struct utsname info;
-	uname(&info);
-	ret += "OS: " + string(info.sysname) + " " + string(info.release) + " " + string(info.version) + "\n";
-	ret += "Distro:\n";
-	char buffer[128];
+    struct utsname info;
+    uname(&info);
+    ret += "OS: " + string(info.sysname) + " " + string(info.release) + " " + string(info.version) +
+           "\n";
+    ret += "Distro:\n";
+    char buffer[128];
     FILE *pipe = popen("lsb_release", "r");
     if (pipe) {
-		while (!feof(pipe)) {
-			if (fgets(buffer, 128, pipe) != 0) {
-				ret += string(buffer);
-			}
-		}
-		pclose( pipe );
-	} else {
-		fprintf(stderr, "popen failed\n");
-	}
+        while (!feof(pipe)) {
+            if (fgets(buffer, 128, pipe) != 0) {
+                ret += string(buffer);
+            }
+        }
+        pclose(pipe);
+    } else {
+        fprintf(stderr, "popen failed\n");
+    }
 #elif defined(WIN32)
-	DWORD version = 0;
-	DWORD major = 0;
-	DWORD minor = 0;
-	DWORD build = 0;
-	
-	version = GetVersion();
-	
-	major = (DWORD)(LOBYTE(LOWORD(version)));
-	minor = (DWORD)(HIBYTE(LOWORD(version)));
-	
-	if (version < 0x80000000) {
-	    build = (DWORD)(HIWORD(version));
-	}
+    DWORD version = 0;
+    DWORD major = 0;
+    DWORD minor = 0;
+    DWORD build = 0;
 
-	ret += "OS: Windows " + to_string(major) + "." + to_string(minor) + " (" + to_string(build) + ")\n";
+    version = GetVersion();
+
+    major = (DWORD)(LOBYTE(LOWORD(version)));
+    minor = (DWORD)(HIBYTE(LOWORD(version)));
+
+    if (version < 0x80000000) {
+        build = (DWORD)(HIWORD(version));
+    }
+
+    ret += "OS: Windows " + to_string(major) + "." + to_string(minor) + " (" + to_string(build) +
+           ")\n";
 #else
-	return "Unsupported Platform";
+    return "Unsupported Platform";
 #endif
-	return ret;
+    return ret;
 }
 #pragma GCC diagnostic pop
 
-int ErrorReporter::OpenLogFile(std::string path)
-{
-	ErrorReporter *e = ErrorReporter::GetInstance();
-	e->_logFilePath = path;
-	e->_logFile = fopen(path.c_str(), "w");
+int ErrorReporter::OpenLogFile(std::string path) {
+    ErrorReporter *e = ErrorReporter::GetInstance();
+    e->_logFilePath = path;
+    e->_logFile = fopen(path.c_str(), "w");
 
-	if (!e->_logFile)
-	{
-		Wasp::MyBase::SetErrMsg(errno, "Failed to open log file \"%s\"", path.c_str());
-		return -1;
-	}
-	return 0;
+    if (!e->_logFile) {
+        Wasp::MyBase::SetErrMsg(errno, "Failed to open log file \"%s\"", path.c_str());
+        return -1;
+    }
+    return 0;
 }
 
-ErrorReporter::ErrorReporter(QWidget *parent)
-{
-	VAssert(parent != NULL);
+ErrorReporter::ErrorReporter(QWidget *parent) {
+    VAssert(parent != NULL);
 
-	if (_instance) return;
-            
-	_parent = parent;
-	_instance = this;
-	signal(SIGSEGV, _segFaultHandler);
-	Wasp::MyBase::SetErrMsgCB(_myBaseErrorCallback);
-	Wasp::MyBase::SetDiagMsgCB(_myBaseDiagCallback);
+    if (_instance)
+        return;
 
-	_logFilePath = "";
-	_logFile = NULL;
+    _parent = parent;
+    _instance = this;
+    signal(SIGSEGV, _segFaultHandler);
+    Wasp::MyBase::SetErrMsgCB(_myBaseErrorCallback);
+    Wasp::MyBase::SetDiagMsgCB(_myBaseDiagCallback);
+
+    _logFilePath = "";
+    _logFile = NULL;
 }
 
-ErrorReporter::~ErrorReporter()
-{
-	if (_logFile)
+ErrorReporter::~ErrorReporter() {
+    if (_logFile)
         fclose(_logFile);
-    
+
     for (int i = 0; i < _boxes.size(); i++)
         delete _boxes[i];
 }

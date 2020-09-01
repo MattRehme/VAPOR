@@ -1,42 +1,33 @@
 #ifndef ORIENTATIONANGLES_H
 #define ORIENTATIONANGLES_H
 
-
 #include <QObject>
 #include "vapor/MyBase.h"
 #include "ui_OrientationAnglesGUI.h"
 
 QT_USE_NAMESPACE
 
-
-
 namespace VAPoR {
-	class RenderParams;
-	class ParamsMgr;
-	class DataMgr;
-}
+class RenderParams;
+class ParamsMgr;
+class DataMgr;
+} // namespace VAPoR
 
 class RenderEventRouter;
 
 class OrientationAngles : public QWidget, public Ui_OrientationAnglesGUI {
 
+    Q_OBJECT
 
-	Q_OBJECT
+  public:
+    OrientationAngles(QWidget *parent) { setupUi(this); };
 
-public: 
+    void Reinit(){};
 
- OrientationAngles(QWidget* parent) {setupUi(this);};
+    virtual ~OrientationAngles() {}
 
- void Reinit() {};
-
- virtual ~OrientationAngles(){}
-
- virtual void Update(
-	const VAPoR::DataMgr *dataMgr,
-	VAPoR::ParamsMgr *paramsMgr,
-	VAPoR::RenderParams *rParams
- ) {};
-
+    virtual void Update(const VAPoR::DataMgr *dataMgr, VAPoR::ParamsMgr *paramsMgr,
+                        VAPoR::RenderParams *rParams){};
 };
 
-#endif //ORIENTATIONANGLES_H 
+#endif // ORIENTATIONANGLES_H

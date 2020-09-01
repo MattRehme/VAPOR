@@ -1,8 +1,8 @@
 #ifndef AXISANNOTATION_H
 #define AXISANNOTATION_H
 /*
-* This class describes a viewpoint
-*/
+ * This class describes a viewpoint
+ */
 #include <vapor/ParamsBase.h>
 
 namespace VAPoR {
@@ -19,93 +19,86 @@ namespace VAPoR {
 //! for a DataMgr or Renderer.
 
 class PARAMS_API AxisAnnotation : public ParamsBase {
- 
-public: 
 
- enum Flags {
- };
+  public:
+    enum Flags {};
 
- AxisAnnotation( ParamsBase::StateSave *ssave);
- AxisAnnotation( ParamsBase::StateSave *ssave, XmlNode *node);
- virtual ~AxisAnnotation();
+    AxisAnnotation(ParamsBase::StateSave *ssave);
+    AxisAnnotation(ParamsBase::StateSave *ssave, XmlNode *node);
+    virtual ~AxisAnnotation();
 
- void SetAxisAnnotationEnabled(bool val);
- bool GetAxisAnnotationEnabled() const;
+    void SetAxisAnnotationEnabled(bool val);
+    bool GetAxisAnnotationEnabled() const;
 
- vector<double> GetAxisBackgroundColor() const;
- void GetAxisBackgroundColor(float bgColor[]) const;
- void SetAxisBackgroundColor(vector<double> color);
+    vector<double> GetAxisBackgroundColor() const;
+    void GetAxisBackgroundColor(float bgColor[]) const;
+    void SetAxisBackgroundColor(vector<double> color);
 
- vector<double> GetAxisColor() const;
- void SetAxisColor(vector<double> color);
+    vector<double> GetAxisColor() const;
+    void SetAxisColor(vector<double> color);
 
- void SetNumTics(vector<double> ticnums);
- vector<double> GetNumTics() const;
+    void SetNumTics(vector<double> ticnums);
+    vector<double> GetNumTics() const;
 
- void SetAxisOrigin(vector<double> orig);
- vector<double> GetAxisOrigin() const;
+    void SetAxisOrigin(vector<double> orig);
+    vector<double> GetAxisOrigin() const;
 
- void SetMinTics(vector<double> ticmins);
- vector<double> GetMinTics() const;
+    void SetMinTics(vector<double> ticmins);
+    vector<double> GetMinTics() const;
 
- void SetMaxTics(vector<double> ticmaxs);
- vector<double> GetMaxTics() const;
+    void SetMaxTics(vector<double> ticmaxs);
+    vector<double> GetMaxTics() const;
 
- void SetTicSize(vector<double> ticsizes);
- vector<double> GetTicSize() const;
+    void SetTicSize(vector<double> ticsizes);
+    vector<double> GetTicSize() const;
 
- void SetTicDirs(vector<double> ticdirs);
- vector<double> GetTicDirs() const;
+    void SetTicDirs(vector<double> ticdirs);
+    vector<double> GetTicDirs() const;
 
- double GetTicWidth() const;
- void SetTicWidth(double val);
+    double GetTicWidth() const;
+    void SetTicWidth(double val);
 
- long GetAxisTextHeight() const;
- void SetAxisTextHeight(long val);
+    long GetAxisTextHeight() const;
+    void SetAxisTextHeight(long val);
 
- long GetAxisDigits() const;
- void SetAxisDigits(long val);
+    long GetAxisDigits() const;
+    void SetAxisDigits(long val);
 
- void SetLatLonAxesEnabled(bool val);
- bool GetLatLonAxesEnabled() const;
+    void SetLatLonAxesEnabled(bool val);
+    bool GetLatLonAxesEnabled() const;
 
- string GetDataMgrName() const;
- void SetDataMgrName(string dataMgr);
+    string GetDataMgrName() const;
+    void SetDataMgrName(string dataMgr);
 
- bool GetShowAxisArrows() const;
- void SetShowAxisArrows(bool val);
+    bool GetShowAxisArrows() const;
+    void SetShowAxisArrows(bool val);
 
- void SetAxisFontSize(int size);
- int GetAxisFontSize() const;
+    void SetAxisFontSize(int size);
+    int GetAxisFontSize() const;
 
- bool GetAxisAnnotationInitialized() const;
- void SetAxisAnnotationInitialized(bool val);
+    bool GetAxisAnnotationInitialized() const;
+    void SetAxisAnnotationInitialized(bool val);
 
- static string GetClassType() {
-  return("AxisAnnotation");
- }
+    static string GetClassType() { return ("AxisAnnotation"); }
 
-private:
-
- static const string _colorTag;
- static const string _digitsTag;
- static const string _textHeightTag;
- static const string _fontSizeTag;
- static const string _ticWidthTag;
- static const string _ticDirsTag;
- static const string _ticSizeTag;
- static const string _minTicsTag;
- static const string _maxTicsTag;
- static const string _numTicsTag;
- static const string _originTag;
- static const string _backgroundColorTag;
- static const string _annotationEnabledTag;
- static const string _latLonAxesTag;
- static const string _dataMgrTag;
- static const string _initializedTag;
-
+  private:
+    static const string _colorTag;
+    static const string _digitsTag;
+    static const string _textHeightTag;
+    static const string _fontSizeTag;
+    static const string _ticWidthTag;
+    static const string _ticDirsTag;
+    static const string _ticSizeTag;
+    static const string _minTicsTag;
+    static const string _maxTicsTag;
+    static const string _numTicsTag;
+    static const string _originTag;
+    static const string _backgroundColorTag;
+    static const string _annotationEnabledTag;
+    static const string _latLonAxesTag;
+    static const string _dataMgrTag;
+    static const string _initializedTag;
 };
-};
+}; // namespace VAPoR
 
-#endif //AXISANNOTATION_H
-
+#endif // AXISANNOTATION_H

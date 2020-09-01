@@ -20,7 +20,6 @@
 #ifndef ANNOTATIONEVENTROUTER_H
 #define ANNOTATIONEVENTROUTER_H
 
-
 #include <qobject.h>
 #include "EventRouter.h"
 #include <vapor/MyBase.h>
@@ -32,145 +31,127 @@
 QT_USE_NAMESPACE
 
 namespace VAPoR {
-	class ControlExec;
+class ControlExec;
 }
-
-
 
 class AnnotationEventRouter : public QWidget, public Ui_AnnotationGUI, public EventRouter {
 
-	Q_OBJECT
+    Q_OBJECT
 
-public: 
+  public:
+    AnnotationEventRouter(QWidget *parent, VAPoR::ControlExec *ce);
 
-    AnnotationEventRouter(
-        QWidget *parent, VAPoR::ControlExec *ce
-    );
+    virtual ~AnnotationEventRouter();
 
-	virtual ~AnnotationEventRouter();
+    virtual void hookUpTab(){};
 
-	virtual void hookUpTab() {};
+    virtual void GetWebHelp(std::vector<std::pair<string, string>> &help) const;
 
-    virtual void GetWebHelp(
-        std::vector <std::pair <string, string>> &help
-    ) const;
-	
-	//! Ignore wheel event in tab (to avoid confusion)
-	virtual void wheelEvent(QWheelEvent*) {}
+    //! Ignore wheel event in tab (to avoid confusion)
+    virtual void wheelEvent(QWheelEvent *) {}
 
- // Get static string identifier for this router class
- //
- static string GetClassType() {
-	return("Annotation");
- }
- string GetType() const {return GetClassType(); }
+    // Get static string identifier for this router class
+    //
+    static string GetClassType() { return ("Annotation"); }
+    string GetType() const { return GetClassType(); }
 
-	virtual void _confirmText() {};
-	
-protected slots:
-	void setAxisAnnotation(bool);
-	void setLatLonAnnotation(bool);
-	void setAxisTextSize(int);
-	void setAxisDigits(int);
-	void setAxisTicWidth(double);
-	void setAxisColor();
-	void setAxisBackgroundColor();
-	void axisAnnotationTableChanged();
-	void setXTicOrientation(int);
-	void setYTicOrientation(int);
-	void setZTicOrientation(int);
-	
-	void setDomainColor();
-	void setRegionColor();
-	void setBackgroundColor();
-	void setDomainFrameEnabled();
-	void setTimeColor();
-	void setLatLonAnnot(bool);
-	void setAxisArrowsEnabled();
-	void setXArrowPosition();
-	void setYArrowPosition();
-	void setZArrowPosition();
-	void timeAnnotationChanged();
-	void timeLLXChanged();
-	void timeLLYChanged();
-	void timeSizeChanged();
-	void copyRegionFromRenderer();
+    virtual void _confirmText(){};
 
-private:
+  protected slots:
+    void setAxisAnnotation(bool);
+    void setLatLonAnnotation(bool);
+    void setAxisTextSize(int);
+    void setAxisDigits(int);
+    void setAxisTicWidth(double);
+    void setAxisColor();
+    void setAxisBackgroundColor();
+    void axisAnnotationTableChanged();
+    void setXTicOrientation(int);
+    void setYTicOrientation(int);
+    void setZTicOrientation(int);
 
-	Combo* _textSizeCombo;
-	Combo* _digitsCombo;
-	Combo* _ticWidthCombo;
-	VaporTable* _annotationVaporTable;
+    void setDomainColor();
+    void setRegionColor();
+    void setBackgroundColor();
+    void setDomainFrameEnabled();
+    void setTimeColor();
+    void setLatLonAnnot(bool);
+    void setAxisArrowsEnabled();
+    void setXArrowPosition();
+    void setYArrowPosition();
+    void setZArrowPosition();
+    void timeAnnotationChanged();
+    void timeLLXChanged();
+    void timeLLYChanged();
+    void timeSizeChanged();
+    void copyRegionFromRenderer();
 
-	std::map<std::string, std::string> _visNames;
-	std::map<std::string, std::string> _renTypeNames;
+  private:
+    Combo *_textSizeCombo;
+    Combo *_digitsCombo;
+    Combo *_ticWidthCombo;
+    VaporTable *_annotationVaporTable;
 
-	vector<double> getTableRow(int row);
+    std::map<std::string, std::string> _visNames;
+    std::map<std::string, std::string> _renTypeNames;
 
-	void connectAnnotationWidgets();
+    vector<double> getTableRow(int row);
 
-	AnnotationEventRouter() {}
+    void connectAnnotationWidgets();
 
-	void setColorHelper(
-		QWidget *w, vector <double> &rgb
-	);
+    AnnotationEventRouter() {}
 
-	void updateColorHelper(
-		const vector <double> &rgb, QWidget *w
-	);
+    void setColorHelper(QWidget *w, vector<double> &rgb);
 
-	void updateRegionColor();
-	void updateDomainColor();
-	void updateBackgroundColor();
+    void updateColorHelper(const vector<double> &rgb, QWidget *w);
 
-	void updateAxisAnnotations();
-	void updateAxisColor();
-	void updateAxisBackgroundColor();
-	void updateAxisTable();
-	void updateAxisEnabledCheckbox();
-	void updateLatLonCheckbox();
-	void updateCopyRegionCombo();
-	void updateTicOrientationCombos();
-	void addRendererToCombo(
-		string, 
-		string, 
-		string, 
-		string);
+    void updateRegionColor();
+    void updateDomainColor();
+    void updateBackgroundColor();
 
-	void updateTimePanel();
-	void updateTimeColor();
-	void updateTimeCoords();
-	void updateTimeType();
-	void updateTimeSize();
+    void updateAxisAnnotations();
+    void updateAxisColor();
+    void updateAxisBackgroundColor();
+    void updateAxisTable();
+    void updateAxisEnabledCheckbox();
+    void updateLatLonCheckbox();
+    void updateCopyRegionCombo();
+    void updateTicOrientationCombos();
+    void addRendererToCombo(string, string, string, string);
 
-	void updateDataMgrCombo();
-	string getProjString();
+    void updateTimePanel();
+    void updateTimeColor();
+    void updateTimeCoords();
+    void updateTimeType();
+    void updateTimeSize();
 
-	VAPoR::AxisAnnotation* _getCurrentAxisAnnotation();
+    void updateDataMgrCombo();
+    string getProjString();
 
-	std::vector<double> getDomainExtents() const;
-	void scaleNormalizedCoordsToWorld(std::vector<double> &coords);
-	void scaleWorldCoordsToNormalized(std::vector<double> &coords);
-	void convertPCSToLon(double &xCoord);
-	void convertPCSToLat(double &yCoord);
-	void convertPCSToLonLat(double &xCoord, double &yCoord);
-	void convertLonLatToPCS(double &xCoord, double &yCoord);
-	void convertLonToPCS(double &xCoord);
-	void convertLatToPCS(double &yCoord);
+    VAPoR::AxisAnnotation *_getCurrentAxisAnnotation();
 
-	void initializeAnnotation(VAPoR::AxisAnnotation* aa);
-	void initializeAnnotationExtents(VAPoR::AxisAnnotation* aa);
-	void initializeTicSizes(VAPoR::AxisAnnotation* aa);
+    std::vector<double> getDomainExtents() const;
+    void scaleNormalizedCoordsToWorld(std::vector<double> &coords);
+    void scaleWorldCoordsToNormalized(std::vector<double> &coords);
+    void convertPCSToLon(double &xCoord);
+    void convertPCSToLat(double &yCoord);
+    void convertPCSToLonLat(double &xCoord, double &yCoord);
+    void convertLonLatToPCS(double &xCoord, double &yCoord);
+    void convertLonToPCS(double &xCoord);
+    void convertLatToPCS(double &yCoord);
 
-	virtual void _updateTab();
+    void initializeAnnotation(VAPoR::AxisAnnotation *aa);
+    void initializeAnnotationExtents(VAPoR::AxisAnnotation *aa);
+    void initializeTicSizes(VAPoR::AxisAnnotation *aa);
 
-	void drawTimeStamp();
-	void drawTimeUser();
-	void drawTimeStep(string text="");
+    virtual void _updateTab();
 
-	AnimationParams* _ap;
-	bool _animConnected;
+    void drawTimeStamp();
+    void drawTimeUser();
+    void drawTimeStep(string text = "");
+
+    AnimationParams *_ap;
+    bool _animConnected;
 };
 
-#endif //ANNOTATIONEVENTROUTER_H
+#endif // ANNOTATIONEVENTROUTER_H

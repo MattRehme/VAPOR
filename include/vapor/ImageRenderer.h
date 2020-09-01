@@ -19,158 +19,102 @@
 #include <vapor/Grid.h>
 #include <vapor/utils.h>
 
-namespace VAPoR 
-{
+namespace VAPoR {
 
-class RENDER_API ImageRenderer : public TwoDRenderer
-{
-public:
+class RENDER_API ImageRenderer : public TwoDRenderer {
+  public:
+    ImageRenderer(const ParamsMgr *pm, string winName, string dataSetName, string instName,
+                  DataMgr *dataMgr);
 
-  ImageRenderer(  const ParamsMgr*  pm, 
-                        string      winName, 
-                        string      dataSetName,
-                        string      instName, 
-                        DataMgr*    dataMgr);
+    virtual ~ImageRenderer();
 
-  virtual ~ImageRenderer();
+    static std::string GetClassType() { return ("Image"); }
 
-  static std::string GetClassType()
-  {
-    return ("Image");
-  }
+  protected:
+    int GetMesh(DataMgr *dataMgr, GLfloat **verts, GLfloat **normals, GLsizei &nverts,
+                GLsizei &width, GLsizei &height, GLuint **indices, GLsizei &nindices,
+                bool &structuredMesh);
 
-protected:
- int GetMesh( DataMgr  *dataMgr,
-               GLfloat   **verts,
-               GLfloat   **normals,
-               GLsizei &nverts,
-               GLsizei   &width,
-               GLsizei &height,
-               GLuint **indices,
-               GLsizei &nindices,
-               bool &structuredMesh);
+    const GLvoid *GetTexture(DataMgr *dataMgr, GLsizei &width, GLsizei &height,
+                             GLint &internalFormat, GLenum &format, GLenum &type, size_t &texelSize,
+                             bool &gridAligned);
 
- const GLvoid *GetTexture( DataMgr   *dataMgr,
-                            GLsizei   &width,
-                            GLsizei   &height,
-                            GLint     &internalFormat,
-                            GLenum    &format,
-                            GLenum    &type,
-                            size_t    &texelSize,
-                            bool    &gridAligned);
+  private:
+    GeoImage *_geoImage;
+    unsigned char *_twoDTex;
+    string _cacheImgFileName;
+    vector<double> _cacheTimes;
+    vector<double> _pcsExtentsData;
+    double _pcsExtentsImg[4];
+    string _proj4StringImg;
+    GLsizei _texWidth;
+    GLsizei _texHeight;
+    size_t _cacheTimestep;
+    int _cacheRefLevel;
+    int _cacheLod;
+    vector<double> _cacheBoxExtents;
+    size_t _cacheTimestepTex;
+    string _cacheHgtVar;
+    int _cacheGeoreferenced;
+    vector<double> _cacheBoxExtentsTex;
+    SmartBuf _sb_verts;
+    SmartBuf _sb_normals;
+    SmartBuf _sb_indices;
+    GLsizei _vertsWidth;
+    GLsizei _vertsHeight;
+    GLsizei _nindices;
+    GLsizei _nverts;
 
-	
-private:
- GeoImage *_geoImage;
- unsigned char *_twoDTex;
- string _cacheImgFileName;
- vector <double> _cacheTimes;
- vector <double> _pcsExtentsData;
- double _pcsExtentsImg[4];
- string _proj4StringImg;
- GLsizei _texWidth;
- GLsizei _texHeight;
- size_t _cacheTimestep;
- int _cacheRefLevel;
- int _cacheLod;
- vector <double> _cacheBoxExtents;
- size_t _cacheTimestepTex;
- string _cacheHgtVar;
- int _cacheGeoreferenced;
- vector <double> _cacheBoxExtentsTex;
- SmartBuf _sb_verts;
- SmartBuf _sb_normals;
- SmartBuf _sb_indices;
- GLsizei _vertsWidth;
- GLsizei _vertsHeight;
- GLsizei _nindices;
- GLsizei _nverts;
+    unsigned char *_getTexture(DataMgr *dataMgr);
 
+    bool _gridStateDirty() const;
 
- unsigned char *_getTexture(DataMgr* dataMgr); 
+    void _gridStateClear();
 
- bool _gridStateDirty() const; 
+    void _gridStateSet();
 
- void _gridStateClear();
+    bool _imageStateDirty(const vector<double> &times) const;
 
- void _gridStateSet();
+    void _imageStateSet(const vector<double> &times);
 
- bool _imageStateDirty(const vector <double> &times) const; 
+    void _imageStateClear();
 
- void _imageStateSet(const vector <double> &times);
+    bool _texStateDirty(DataMgr *dataMgr) const;
 
- void _imageStateClear(); 
+    void _texStateSet(DataMgr *dataMgr);
 
- bool _texStateDirty(DataMgr *dataMgr) const; 
+    void _texStateClear();
 
- void _texStateSet(DataMgr *dataMgr);
+    int _reinit(string path, vector<double> times);
 
- void _texStateClear(); 
+    unsigned char *_getImage(GeoImage *geoimage, size_t ts, string proj4StringData,
+                             vector<double> pcsExtentsDataVec, double pcsExtentsImg[4],
+                             double geoCornersImg[8], string &proj4StringImg, GLsizei &width,
+                             GLsizei &height) const;
 
+    int _getMeshDisplacedGeo(DataMgr *dataMgr, Grid *hgtGrid, GLsizei width, GLsizei height,
+                             double defaultZ);
 
- int _reinit(
-	string path,
-	vector <double> times
- ); 
+    // Compute _verts  for displayed, non-georeferenced image
+    //
+    int _getMeshDisplacedNoGeo(DataMgr *dataMgr, Grid *hgtGrid, GLsizei width, GLsizei height,
+                               const vector<double> &minExt, const vector<double> &maxExt);
 
- unsigned char *_getImage(
-	GeoImage *geoimage,
-    size_t ts, 
-	string proj4StringData,
-	vector <double> pcsExtentsDataVec,
-    double pcsExtentsImg[4], double geoCornersImg[8], string &proj4StringImg,
-    GLsizei &width, GLsizei &height
- ) const; 
+    int _getMeshDisplaced(DataMgr *dataMgr, GLsizei width, GLsizei height,
+                          const vector<double> &minBox, const vector<double> &maxBox);
 
- int _getMeshDisplacedGeo(
-	DataMgr *dataMgr,
-	Grid *hgtGrid,
-	GLsizei width,
-	GLsizei height,
-	double defaultZ
- ); 
+    int _getMeshPlane(const vector<double> &minBox, const vector<double> &maxBox);
 
- // Compute _verts  for displayed, non-georeferenced image
- //
- int _getMeshDisplacedNoGeo(
-	DataMgr *dataMgr,
-	Grid *hgtGrid,
-	GLsizei width,
-	GLsizei height,
-	const vector <double> &minExt,
-	const vector <double> &maxExt
- ); 
+    // Get the selected horizontal ROI in PCS data coordinates
+    //
+    vector<double> _getPCSExtentsData() const;
 
- int _getMeshDisplaced(
-	DataMgr *dataMgr,
-	GLsizei width,
-	GLsizei height,
-	const vector <double> &minBox,
-	const vector <double> &maxBox
- ); 
+    // Transform verts from absolute to local coordinates
+    //
+    void _transformToLocal(size_t width, size_t height, const vector<double> &scaleFac) const;
 
- int _getMeshPlane(
-	const vector <double> &minBox, 
-	const vector <double> &maxBox
- );
-
-
- // Get the selected horizontal ROI in PCS data coordinates
- //
- vector <double> _getPCSExtentsData() const; 
-
- // Transform verts from absolute to local coordinates
- //
- void _transformToLocal(
-	size_t width, size_t height, 
-	const vector <double> &scaleFac
- ) const;
-
-  void _clearCache() {    
-    _cacheHgtVar.clear();
-  } 
-
+    void _clearCache() { _cacheHgtVar.clear(); }
 };
-};
+}; // namespace VAPoR
 
 #endif // TWODRENDERER_H
